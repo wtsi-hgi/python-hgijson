@@ -1,5 +1,6 @@
 from abc import ABCMeta
 from json import JSONEncoder
+from typing import Dict, Any
 from typing import TypeVar, Iterable
 
 from hgicommon.collections import Metadata
@@ -15,9 +16,14 @@ class _MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
     constructor. Instead this class must be subclassed and the subclass must define the relevant constants.
     """
     _PLACEHOLDER = TypeVar("")
-
     ENCODING_CLS = _PLACEHOLDER     # type: type
     PROPERTY_MAPPINGS = _PLACEHOLDER    # type: Iterable[JsonPropertyMapping]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._args = args
+        self._kwargs = kwargs
+        self._encoders_cache = dict()    # type: Dict[type, JSONEncoder]
 
     def default(self, to_encode: ENCODING_CLS) -> DefaultSupportedJSONSerializableType:
         if self.ENCODING_CLS is _MappingJSONEncoder._PLACEHOLDER:
@@ -31,10 +37,27 @@ class _MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         encoded = {}
         for mapping in self.PROPERTY_MAPPINGS:
             assert mapping.json_property not in encoded
-            if mapping.object_property is not None:
-                encoded[mapping.json_property] = to_encode.__getattribute__(mapping.object_property)
+            value = to_encode.__getattribute__(mapping.object_property)
+            encoded[mapping.json_property] = self._encode_value(value, mapping.encoder)
 
         return encoded
+
+    def _encode_value(self, value: Any, encoder_type: type) -> DefaultSupportedJSONSerializableType:
+        """
+        Encode the given value using an encoder of the given type.
+        :param value: the value to encode
+        :param encoder_type: the type of encoder to encode the value with
+        :return: encoded value
+        """
+        if encoder_type == JSONEncoder:
+            # Already "primitive" encoding
+            return value
+
+        if encoder_type not in self._encoders_cache:
+            self._encoders_cache[encoder_type] = encoder_type(*self._args, **self._kwargs)
+
+        value_encoder = self._encoders_cache[encoder_type]
+        return value_encoder.default(value)
 
 
 class MetadataJSONEncoder(JSONEncoder):

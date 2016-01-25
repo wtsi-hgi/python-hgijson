@@ -6,20 +6,13 @@ from hgicommon.serialization.json.decoders import _MappingJSONDecoder
 from hgicommon.serialization.json.encoders import _MappingJSONEncoder
 
 
-# Type of a concrete subclass of `_MappingJSONEncoder`, created dynamically.
-MappingJSONEncoderType = TypeVar("MappingJSONEncoder", bound=_MappingJSONEncoder)
-
-# Type of a concrete subclass of `_MappingJSONDecoder`, created dynamically.
-MappingJSONDecoderType = TypeVar("MappingJSONDecoder", bound=_MappingJSONDecoder)
-
-
 class _JSONSerializationClassBuilder(metaclass=ABCMeta):
     """
     TODO
     """
-    def __init__(self):
-        self._target_cls = type(None)
-        self._mappings = []
+    def __init__(self, target_cls: type=type(None), mappings: Iterable[JsonPropertyMapping]=()):
+        self._target_cls = target_cls
+        self._mappings = mappings
 
     @property
     def target_cls(self) -> type:
@@ -42,7 +35,7 @@ class MappingJSONEncoderClassBuilder(_JSONSerializationClassBuilder):
     """
     Builder for `_MappingJSONEncoder` concrete subclasses.
     """
-    def build(self) -> MappingJSONEncoderType:
+    def build(self) -> type:
         """
         Build a subclass of `_MappingJSONEncoder`.
         :return: the built subclass
@@ -62,7 +55,7 @@ class MappingJSONDecoderClassBuilder(_JSONSerializationClassBuilder):
     """
     Builder for `_MappingJSONDecoder` concrete subclasses.
     """
-    def build(self) -> MappingJSONDecoderType:
+    def build(self) -> type:
         """
         Build a subclass of `_MappingJSONDecoder`.
         :return: the built subclass
