@@ -15,19 +15,19 @@ class JsonPropertyMapping(Model):
     """
     def __init__(
             self,
-            json_property: str=None, object_property: str=None,
+            json_property: str=None, object_property: str=None, constructor_parameter: str=None,
             json_property_getter: Callable[[Dict], Any]=None, json_property_setter: Callable[[Any, Any], None]=None,
             object_property_getter: Callable[[Any], Any]=None, object_property_setter: Callable[[Any, Any], None]=None,
-            constructor_parameter: str=None, encoder: type=JSONEncoder, decoder: type=JSONDecoder):
+            encoder: type=JSONEncoder, decoder: type=JSONDecoder):
         """
         TODO
         :param json_property:
         :param object_property:
+        :param constructor_parameter:
         :param json_property_getter:
         :param json_property_setter:
         :param object_property_getter:
         :param object_property_setter:
-        :param constructor_parameter:
         :param encoder:
         :param decoder:
         :return:
