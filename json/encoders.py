@@ -1,10 +1,12 @@
 from abc import ABCMeta
 from json import JSONEncoder
-from typing import Dict, Any
-from typing import TypeVar, Iterable
+from typing import Any
+from typing import Dict
+from typing import Iterable
 
 from hgicommon.collections import Metadata
-from hgicommon.serialization.json.common import JsonPropertyMapping, DefaultSupportedJSONSerializableType
+from hgicommon.serialization.json.common import DefaultSupportedJSONSerializableType
+from hgicommon.serialization.json.common import JsonPropertyMapping
 
 
 class _MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
@@ -15,9 +17,8 @@ class _MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
     encoded class and the mappings between the object properties and the json properties cannot be passed through the
     constructor. Instead this class must be subclassed and the subclass must define the relevant constants.
     """
-    _PLACEHOLDER = TypeVar("")
-    ENCODING_CLS = _PLACEHOLDER     # type: type
-    PROPERTY_MAPPINGS = _PLACEHOLDER    # type: Iterable[JsonPropertyMapping]
+    ENCODING_CLS = type(None)     # type: type
+    PROPERTY_MAPPINGS = None    # type: Iterable[JsonPropertyMapping]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -26,23 +27,23 @@ class _MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         self._encoders_cache = dict()    # type: Dict[type, JSONEncoder]
 
     def default(self, to_encode: ENCODING_CLS) -> DefaultSupportedJSONSerializableType:
-        if self.ENCODING_CLS is _MappingJSONEncoder._PLACEHOLDER:
+        if self.ENCODING_CLS is None:
             raise RuntimeError("Subclass of `_MappingJSONEncoder` did not \"override\" `ENCODING_CLS` constant")
-        if self.PROPERTY_MAPPINGS is _MappingJSONEncoder._PLACEHOLDER:
+        if self.PROPERTY_MAPPINGS is None:
             raise RuntimeError("Subclass of `_MappingJSONEncoder` did not \"override\" `PROPERTY_MAPPINGS` constant")
 
         if not isinstance(to_encode, self.ENCODING_CLS):
-            super().default(to_encode)
+            JSONEncoder.default(self, to_encode)
 
         encoded = {}
         for mapping in self.PROPERTY_MAPPINGS:
             assert mapping.json_property not in encoded
             value = to_encode.__getattribute__(mapping.object_property)
-            encoded[mapping.json_property] = self._encode_value(value, mapping.encoder)
+            encoded[mapping.json_property] = self._encode_property_value(value, mapping.encoder)
 
         return encoded
 
-    def _encode_value(self, value: Any, encoder_type: type) -> DefaultSupportedJSONSerializableType:
+    def _encode_property_value(self, value: Any, encoder_type: type) -> DefaultSupportedJSONSerializableType:
         """
         Encode the given value using an encoder of the given type.
         :param value: the value to encode
@@ -60,6 +61,17 @@ class _MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         return value_encoder.default(value)
 
 
+class _CollectionMappingJSONEncoder(_MappingJSONEncoder):
+    """
+    JSON encoder that serialises an iterable of objects based on a mapping of its properties to JSON properties.
+    """
+    def default(self, to_encode: Iterable[_MappingJSONEncoder.ENCODING_CLS]) -> DefaultSupportedJSONSerializableType:
+        encoded = []
+        for x in to_encode:
+            encoded.append(super().default(x))
+        return encoded
+
+
 class MetadataJSONEncoder(JSONEncoder):
     """
     JSON encoder for `Metadata` instances.
@@ -70,6 +82,6 @@ class MetadataJSONEncoder(JSONEncoder):
     """
     def default(self, to_encode: Metadata) -> DefaultSupportedJSONSerializableType:
         if not isinstance(to_encode, Metadata):
-            super().default(to_encode)
+            JSONEncoder.default(self, to_encode)
 
         return to_encode._data
