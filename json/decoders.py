@@ -44,7 +44,7 @@ class _MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
         init_kwargs = dict()    # Dict[str, Any]
         for mapping in self.PROPERTY_MAPPINGS:
             if mapping.constructor_parameter is not None:
-                value = json_as_dict[mapping.json_property]
+                value = mapping.json_property_getter(json_as_dict)
                 decoded_value = self._decode_property_value(value, mapping.decoder)
                 init_kwargs[mapping.constructor_parameter] = decoded_value
             else:
@@ -54,9 +54,9 @@ class _MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
 
         for mapping in mappings_not_set_in_constructor:
             if mapping.constructor_parameter is None:
-                value = json_as_dict[mapping.json_property]
+                value = mapping.json_property_getter(json_as_dict)
                 decoded_value = self._decode_property_value(value, mapping.decoder)
-                mapping.property_setter(decoded, decoded_value)
+                mapping.object_property_setter(decoded, decoded_value)
 
         return decoded
 

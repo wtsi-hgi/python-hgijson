@@ -37,9 +37,9 @@ class _MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
 
         encoded = {}
         for mapping in self.PROPERTY_MAPPINGS:
-            assert mapping.json_property not in encoded
-            value = mapping.property_getter(to_encode)
-            encoded[mapping.json_property] = self._encode_property_value(value, mapping.encoder)
+            value = mapping.object_property_getter(to_encode)
+            encoded_value = self._encode_property_value(value, mapping.encoder)
+            mapping.json_property_setter(encoded, encoded_value)
 
         return encoded
 
