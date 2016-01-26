@@ -1,10 +1,9 @@
 import json
 from abc import ABCMeta
 from json import JSONDecoder
-from typing import Dict, Iterable, TypeVar, Any
+from typing import Any, Dict, Iterable
 
 from hgicommon.serialization.json.common import DefaultSupportedJSONSerializableType, JsonPropertyMapping
-from hgicommon.serialization.json.encoders import _MappingJSONEncoder
 
 
 class _MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
@@ -36,28 +35,34 @@ class _MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
 
     def _decode_json_as_dict(self, json_as_dict: dict) -> Any:
         """
-        TODO
-        :param json_as_dict:
-        :return:
+        Decode the given instance represented as JSON dictionary.
+        :param json_as_dict: the object to decode
+        :return: decoded instance
         """
+        mappings_not_set_in_constructor = []
+
         init_kwargs = dict()    # Dict[str, Any]
         for mapping in self.PROPERTY_MAPPINGS:
             if mapping.constructor_parameter is not None:
                 value = json_as_dict[mapping.json_property]
-                init_kwargs[mapping.constructor_parameter] = self._decode_property_value(value, mapping.decoder)
+                decoded_value = self._decode_property_value(value, mapping.decoder)
+                init_kwargs[mapping.constructor_parameter] = decoded_value
+            else:
+                mappings_not_set_in_constructor.append(mapping)
 
         decoded = self.DECODING_CLS(**init_kwargs)
 
-        for mapping in self.PROPERTY_MAPPINGS:
+        for mapping in mappings_not_set_in_constructor:
             if mapping.constructor_parameter is None:
                 value = json_as_dict[mapping.json_property]
-                decoded.__setattr__(mapping.object_property, self._decode_property_value(value, mapping.decoder))
+                decoded_value = self._decode_property_value(value, mapping.decoder)
+                mapping.property_setter(decoded, decoded_value)
 
         return decoded
 
     def _decode_property_value(self, value: DefaultSupportedJSONSerializableType, decoder_type: type) -> Any:
         """
-        Dencode the given value using an decoder of the given type.
+        Decode the given value using an decoder of the given type.
         :param value: the value to decode
         :param decoder_type: the type of decoder to decode the value with
         :return: decoded value
