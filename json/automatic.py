@@ -1,9 +1,10 @@
 import copy
 from abc import ABCMeta, abstractmethod
 from json import JSONEncoder
-from typing import Tuple, Dict, Union, List, Optional, Iterable, Any, TypeVar
+from typing import Dict
+from typing import Optional, Iterable, Any, TypeVar
 
-from hgicommon.serialization.json.common import DefaultSupportedJSONSerializableType
+from hgicommon.serialization.json.temp import PrimitiveJsonSerializableType
 
 
 class _RegisteredTypeJSONEncoder(JSONEncoder, metaclass=ABCMeta):
@@ -22,7 +23,7 @@ class _RegisteredTypeJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         self._kwargs = kwargs
         self._encoder_cache = dict()    # type: Dict[type, JSONEncoder]
 
-    def default(self, to_encode: Any) -> DefaultSupportedJSONSerializableType:
+    def default(self, to_encode: Any) -> PrimitiveJsonSerializableType:
         type_to_encode = type(to_encode)
 
         encoder_type = self._get_json_encoders_for_type(type_to_encode)

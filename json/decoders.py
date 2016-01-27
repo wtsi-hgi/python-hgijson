@@ -1,12 +1,13 @@
-import json
 from abc import ABCMeta
 from json import JSONDecoder
-from typing import Any, Dict, Iterable
+from typing import Iterable
 
-from hgicommon.serialization.json.common import DefaultSupportedJSONSerializableType, JsonPropertyMapping
+from hgicommon.serialization.json.common import JsonPropertyMapping
+
+from hgicommon.serialization.serialization import Deserializer, SerializableType
 
 
-class _MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
+class _MappingJSONDecoder(Deserializer, JSONDecoder, metaclass=ABCMeta):
     """
     JSON decoder that creates an object from JSON based on a mapping from the JSON properties to the object properties,
     mindful that some properties may have to be passed through the constructor.
@@ -15,67 +16,28 @@ class _MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
     decoded class and the mappings between the object properties and the json properties cannot be passed through the
     constructor. Instead this class must be subclassed and the subclass must define the relevant constants.
     """
-    DECODING_CLS = type(None)     # type: type
+    DESERIALIZABLE_CLS = type(None)     # type: type
     PROPERTY_MAPPINGS = None    # type: Iterable[JsonPropertyMapping]
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._args = args
-        self._kwargs = kwargs
-        self._decoders_cache = dict()    # type: Dict[type, JSONDecoder]
-
-    def decode(self, json_as_string: str, **kwargs) -> Any:
-        if self.DECODING_CLS is None:
+        if self.DESERIALIZABLE_CLS is None:
             raise RuntimeError("Subclass of `_MappingJSONEncoder` did not \"override\" `DECODING_CLS` constant")
         if self.PROPERTY_MAPPINGS is None:
             raise RuntimeError("Subclass of `_MappingJSONEncoder` did not \"override\" `PROPERTY_MAPPINGS` constant")
 
-        json_as_dict = super().decode(json_as_string)
-        return self._decode_json_as_dict(json_as_dict)
+        super().__init__(self.DESERIALIZABLE_CLS, self.PROPERTY_MAPPINGS, *args, **kwargs)
+        self._args = args
+        self._kwargs = kwargs
 
-    def _decode_json_as_dict(self, json_as_dict: dict) -> Any:
-        """
-        Decode the given instance represented as JSON dictionary.
-        :param json_as_dict: the object to decode
-        :return: decoded instance
-        """
-        mappings_not_set_in_constructor = []
+    def decode(self, json_as_string: str, **kwargs) -> SerializableType:
+        object_as_dict = super().decode(json_as_string)
+        return self._decode_json_as_dict(object_as_dict)
 
-        init_kwargs = dict()    # Dict[str, Any]
-        for mapping in self.PROPERTY_MAPPINGS:
-            if mapping.constructor_parameter is not None:
-                value = mapping.json_property_getter(json_as_dict)
-                decoded_value = self._decode_property_value(value, mapping.decoder)
-                init_kwargs[mapping.constructor_parameter] = decoded_value
-            else:
-                mappings_not_set_in_constructor.append(mapping)
+    def _decode_json_as_dict(self, object_as_dict: dict) -> SerializableType:
+        return self.deserialize(object_as_dict)
 
-        decoded = self.DECODING_CLS(**init_kwargs)
-
-        for mapping in mappings_not_set_in_constructor:
-            if mapping.constructor_parameter is None:
-                value = mapping.json_property_getter(json_as_dict)
-                decoded_value = self._decode_property_value(value, mapping.decoder)
-                mapping.object_property_setter(decoded, decoded_value)
-
-        return decoded
-
-    def _decode_property_value(self, value: DefaultSupportedJSONSerializableType, decoder_type: type) -> Any:
-        """
-        Decode the given value using an decoder of the given type.
-        :param value: the value to decode
-        :param decoder_type: the type of decoder to decode the value with
-        :return: decoded value
-        """
-        if decoder_type == JSONDecoder:
-            # Already "primitive" encoding
-            return value
-
-        if decoder_type not in self._decoders_cache:
-            self._decoders_cache[decoder_type] = decoder_type(*self._args, **self._kwargs)
-
-        value_decoder = self._decoders_cache[decoder_type]
-        return value_decoder.decode(json.dumps(value))
+    def _create_deserializer_of_type(self, deserializer_type: type) -> Deserializer:
+        return deserializer_type(*self._args, **self._kwargs)
 
 
 class _CollectionMappingJSONDecoder(_MappingJSONDecoder):
@@ -83,8 +45,8 @@ class _CollectionMappingJSONDecoder(_MappingJSONDecoder):
     JSON decoder that creates an iterable of objects from JSON based on a mapping from the JSON properties to the object
     properties.
     """
-    def _decode_json_as_dict(self, json_as_dict: dict) -> Any:
-        decoded = []
-        for x in json_as_dict:
-            decoded.append(super()._decode_json_as_dict(x))
-        return decoded
+    def _decode_json_as_dict(self, object_as_dict: dict) -> SerializableType:
+        deserialized = []
+        for deserializable in object_as_dict:
+            deserialized.append(self.deserialize(deserializable))
+        return deserialized
