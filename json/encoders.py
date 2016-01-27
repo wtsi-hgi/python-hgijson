@@ -18,22 +18,22 @@ class _MappingJSONEncoder(Serializer, JSONEncoder, metaclass=ABCMeta):
     encoded class and the mappings between the object properties and the json properties cannot be passed through the
     constructor. Instead this class must be subclassed and the subclass must define the relevant constants.
     """
-    SERIALIZABLE_CLS = type(None)     # type: type
-    PROPERTY_MAPPINGS = None    # type: Iterable[JsonPropertyMapping]
+    _SERIALIZABLE_CLS = type(None)     # type: type
+    _PROPERTY_MAPPINGS = None    # type: Iterable[JsonPropertyMapping]
 
     def __init__(self, *args, **kwargs):
-        if self.SERIALIZABLE_CLS is _MappingJSONEncoder.SERIALIZABLE_CLS:
+        if self._SERIALIZABLE_CLS is _MappingJSONEncoder._SERIALIZABLE_CLS:
             raise RuntimeError("Subclass of `_MappingJSONEncoder` did not \"override\" `SERIALIZABLE_CLS` constant "
                                "(it cannot be derived from the generic)")
-        if self.PROPERTY_MAPPINGS is _MappingJSONEncoder.PROPERTY_MAPPINGS:
+        if self._PROPERTY_MAPPINGS is _MappingJSONEncoder._PROPERTY_MAPPINGS:
             raise RuntimeError("Subclass of `_MappingJSONEncoder` did not \"override\" `PROPERTY_MAPPINGS` constant")
 
-        super().__init__(self.PROPERTY_MAPPINGS, *args, **kwargs)
+        super().__init__(self._PROPERTY_MAPPINGS, *args, **kwargs)
         self._args = args
         self._kwargs = kwargs
 
     def default(self, serializable: SerializableType) -> PrimitiveJsonSerializableType:
-        if not isinstance(serializable, self.SERIALIZABLE_CLS):
+        if not isinstance(serializable, self._SERIALIZABLE_CLS):
             JSONEncoder.default(self, serializable)
 
         return self.serialize(serializable)

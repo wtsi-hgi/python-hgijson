@@ -15,7 +15,7 @@ class PropertyMapping(Model):
             serialized_property_name=None, object_property_name: str=None, constructor_parameter_name: str=None,
             serialized_property_getter: Callable[[Dict], Any]=None, serialized_property_setter: Callable[[Any, Any], None]=None,
             object_property_getter: Callable[[Any], Any]=None, object_property_setter: Callable[[Any, Any], None]=None,
-            serializer: type=PrimitiveSerializer, deserializer: type=PrimitiveDeserializer):
+            serializer_cls: type=PrimitiveSerializer, deserializer_cls: type=PrimitiveDeserializer):
         """
         TODO
         :param serialized_property_name:
@@ -25,8 +25,8 @@ class PropertyMapping(Model):
         :param serialized_property_setter:
         :param object_property_getter:
         :param object_property_setter:
-        :param serializer:
-        :param deserializer:
+        :param serializer_cls:
+        :param deserializer_cls:
         """
         # TODO: Check for too many arguments set
 
@@ -52,5 +52,5 @@ class PropertyMapping(Model):
         self.object_property_getter = object_property_getter
         self.object_property_setter = object_property_setter
         self.constructor_parameter_name = constructor_parameter_name
-        self.serializer = serializer
-        self.deserializer = deserializer
+        self.serializer_cls = serializer_cls
+        self.deserializer_cls = deserializer_cls

@@ -37,7 +37,7 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
         for mapping in self._property_mappings:
             if mapping.object_property_setter is not None and mapping.serialized_property_setter is not None:
                 value = mapping.object_property_getter(serializable)
-                encoded_value = self._serialize_property_value(value, mapping.serializer)
+                encoded_value = self._serialize_property_value(value, mapping.serializer_cls)
                 mapping.serialized_property_setter(serialized, encoded_value)
 
         return serialized
@@ -104,7 +104,7 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
             if mapping.constructor_parameter_name is not None:
                 assert mapping.serialized_property_getter is not None
                 value = mapping.serialized_property_getter(object_as_json)
-                decoded_value = self._deserialize_property_value(value, mapping.deserializer)
+                decoded_value = self._deserialize_property_value(value, mapping.deserializer_cls)
                 init_kwargs[mapping.constructor_parameter_name] = decoded_value
             else:
                 mappings_not_set_in_constructor.append(mapping)
@@ -115,7 +115,7 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
             assert mapping.constructor_parameter_name is None
             if mapping.serialized_property_getter is not None and mapping.object_property_setter is not None:
                 value = mapping.serialized_property_getter(object_as_json)
-                decoded_value = self._deserialize_property_value(value, mapping.deserializer)
+                decoded_value = self._deserialize_property_value(value, mapping.deserializer_cls)
                 mapping.object_property_setter(decoded, decoded_value)
 
         return decoded

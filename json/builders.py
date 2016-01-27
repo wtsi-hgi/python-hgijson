@@ -32,8 +32,8 @@ class MappingJSONEncoderClassBuilder(_JSONSerializationClassBuilder):
             cls_name,
             (encoder_base_cls[TypeVar("T", bound=self.target_cls), PrimitiveJsonSerializableType], ),
             {
-                "SERIALIZABLE_CLS": self.target_cls,
-                "PROPERTY_MAPPINGS": self.mappings
+                "_SERIALIZABLE_CLS": self.target_cls,
+                "_PROPERTY_MAPPINGS": self.mappings
             }
         )
 
@@ -53,7 +53,7 @@ class MappingJSONDecoderClassBuilder(_JSONSerializationClassBuilder):
             class_name,
             (decoder_base_cls[TypeVar("T", bound=self.target_cls), PrimitiveJsonSerializableType], ),
             {
-                "DESERIALIZABLE_CLS": self.target_cls,
-                "PROPERTY_MAPPINGS": self.mappings
+                "_DESERIALIZABLE_CLS": self.target_cls,
+                "_PROPERTY_MAPPINGS": self.mappings
             }
         )

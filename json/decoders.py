@@ -16,16 +16,16 @@ class _MappingJSONDecoder(Deserializer, JSONDecoder, metaclass=ABCMeta):
     decoded class and the mappings between the object properties and the json properties cannot be passed through the
     constructor. Instead this class must be subclassed and the subclass must define the relevant constants.
     """
-    DESERIALIZABLE_CLS = type(None)     # type: type
-    PROPERTY_MAPPINGS = None    # type: Iterable[JsonPropertyMapping]
+    _DESERIALIZABLE_CLS = type(None)     # type: type
+    _PROPERTY_MAPPINGS = None    # type: Iterable[JsonPropertyMapping]
 
     def __init__(self, *args, **kwargs):
-        if self.DESERIALIZABLE_CLS is None:
+        if self._DESERIALIZABLE_CLS is None:
             raise RuntimeError("Subclass of `_MappingJSONEncoder` did not \"override\" `DECODING_CLS` constant")
-        if self.PROPERTY_MAPPINGS is None:
+        if self._PROPERTY_MAPPINGS is None:
             raise RuntimeError("Subclass of `_MappingJSONEncoder` did not \"override\" `PROPERTY_MAPPINGS` constant")
 
-        super().__init__(self.DESERIALIZABLE_CLS, self.PROPERTY_MAPPINGS, *args, **kwargs)
+        super().__init__(self._DESERIALIZABLE_CLS, self._PROPERTY_MAPPINGS, *args, **kwargs)
         self._args = args
         self._kwargs = kwargs
 
