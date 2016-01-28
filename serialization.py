@@ -16,7 +16,7 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
         Constructor.
         :param property_mappings: the property mappings to use during serialization
         """
-        super().__init__(*args, **kwargs)
+        super().__init__()
         self._property_mappings = property_mappings     # type_but_do_not_import: Iterable[PropertyMapping]
         self._serializers_cache = dict()    # type: Dict[type, Serializer]
 
@@ -82,7 +82,7 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
         :param property_mappings: the property mappings that this deserialiser uses when deserialing an object
         :param deserializable_cls: the class that should be built as a result of deserialization
         """
-        super().__init__(*args, **kwargs)
+        super().__init__()
         self._property_mappings = property_mappings     # type_but_do_not_import: Iterable[PropertyMapping]
         self._deserializable_cls = deserializable_cls
         self._deserializers_cache = dict()    # type: Dict[type, Deserializer]
