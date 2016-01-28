@@ -1,10 +1,8 @@
 from json import JSONDecoder
 from json import JSONEncoder
-from typing import Callable, Any
-from typing import Dict
+from typing import Callable, Any, Dict
 
-from hgicommon.serialization.json._common import BuildJSONDecoderAsDeserializer
-from hgicommon.serialization.json._common import BuildJSONEncoderAsSerializer
+from hgicommon.serialization.json._converters import json_decoder_to_deserializer, json_encoder_to_serializer
 from hgicommon.serialization.models import PropertyMapping
 
 
@@ -31,8 +29,8 @@ class JsonPropertyMapping(PropertyMapping):
         :param decoder_cls:
         :return:
         """
-        encoder_as_serializer_cls = BuildJSONEncoderAsSerializer(encoder_cls).build()
-        decoder_as_serializer_cls = BuildJSONDecoderAsDeserializer(decoder_cls).build()
+        encoder_as_serializer_cls = json_encoder_to_serializer(encoder_cls)
+        decoder_as_serializer_cls = json_decoder_to_deserializer(decoder_cls)
 
         # TODO: Set default JSON property getter/setter if name specified
 

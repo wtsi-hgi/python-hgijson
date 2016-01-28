@@ -1,17 +1,23 @@
 from abc import ABCMeta
 from typing import Iterable, TypeVar
 
-from hgicommon.serialization.models import PropertyMapping
-from hgicommon.serialization.json.decoders import _MappingJSONDecoder, _CollectionMappingJSONDecoder
-from hgicommon.serialization.json.encoders import _MappingJSONEncoder, _CollectionMappingJSONEncoder
+from hgicommon.serialization.json._serialization import CollectionMappingJSONEncoder, CollectionMappingJSONDecoder, \
+    MappingJSONEncoder, MappingJSONDecoder
+from hgicommon.serialization.json.models import JsonPropertyMapping
 from hgicommon.serialization.types import PrimitiveJsonSerializableType
 
 
 class _JSONSerializationClassBuilder(metaclass=ABCMeta):
     """
-    TODO
+    Subclass of serialization class builders.
     """
-    def __init__(self, target_cls: type=type(None), mappings: Iterable[PropertyMapping]=(), iterable: bool=False):
+    def __init__(self, target_cls: type=type(None), mappings: Iterable[JsonPropertyMapping]=(), iterable: bool=False):
+        """
+        Constructor.
+        :param target_cls: the class that the builder targets
+        :param mappings: mappings from JSON properties to object properties
+        :param iterable: whether the serialization class will deal with collections
+        """
         self.target_cls = target_cls
         self.mappings = mappings
         self.iterable = iterable
@@ -19,15 +25,15 @@ class _JSONSerializationClassBuilder(metaclass=ABCMeta):
 
 class MappingJSONEncoderClassBuilder(_JSONSerializationClassBuilder):
     """
-    Builder for `_MappingJSONEncoder` concrete subclasses.
+    Builder for `MappingJSONEncoder` concrete subclasses.
     """
     def build(self) -> type:
         """
-        Build a subclass of `_MappingJSONEncoder`.
+        Build a subclass of `MappingJSONEncoder`.
         :return: the built subclass
         """
         cls_name = "%sDynamicMappingJSONEncoder" % self.target_cls.__name__
-        encoder_base_cls = _MappingJSONEncoder if not self.iterable else _CollectionMappingJSONEncoder
+        encoder_base_cls = MappingJSONEncoder if not self.iterable else CollectionMappingJSONEncoder
         return type(
             cls_name,
             (encoder_base_cls[TypeVar("T", bound=self.target_cls), PrimitiveJsonSerializableType], ),
@@ -40,15 +46,15 @@ class MappingJSONEncoderClassBuilder(_JSONSerializationClassBuilder):
 
 class MappingJSONDecoderClassBuilder(_JSONSerializationClassBuilder):
     """
-    Builder for `_MappingJSONDecoder` concrete subclasses.
+    Builder for `MappingJSONDecoder` concrete subclasses.
     """
     def build(self) -> type:
         """
-        Build a subclass of `_MappingJSONDecoder`.
+        Build a subclass of `MappingJSONDecoder`.
         :return: the built subclass
         """
         class_name = "%sDynamicMappingJSONDecoder" % self.target_cls.__name__
-        decoder_base_cls = _MappingJSONDecoder if not self.iterable else _CollectionMappingJSONDecoder
+        decoder_base_cls = MappingJSONDecoder if not self.iterable else CollectionMappingJSONDecoder
         return type(
             class_name,
             (decoder_base_cls[TypeVar("T", bound=self.target_cls), PrimitiveJsonSerializableType], ),
