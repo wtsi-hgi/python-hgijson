@@ -1,10 +1,10 @@
 from abc import ABCMeta
 from typing import Iterable, TypeVar
 
-from hgicommon.serialization.common import PropertyMapping
+from hgicommon.serialization.models import PropertyMapping
 from hgicommon.serialization.json.decoders import _MappingJSONDecoder, _CollectionMappingJSONDecoder
 from hgicommon.serialization.json.encoders import _MappingJSONEncoder, _CollectionMappingJSONEncoder
-from hgicommon.serialization.json.temp import PrimitiveJsonSerializableType
+from hgicommon.serialization.types import PrimitiveJsonSerializableType
 
 
 class _JSONSerializationClassBuilder(metaclass=ABCMeta):

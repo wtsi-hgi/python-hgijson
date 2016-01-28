@@ -1,10 +1,9 @@
 import copy
 from abc import ABCMeta, abstractmethod
 from json import JSONEncoder
-from typing import Dict
-from typing import Optional, Iterable, Any, TypeVar
+from typing import Dict, Optional, Iterable, Any, TypeVar
 
-from hgicommon.serialization.json.temp import PrimitiveJsonSerializableType
+from hgicommon.serialization.types import PrimitiveJsonSerializableType
 
 
 class _RegisteredTypeJSONEncoder(JSONEncoder, metaclass=ABCMeta):
@@ -41,8 +40,9 @@ class _RegisteredTypeJSONEncoder(JSONEncoder, metaclass=ABCMeta):
 
         return encoder.default(to_encode)
 
+    @staticmethod
     @abstractmethod
-    def _get_json_encoders_for_type(self, type_to_encode: type) -> Optional[Iterable[JSONEncoder]]:
+    def _get_json_encoders_for_type(type_to_encode: type) -> Optional[Iterable[JSONEncoder]]:
         """
         Gets the correct JSON encoder for the given type.
         :param type_to_encode: the type to encode
@@ -58,6 +58,10 @@ class AutomaticJSONEncoderClassBuilder:
     """
     Builder for `JSONEncoder` class that is able to use a number of given `JSONEncoders` to automatically serialise
     models that may contain many models of different types.
+
+    Similar to `jsonpublish` but without the global scope and able to be used with any json.dumps settings (unlike
+    `jsonpublish` which (confusingly) can only be used by the settings that the developer made (see the package's
+    __init__).
     """
     # Encoders for objects that are handled by the in-build JSON library
     _DEFAULT_JSON_ENCODERS = {

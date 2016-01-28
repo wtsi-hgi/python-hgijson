@@ -1,29 +1,23 @@
 from abc import ABCMeta, abstractmethod
-from typing import Any, TypeVar, Generic, Iterable, Container, List, Tuple
-from typing import Dict
+from typing import Any, Generic, Iterable, Dict
 
-from hgicommon.serialization.json.temp import PrimitiveJsonSerializableType
-
-SerializableType = TypeVar("Serializable")
-
-PrimitiveUnionType = TypeVar("PrimitiveUnion")
+from hgicommon.serialization.types import SerializableType, PrimitiveUnionType, PrimitiveJsonSerializableType
 
 
 class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMeta):
     """
-    TODO
+    Serializer that uses a mapping that describes how the process should occur for the type of serializable object that
+    this serializer handles.
     """
+    # TODO: Correct type hinting in signature without causing a cyclic dependency issue
     # def __init__(self, property_mappings: Iterable[PropertyMapping], *args, **kwargs):
     def __init__(self, property_mappings: Iterable[Any], *args, **kwargs):
         """
-        TODO
-        :param primitive_types:
-        :param property_mappings:
-        :param args:
-        :param kwargs:
+        Constructor.
+        :param property_mappings: the property mappings to use during serialization
         """
         super().__init__(*args, **kwargs)
-        self._property_mappings = property_mappings
+        self._property_mappings = property_mappings     # type_but_do_not_import: Iterable[PropertyMapping]
         self._serializers_cache = dict()    # type: Dict[type, Serializer]
 
     def serialize(self, serializable: SerializableType) -> PrimitiveUnionType:
@@ -35,7 +29,7 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
         serialized = self._create_serialized_container()
 
         for mapping in self._property_mappings:
-            if mapping.object_property_setter is not None and mapping.serialized_property_setter is not None:
+            if mapping.object_property_getter is not None and mapping.serialized_property_setter is not None:
                 value = mapping.object_property_getter(serializable)
                 encoded_value = self._serialize_property_value(value, mapping.serializer_cls)
                 mapping.serialized_property_setter(serialized, encoded_value)
@@ -56,6 +50,8 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
         return serializer.serialize(value)
 
     @abstractmethod
+    # FIXME: Signature should be self referential to this class:
+    # def _create_serializer_of_type(self, serializer_type: type) -> Serializer:
     def _create_serializer_of_type(self, serializer_type: type):
         """
         Create an instance of an serializer of the given type.
@@ -67,62 +63,63 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
     @abstractmethod
     def _create_serialized_container(self) -> Any:
         """
-        TODO
-        :return:
+        Create the container in which serialized representation is built in
+        :return: the container
         """
         pass
 
 
 class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMeta):
     """
-    TODO
+    Deserializer that uses a mapping that describes how the process should occur for the type of deserializable object
+    that this deserializer handles.
     """
-    # TODO: Order parameters same as serializer
+    # TODO: Correct type hinting in signature without causing a cyclic dependency issue
     # def __init__(self, deserializable_cls: type, property_mappings: Iterable[PropertyMapping], *args, **kwargs):
-    def __init__(self, deserializable_cls: type, property_mappings: Iterable[Any], *args, **kwargs):
+    def __init__(self, property_mappings: Iterable[Any], deserializable_cls: type, *args, **kwargs):
         """
-        TODO
-        :param primitive_types:
-        :param deserializable_cls:
-        :param property_mappings:
+        Construtor.
+        :param property_mappings: the property mappings that this deserialiser uses when deserialing an object
+        :param deserializable_cls: the class that should be built as a result of deserialization
         """
         super().__init__(*args, **kwargs)
+        self._property_mappings = property_mappings     # type_but_do_not_import: Iterable[PropertyMapping]
         self._deserializable_cls = deserializable_cls
-        self._property_mappings = property_mappings
         self._deserializers_cache = dict()    # type: Dict[type, Deserializer]
 
-    def deserialize(self, object_as_json: PrimitiveJsonSerializableType) -> SerializableType:
+    def deserialize(self, object_property_value_dict: PrimitiveJsonSerializableType) -> SerializableType:
         """
-        TODO
-        :param object_as_json:
-        :return:
+        Deserializes the given representation of the serialized object.
+        :param object_property_value_dict: the serialized object as a dictionary
+        :return: the deserialized object
         """
         mappings_not_set_in_constructor = []
 
         init_kwargs = dict()    # Dict[str, Any]
         for mapping in self._property_mappings:
-            if mapping.constructor_parameter_name is not None:
+            if mapping.object_constructor_parameter_name is not None:
                 assert mapping.serialized_property_getter is not None
-                value = mapping.serialized_property_getter(object_as_json)
+                value = mapping.serialized_property_getter(object_property_value_dict)
                 decoded_value = self._deserialize_property_value(value, mapping.deserializer_cls)
-                init_kwargs[mapping.constructor_parameter_name] = decoded_value
+                init_kwargs[mapping.object_constructor_parameter_name] = decoded_value
             else:
                 mappings_not_set_in_constructor.append(mapping)
 
         decoded = self._deserializable_cls(**init_kwargs)
 
         for mapping in mappings_not_set_in_constructor:
-            assert mapping.constructor_parameter_name is None
+            assert mapping.object_constructor_parameter_name is None
             if mapping.serialized_property_getter is not None and mapping.object_property_setter is not None:
-                value = mapping.serialized_property_getter(object_as_json)
+                value = mapping.serialized_property_getter(object_property_value_dict)
                 decoded_value = self._deserialize_property_value(value, mapping.deserializer_cls)
                 mapping.object_property_setter(decoded, decoded_value)
 
+        assert type(decoded) == self._deserializable_cls
         return decoded
 
     def _deserialize_property_value(self, value: PrimitiveJsonSerializableType, deserializer_type: type) -> Any:
         """
-        Deserialize the given value using a deserializer of the given type.
+        Deserializes the given value using a deserializer of the given type.
         :param value: the value to deserialize
         :param deserializer_type: the type of deserializer to deserialize the value with
         :return: deserialized value
@@ -136,34 +133,8 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
     @abstractmethod
     def _create_deserializer_of_type(self, deserializer_type: type):
         """
-        TODO
-        :param deserializer_type:
-        :return:
+        Creates a deserializer of the given type.
+        :param deserializer_type: the type of deserializer to create
+        :return: the created deserializer (of type `Deserializer`)
         """
         pass
-
-
-class PrimitiveSerializer(Serializer):
-    def __init__(self, *args, **kwargs):
-        super().__init__((), *args, **kwargs)
-
-    def serialize(self, serializable: Any):
-        return serializable
-
-    def _create_serializer_of_type(self, serializer_type: type):
-        assert False
-
-    def _create_serialized_container(self) -> Any:
-        assert False
-
-
-class PrimitiveDeserializer(Deserializer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(Any, (), *args, **kwargs)
-
-    def deserialize(self, object_as_json: PrimitiveJsonSerializableType):
-        return object_as_json
-
-    def _create_deserializer_of_type(self, deserializer_type: type):
-        assert False
-

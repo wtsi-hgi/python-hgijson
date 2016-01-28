@@ -2,41 +2,12 @@ import json
 from json import JSONEncoder, JSONDecoder
 from typing import Dict, Callable, Any
 
-from hgicommon.serialization.common import PropertyMapping
-from hgicommon.serialization.json.temp import PrimitiveJsonSerializableType
-from hgicommon.serialization.serialization import PrimitiveDeserializer, PrimitiveSerializer, Serializer, Deserializer, \
-    PrimitiveUnionType
+from hgicommon.serialization.models import PropertyMapping
+from hgicommon.serialization.serialization import Deserializer
+from hgicommon.serialization.serialization import Serializer
+from hgicommon.serialization.serializers import PrimitiveSerializer, PrimitiveDeserializer
+from hgicommon.serialization.types import PrimitiveJsonSerializableType, PrimitiveUnionType
 
-
-class JsonPropertyMapping(PropertyMapping):
-    """
-    Model of a mapping between a json property and a property of an object.
-    """
-    def __init__(
-            self,
-            json_property_name=None, object_property_name: str=None, constructor_parameter_name: str=None,
-            json_property_getter: Callable[[Dict], Any]=None, json_property_setter: Callable[[Any, Any], None]=None,
-            object_property_getter: Callable[[Any], Any]=None, object_property_setter: Callable[[Any, Any], None]=None,
-            encoder_cls: type=JSONEncoder, decoder_cls: type=JSONDecoder):
-        """
-        TODO
-        :param json_property_name:
-        :param object_property_name:
-        :param constructor_parameter_name:
-        :param json_property_getter:
-        :param json_property_setter:
-        :param object_property_getter:
-        :param object_property_setter:
-        :param encoder_cls:
-        :param decoder_cls:
-        :return:
-        """
-        encoder_as_serializer_cls = _BuildJSONEncoderAsSerializer(encoder_cls).build()
-        decoder_as_serializer_cls = _BuildJSONDecoderAsDeserializer(decoder_cls).build()
-
-        super().__init__(json_property_name, object_property_name, constructor_parameter_name, json_property_getter,
-                         json_property_setter, object_property_getter, object_property_setter,
-                         encoder_as_serializer_cls, decoder_as_serializer_cls)
 
 
 class _JSONEncoderAsSerializer(PrimitiveSerializer):
@@ -77,13 +48,13 @@ class _JSONDecoderAsDeserializer(PrimitiveDeserializer):
         super().__init__(*args, **kwargs)
         self._decoder = self._DECODER_CLS(*args, **kwargs)  # type: JSONDecoder
 
-    def deserialize(self, object_as_json: PrimitiveJsonSerializableType):
+    def deserialize(self, object_property_value_dict: PrimitiveJsonSerializableType):
         # TODO: Converting it to a string like this is far from optimal...
-        json_as_string = json.dumps(object_as_json)
+        json_as_string = json.dumps(object_property_value_dict)
         return self._decoder.decode(json_as_string)
 
 
-class _BuildJSONEncoderAsSerializer:
+class BuildJSONEncoderAsSerializer:
     """
     TODO
     """
@@ -102,7 +73,7 @@ class _BuildJSONEncoderAsSerializer:
         TODO
         :return:
         """
-        if self.encoder_cls not in _BuildJSONEncoderAsSerializer._serializer_cache:
+        if self.encoder_cls not in BuildJSONEncoderAsSerializer._serializer_cache:
             if issubclass(self.encoder_cls, Serializer):
                 encoder_as_serializer_cls = self.encoder_cls
             else:
@@ -113,12 +84,12 @@ class _BuildJSONEncoderAsSerializer:
                         "_ENCODER_CLS": self.encoder_cls
                     }
                 )
-            _BuildJSONEncoderAsSerializer._serializer_cache[self.encoder_cls] = encoder_as_serializer_cls
+            BuildJSONEncoderAsSerializer._serializer_cache[self.encoder_cls] = encoder_as_serializer_cls
 
-        return _BuildJSONEncoderAsSerializer._serializer_cache[self.encoder_cls]
+        return BuildJSONEncoderAsSerializer._serializer_cache[self.encoder_cls]
 
 
-class _BuildJSONDecoderAsDeserializer:
+class BuildJSONDecoderAsDeserializer:
     """
     TODO
     """
@@ -137,8 +108,8 @@ class _BuildJSONDecoderAsDeserializer:
         TODO
         :return:
         """
-        if self.decoder_cls not in _BuildJSONDecoderAsDeserializer._deserializer_cache:
-            if issubclass(self.decoder_cls, Serializer):
+        if self.decoder_cls not in BuildJSONDecoderAsDeserializer._deserializer_cache:
+            if issubclass(self.decoder_cls, Deserializer):
                 encoder_as_deserializer_cls = self.decoder_cls
             else:
                 encoder_as_deserializer_cls = type(
@@ -148,6 +119,6 @@ class _BuildJSONDecoderAsDeserializer:
                         "_DECODER_CLS": self.decoder_cls
                     }
                 )
-            _BuildJSONDecoderAsDeserializer._deserializer_cache[self.decoder_cls] = encoder_as_deserializer_cls
+            BuildJSONDecoderAsDeserializer._deserializer_cache[self.decoder_cls] = encoder_as_deserializer_cls
 
-        return _BuildJSONDecoderAsDeserializer._deserializer_cache[self.decoder_cls]
+        return BuildJSONDecoderAsDeserializer._deserializer_cache[self.decoder_cls]

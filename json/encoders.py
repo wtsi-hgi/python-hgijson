@@ -3,11 +3,10 @@ from json import JSONEncoder
 from typing import Dict
 from typing import Iterable
 
-from hgicommon.serialization.json.common import JsonPropertyMapping
 
 from hgicommon.collections import Metadata
-from hgicommon.serialization.json.temp import PrimitiveJsonSerializableType
 from hgicommon.serialization.serialization import Serializer, SerializableType
+from hgicommon.serialization.types import PrimitiveJsonSerializableType
 
 
 class _MappingJSONEncoder(Serializer, JSONEncoder, metaclass=ABCMeta):
@@ -19,7 +18,7 @@ class _MappingJSONEncoder(Serializer, JSONEncoder, metaclass=ABCMeta):
     constructor. Instead this class must be subclassed and the subclass must define the relevant constants.
     """
     _SERIALIZABLE_CLS = type(None)     # type: type
-    _PROPERTY_MAPPINGS = None    # type: Iterable[JsonPropertyMapping]
+    _PROPERTY_MAPPINGS = None    # type_but_do_not_static_check_as_cannot_import: Iterable[JsonPropertyMapping]
 
     def __init__(self, *args, **kwargs):
         if self._SERIALIZABLE_CLS is _MappingJSONEncoder._SERIALIZABLE_CLS:

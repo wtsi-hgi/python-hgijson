@@ -1,8 +1,5 @@
 from abc import ABCMeta
 from json import JSONDecoder
-from typing import Iterable
-
-from hgicommon.serialization.json.common import JsonPropertyMapping
 
 from hgicommon.serialization.serialization import Deserializer, SerializableType
 
@@ -17,7 +14,7 @@ class _MappingJSONDecoder(Deserializer, JSONDecoder, metaclass=ABCMeta):
     constructor. Instead this class must be subclassed and the subclass must define the relevant constants.
     """
     _DESERIALIZABLE_CLS = type(None)     # type: type
-    _PROPERTY_MAPPINGS = None    # type: Iterable[JsonPropertyMapping]
+    _PROPERTY_MAPPINGS = None    # type_but_do_not_static_check_as_cannot_import: Iterable[JsonPropertyMapping]
 
     def __init__(self, *args, **kwargs):
         if self._DESERIALIZABLE_CLS is None:
@@ -25,7 +22,7 @@ class _MappingJSONDecoder(Deserializer, JSONDecoder, metaclass=ABCMeta):
         if self._PROPERTY_MAPPINGS is None:
             raise RuntimeError("Subclass of `_MappingJSONEncoder` did not \"override\" `PROPERTY_MAPPINGS` constant")
 
-        super().__init__(self._DESERIALIZABLE_CLS, self._PROPERTY_MAPPINGS, *args, **kwargs)
+        super().__init__(self._PROPERTY_MAPPINGS, self._DESERIALIZABLE_CLS, *args, **kwargs)
         self._args = args
         self._kwargs = kwargs
 
