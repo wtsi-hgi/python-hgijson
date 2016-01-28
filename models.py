@@ -55,7 +55,7 @@ class PropertyMapping(Model):
                 def object_property_getter(obj: Any) -> Any:
                     return obj.__getattribute__(object_property_name)
 
-            if object_property_setter is None:
+            if object_property_setter is None and object_constructor_parameter_name is None:
                 def object_property_setter(obj: Any, value: Any):
                     obj.__setattr__(object_property_name, value)
 
@@ -64,7 +64,7 @@ class PropertyMapping(Model):
                 raise ValueError("`serialized_property_getter` or `serialized_property_name` must be defined alongside "
                                  "`object_constructor_parameter_name`")
 
-            if object_property_setter is not None and object_constructor_parameter_name is None:
+            if object_property_setter is not None and object_constructor_parameter_name is not None:
                 raise ValueError("`object_property_setter` cannot be defined if `object_constructor_parameter_name` is "
                                  "given as the serialized data will be injected into the object as an argument. If an "
                                  "object property should also be set using a setter, define another mapping.")
