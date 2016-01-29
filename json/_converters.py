@@ -18,16 +18,13 @@ def json_encoder_to_serializer(encoder_cls: type) -> type:
     :return: the equivalent `Serializer` class
     """
     if encoder_cls not in _serializer_cache:
-        if issubclass(encoder_cls, Serializer):
-            encoder_as_serializer_cls = encoder_cls
-        else:
-            encoder_as_serializer_cls = type(
-                "%sAsSerializer" % encoder_cls.__class__.__name__,
-                (_JSONEncoderAsSerializer,),
-                {
-                    "_ENCODER_CLS": encoder_cls
-                }
-            )
+        encoder_as_serializer_cls = type(
+            "%sAsSerializer" % encoder_cls.__class__.__name__,
+            (_JSONEncoderAsSerializer,),
+            {
+                "_ENCODER_CLS": encoder_cls
+            }
+        )
         _serializer_cache[encoder_cls] = encoder_as_serializer_cls
 
     return _serializer_cache[encoder_cls]
@@ -40,16 +37,13 @@ def json_decoder_to_deserializer(decoder_cls: type) -> type:
     :return: the equivalent `Deserializer` class
     """
     if decoder_cls not in _deserializer_cache:
-        if issubclass(decoder_cls, Deserializer):
-            encoder_as_deserializer_cls = decoder_cls
-        else:
-            encoder_as_deserializer_cls = type(
-                "%sAsDeserializer" % decoder_cls.__class__.__name__,
-                (_JSONDecoderAsDeserializer,),
-                {
-                    "_DECODER_CLS": decoder_cls
-                }
-            )
+        encoder_as_deserializer_cls = type(
+            "%sAsDeserializer" % decoder_cls.__class__.__name__,
+            (_JSONDecoderAsDeserializer,),
+            {
+                "_DECODER_CLS": decoder_cls
+            }
+        )
         _deserializer_cache[decoder_cls] = encoder_as_deserializer_cls
 
     return _deserializer_cache[decoder_cls]

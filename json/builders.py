@@ -1,21 +1,22 @@
 from abc import ABCMeta
-from typing import Iterable, TypeVar
+from typing import Iterable
 
 from hgicommon.serialization.json._serialization import MappingJSONEncoder, MappingJSONDecoder
 from hgicommon.serialization.json.models import JsonPropertyMapping
-from hgicommon.serialization.types import PrimitiveJsonSerializableType
 
 
 class _JSONSerializationClassBuilder(metaclass=ABCMeta):
     """
     Subclass of serialization class builders.
     """
-    def __init__(self, target_cls: type=type(None), mappings: Iterable[JsonPropertyMapping]=()):
+    def __init__(self, superclass: type, target_cls: type=type(None), mappings: Iterable[JsonPropertyMapping]=()):
         """
         Constructor.
+        :param superclass: the superclass to which the serialization class should extend
         :param target_cls: the class that the builder targets
         :param mappings: mappings from JSON properties to object properties
         """
+        self.superclass = superclass
         self.target_cls = target_cls
         self.mappings = mappings
 
@@ -24,18 +25,39 @@ class MappingJSONEncoderClassBuilder(_JSONSerializationClassBuilder):
     """
     Builder for `MappingJSONEncoder` concrete subclasses.
     """
+    def __init__(self, superclass=MappingJSONEncoder, **kwargs):
+        super().__init__(superclass, **kwargs)
+
     def build(self) -> type:
         """
         Build a subclass of `MappingJSONEncoder`.
         :return: the built subclass
         """
+        def get_property_mappings(encoder: MappingJSONEncoder) -> Iterable[JsonPropertyMapping]:
+            mappings = []
+            if self.superclass != MappingJSONEncoder:
+                super_mappings = self.superclass._get_property_mappings(encoder)
+                mappings.extend(super_mappings)
+
+            # FIXME: Favour subclass mappings!
+            mappings.extend(self.mappings)
+            return mappings
+
+        def get_serializable_cls(encoder: MappingJSONEncoder) -> type:
+            return self.target_cls
+
+        def default(encoder: MappingJSONEncoder, *args, **kwargs):
+            return self.superclass.default(encoder, *args, **kwargs)
+
         cls_name = "%sDynamicMappingJSONEncoder" % self.target_cls.__name__
+
         return type(
             cls_name,
-            (MappingJSONEncoder[TypeVar("T", bound=self.target_cls), PrimitiveJsonSerializableType], ),
+            (self.superclass, ),
             {
-                "_SERIALIZABLE_CLS": self.target_cls,
-                "_PROPERTY_MAPPINGS": self.mappings
+                "_get_property_mappings": get_property_mappings,
+                "_get_serializable_cls": get_serializable_cls,
+                "default": default
             }
         )
 
@@ -44,17 +66,34 @@ class MappingJSONDecoderClassBuilder(_JSONSerializationClassBuilder):
     """
     Builder for `MappingJSONDecoder` concrete subclasses.
     """
+    def __init__(self, superclass=MappingJSONDecoder, **kwargs):
+        super().__init__(superclass, **kwargs)
+
     def build(self) -> type:
         """
         Build a subclass of `MappingJSONDecoder`.
         :return: the built subclass
         """
+        def get_property_mappings(decoder: MappingJSONDecoder) -> Iterable[JsonPropertyMapping]:
+            mappings = []
+            if self.superclass != MappingJSONDecoder:
+                super_mappings = self.superclass._get_property_mappings(decoder)
+                mappings.extend(super_mappings)
+
+            # FIXME: Favour subclass mappings!
+            mappings.extend(self.mappings)
+            return mappings
+
+        def get_deserializable_cls(decoder: MappingJSONDecoder) -> type:
+            return self.target_cls
+
         class_name = "%sDynamicMappingJSONDecoder" % self.target_cls.__name__
+
         return type(
             class_name,
-            (MappingJSONDecoder[TypeVar("T", bound=self.target_cls), PrimitiveJsonSerializableType], ),
+            (self.superclass, ),
             {
-                "_DESERIALIZABLE_CLS": self.target_cls,
-                "_PROPERTY_MAPPINGS": self.mappings
+                "_get_property_mappings": get_property_mappings,
+                "_get_deserializable_cls": get_deserializable_cls
             }
         )

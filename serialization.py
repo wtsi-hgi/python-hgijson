@@ -28,6 +28,9 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
         """
         serialized = self._create_serialized_container()
 
+        # print(type(self))
+        # print(len(self._property_mappings))
+
         for mapping in self._property_mappings:
             if mapping.object_property_getter is not None and mapping.serialized_property_setter is not None:
                 value = mapping.object_property_getter(serializable)
@@ -96,7 +99,7 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
         """
         mappings_not_set_in_constructor = []
 
-        init_kwargs = dict()    # Dict[str, Any]
+        init_kwargs = dict()    # type: Dict[str, Any]
         for mapping in self._property_mappings:
             if mapping.object_constructor_parameter_name is not None:
                 assert mapping.serialized_property_getter is not None
@@ -107,6 +110,7 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
                 mappings_not_set_in_constructor.append(mapping)
 
         decoded = self._deserializable_cls(**init_kwargs)
+        assert type(decoded) == self._deserializable_cls
 
         for mapping in mappings_not_set_in_constructor:
             assert mapping.object_constructor_parameter_name is None
@@ -115,7 +119,6 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
                 decoded_value = self._deserialize_property_value(value, mapping.deserializer_cls)
                 mapping.object_property_setter(decoded, decoded_value)
 
-        assert type(decoded) == self._deserializable_cls
         return decoded
 
     def _deserialize_property_value(self, value: PrimitiveJsonSerializableType, deserializer_type: type) -> Any:
