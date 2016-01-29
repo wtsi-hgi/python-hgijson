@@ -47,6 +47,7 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
             self._serializers_cache[serializer_type] = self._create_serializer_of_type(serializer_type)
 
         serializer = self._serializers_cache[serializer_type]
+        assert serializer is not None
         return serializer.serialize(value)
 
     @abstractmethod
@@ -128,6 +129,7 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
             self._deserializers_cache[deserializer_type] = self._create_deserializer_of_type(deserializer_type)
 
         deserializer = self._deserializers_cache[deserializer_type]
+        assert deserializer is not None
         return deserializer.deserialize(value)
 
     @abstractmethod

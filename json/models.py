@@ -29,11 +29,25 @@ class JsonPropertyMapping(PropertyMapping):
         :param decoder_cls:
         :return:
         """
+        if json_property_name is not None:
+            if json_property_getter is not None and json_property_setter is not None:
+                raise ValueError("Redundant `json_property_name` argument given. It has been specified that a "
+                                 "serialized property is to be used via the given property name and both a setter and "
+                                 "getter of this property has been provided. To avoid confusion, the serialized "
+                                 "property cannot be specified in this case.")
+
+            # FIXME: These should be in JSON subclass
+            if json_property_getter is None:
+                def json_property_getter(obj_as_json: dict):
+                    return obj_as_json[json_property_name]
+
+            if json_property_setter is None:
+                def json_property_setter(obj_as_json: dict, value: Any):
+                    obj_as_json[json_property_name] = value
+
         encoder_as_serializer_cls = json_encoder_to_serializer(encoder_cls)
         decoder_as_serializer_cls = json_decoder_to_deserializer(decoder_cls)
 
-        # TODO: Set default JSON property getter/setter if name specified
-
-        super().__init__(json_property_name, object_property_name, object_constructor_parameter_name, json_property_getter,
+        super().__init__(object_property_name, object_constructor_parameter_name, json_property_getter,
                          json_property_setter, object_property_getter, object_property_setter,
                          encoder_as_serializer_cls, decoder_as_serializer_cls)
