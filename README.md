@@ -1,5 +1,5 @@
 # Python 3 JSON Library
-# JSON serialization Using Mappings
+# JSON serialization using mappings
 Python 3 library for serializing and deserializing complex class-based Python models using an arbitrary complex schema 
 of mappings. 
 
