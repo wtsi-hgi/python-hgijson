@@ -1,6 +1,9 @@
+[![Build Status](https://travis-ci.org/wtsi-hgi/python-json.svg)](https://travis-ci.org/wtsi-hgi/python-json)
+
+
 # Python 3 JSON Serialization
-Python 3 library for serializing and deserializing complex class-based Python models using an arbitrary complex schema 
-of mappings. 
+Python 3 library for serializing and deserializing complex class-based Python models using an arbitrary complex mapping 
+schema.
 
 
 ## Features
@@ -15,43 +18,26 @@ of exotic "convert_to_json" methods.
 * Pure Python 3 - no XML or similar required to describe mappings, not using outdated Python 2.
 
 
-## Table of Contents
-- [Python 3 JSON serialization](#python-3-json-serialization)
-  - [Features](#features)
-  - [Table of Contents](#table-of-contents)
-  - [How to use](#how-to-use)
-    - [Outline](#outline)
-    - [Details](#details)
-      - [One-to-one JSON property to object property mapping](#one-to-one-json-property-to-object-property-mapping)
-      - [Arbitrary mapping to JSON property value](#arbitrary-mapping-to-json-property-value)
-      - [Arbitrary mapping to object property value](#arbitrary-mapping-to-object-property-value)
-      - [Deserializing objects with constructors parameters](#deserializing-objects-with-constructors-parameters)
-      - [Deserializing objects with mutators](#deserializing-objects-with-mutators)
-      - [Conditionally optional JSON properties](#conditionally-optional-json-properties)
-      - [One-way mappings](#one-way-mappings)
-    - [Warning](#warning)
-    - [Notes](#notes)
-  - [Performance](#performance)
-  - [Alternatives](#alternatives)
-  - [License](#license)
-  
-
-## How to use
-### Outline
+## Overview
 1. Define schema for mapping an object to and/or from JSON representation using a list of `JsonPropertyMapping`
 definitions.
 2. Use `MappingJSONEncoderClassBuilder` with the mappings to build a subclass of `JSONEncode` for serializing instances 
 of a specific type. Similar with decode.
 3. Use created encoder class with Python's in-built `json.dumps` via the `cls` parameter. Similar with decoder.
+  
 
-Example:
-```python
-simple_mapping_schema = [JsonPropertyMapping("json_property", "object_property")]
-
-MyObjectJSONEncoder = MappingJSONEncoderClassBuilder(MyObjectType, simple_mapping_schema).build()
-
-my_object_as_json_string = json.dumps(my_object, cls=MyObjectJSONEncoder, **other_kwargs)
-```
+## How to use
+### Table of Contents
+- [Details](#details)
+  - [One-to-one JSON property to object property mapping](#one-to-one-json-property-to-object-property-mapping)
+  - [Arbitrary mapping to JSON property value](#arbitrary-mapping-to-json-property-value)
+  - [Arbitrary mapping to object property value](#arbitrary-mapping-to-object-property-value)
+  - [Deserializing objects with constructors parameters](#deserializing-objects-with-constructors-parameters)
+  - [Deserializing objects with mutators](#deserializing-objects-with-mutators)
+  - [Conditionally optional JSON properties](#conditionally-optional-json-properties)
+  - [One-way mappings](#one-way-mappings)
+- [Warning](#warning)
+- [Notes](#notes)
 
 
 ### Details
@@ -218,7 +204,7 @@ class Person:
 ```
 
 JSON:
-```json
+```javascript
 // if person.name is not None:
 {
     "full_name": "<person.name>"
@@ -314,7 +300,7 @@ employee_mapping_schema = [
 
 
 #### One-way mappings
-* Contrived example warning... *
+*Contrived example warning...*
 
 Model:
 ```python
