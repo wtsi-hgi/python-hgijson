@@ -1,14 +1,12 @@
 from abc import ABCMeta, abstractmethod
 from json import JSONEncoder, JSONDecoder
-from typing import Dict, Union, Any
-from typing import Iterable
+from typing import Dict, Union, Iterable, Sequence
 
-from hgicommon import collections
+import collections
+
 from hgicommon.serialization.json.models import JsonPropertyMapping
-from hgicommon.serialization.models import PropertyMapping
 from hgicommon.serialization.serialization import Serializer, Deserializer
-from hgicommon.serialization.types import PrimitiveJsonSerializableType
-from hgicommon.serialization.types import SerializableType
+from hgicommon.serialization.types import PrimitiveJsonSerializableType, SerializableType
 
 
 class _JsonSerializer(Serializer):
@@ -54,12 +52,22 @@ class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         # FIXME: Create serializer here?
         self._serializer_cache = None
 
-    def default(self, serializable: Union[SerializableType, Iterable[SerializableType]]) -> PrimitiveJsonSerializableType:
-        if not isinstance(serializable, self._get_serializable_cls()):
+    def default(self, serializable: Union[SerializableType, Sequence[SerializableType]]) -> PrimitiveJsonSerializableType:
+        serializer = self._create_serializer()
+
+        if isinstance(serializable, collections.Iterable):
+            if len(serializable) == 0:
+                return []
+            encoded = []
+            for to_encode in serializable:
+                encoded.append(serializer.serialize(to_encode))
+            return encoded
+
+        elif not isinstance(serializable, self._get_serializable_cls()):
             JSONEncoder.default(self, serializable)
 
-        serializer = self._create_serializer()
-        return serializer.serialize(serializable)
+        else:
+            return serializer.serialize(serializable)
 
     def _create_serializer(self) -> _JsonSerializer:
         """
@@ -93,9 +101,6 @@ class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         :return:
         """
         pass
-
-
-
 
 
 class MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):

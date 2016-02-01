@@ -80,7 +80,7 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
     """
     # TODO: Correct type hinting in signature without causing a cyclic dependency issue
     # def __init__(self, deserializable_cls: type, property_mappings: Iterable[PropertyMapping], *args, **kwargs):
-    def __init__(self, property_mappings: Iterable[Any], deserializable_cls: type, *args, **kwargs):
+    def __init__(self, property_mappings: Iterable[Any], deserializable_cls: type):
         """
         Construtor.
         :param property_mappings: the property mappings that this deserialiser uses when deserialing an object
