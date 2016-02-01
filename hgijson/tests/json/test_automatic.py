@@ -2,8 +2,8 @@ import json
 import unittest
 from json import JSONEncoder
 
-from hgicommon.serialization.json.automatic import AutomaticJSONEncoderClassBuilder
-from hgicommon.tests._stubs import StubModel, StubRegisteredTypeJSONEncoder
+from hgijson.json.automatic import AutomaticJSONEncoderClassBuilder
+from hgijson.tests._stubs import StubModel, StubRegisteredTypeJSONEncoder
 
 
 class TestRegisteredTypeJSONEncoder(unittest.TestCase):

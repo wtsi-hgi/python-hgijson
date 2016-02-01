@@ -2,8 +2,8 @@ from json import JSONDecoder
 from json import JSONEncoder
 from typing import Callable, Any, Dict
 
-from hgicommon.serialization.json._converters import json_decoder_to_deserializer, json_encoder_to_serializer
-from hgicommon.serialization.models import PropertyMapping
+from hgijson.json._converters import json_decoder_to_deserializer, json_encoder_to_serializer
+from hgijson.models import PropertyMapping
 
 
 class JsonPropertyMapping(PropertyMapping):

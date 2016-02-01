@@ -1,10 +1,10 @@
 import json
 import unittest
 
-from hgicommon.serialization.json._converters import json_encoder_to_serializer, json_decoder_to_deserializer
-from hgicommon.serialization.serialization import Deserializer, Serializer
-from hgicommon.tests.serialization.json._helpers import create_simple_model_with_json_representation
-from hgicommon.tests.serialization.json._serializers import BasicSimpleModelJSONEncoder, BasicSimpleModelJSONDecoder
+from hgijson.json._converters import json_encoder_to_serializer, json_decoder_to_deserializer
+from hgijson.serialization import Deserializer, Serializer
+from hgijson.tests.json._helpers import create_simple_model_with_json_representation
+from hgijson.tests.json._serializers import BasicSimpleModelJSONEncoder, BasicSimpleModelJSONDecoder
 
 
 class TestConverters(unittest.TestCase):

@@ -4,9 +4,9 @@ from typing import Dict, Union, Iterable, Sequence
 
 import collections
 
-from hgicommon.serialization.json.models import JsonPropertyMapping
-from hgicommon.serialization.serialization import Serializer, Deserializer
-from hgicommon.serialization.types import PrimitiveJsonSerializableType, SerializableType
+from hgijson.json.models import JsonPropertyMapping
+from hgijson.serialization import Serializer, Deserializer
+from hgijson.types import PrimitiveJsonSerializableType, SerializableType
 
 
 class _JsonSerializer(Serializer):

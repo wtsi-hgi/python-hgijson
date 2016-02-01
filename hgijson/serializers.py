@@ -1,7 +1,7 @@
 from typing import Any
 
-from hgicommon.serialization.serialization import Serializer, Deserializer
-from hgicommon.serialization.types import PrimitiveJsonSerializableType
+from hgijson.serialization import Serializer, Deserializer
+from hgijson.types import PrimitiveJsonSerializableType
 
 
 class PrimitiveSerializer(Serializer):
@@ -26,7 +26,7 @@ class PrimitiveDeserializer(Deserializer):
     Deserializer for primitive values - just returns them.
     """
     def __init__(self, *args, **kwargs):
-        super().__init__((), object, *args, **kwargs)
+        super().__init__((), object)
 
     def deserialize(self, object_property_value_dict: PrimitiveJsonSerializableType):
         return object_property_value_dict

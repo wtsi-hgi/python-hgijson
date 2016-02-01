@@ -1,6 +1,6 @@
 import unittest
 
-from hgicommon.serialization.json.models import JsonPropertyMapping
+from hgijson.json.models import JsonPropertyMapping
 
 
 class TestPropertyMapping(unittest.TestCase):

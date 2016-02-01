@@ -2,7 +2,7 @@ import json
 import unittest
 
 from hgicommon.collections import Metadata
-from hgicommon.serialization.json.encoders import MetadataJSONEncoder
+from hgijson.json.encoders import MetadataJSONEncoder
 
 
 class TestMetadataJSONEncoder(unittest.TestCase):

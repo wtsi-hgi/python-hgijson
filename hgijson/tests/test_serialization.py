@@ -1,14 +1,14 @@
 import unittest
 from typing import Dict, Any
 
-from hgicommon.serialization.json.models import JsonPropertyMapping
-from hgicommon.serialization.models import PropertyMapping
-from hgicommon.tests.serialization._models import SimpleModel
-from hgicommon.tests.serialization._serializers import ComplexModelSerializer, SimpleModelDeserializer, \
+from hgijson.json.models import JsonPropertyMapping
+from hgijson.models import PropertyMapping
+from hgijson.tests._models import SimpleModel
+from hgijson.tests._serializers import ComplexModelSerializer, SimpleModelDeserializer, \
     ComplexModelDeserializer
-from hgicommon.tests.serialization._serializers import SimpleModelSerializer
-from hgicommon.tests.serialization.json._helpers import create_complex_model_with_json_representation
-from hgicommon.tests.serialization.json._helpers import create_simple_model_with_json_representation
+from hgijson.tests._serializers import SimpleModelSerializer
+from hgijson.tests.json._helpers import create_complex_model_with_json_representation
+from hgijson.tests.json._helpers import create_simple_model_with_json_representation
 
 
 class TestSerializer(unittest.TestCase):

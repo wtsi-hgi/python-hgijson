@@ -1,6 +1,6 @@
 import unittest
 
-from hgicommon.serialization.serializers import PrimitiveSerializer, PrimitiveDeserializer
+from hgijson.serializers import PrimitiveSerializer, PrimitiveDeserializer
 
 
 class TestPrimitiveSerializer(unittest.TestCase):

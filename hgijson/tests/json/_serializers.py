@@ -2,10 +2,10 @@ import json
 from json import JSONEncoder, JSONDecoder
 from typing import Sequence, Iterable
 
-from hgicommon.serialization.json._serialization import MappingJSONDecoder, MappingJSONEncoder
-from hgicommon.serialization.json.models import JsonPropertyMapping
-from hgicommon.serialization.types import PrimitiveUnionType
-from hgicommon.tests.serialization._models import SimpleModel, ComplexModel
+from hgijson.json._serialization import MappingJSONDecoder, MappingJSONEncoder
+from hgijson.json.models import JsonPropertyMapping
+from hgijson.types import PrimitiveUnionType
+from hgijson.tests._models import SimpleModel, ComplexModel
 
 
 def get_simple_model_json_property_mappings() -> Sequence[JsonPropertyMapping]:

@@ -1,8 +1,8 @@
 from abc import ABCMeta
 from typing import Iterable
 
-from hgicommon.serialization.json._serialization import MappingJSONEncoder, MappingJSONDecoder
-from hgicommon.serialization.json.models import JsonPropertyMapping
+from hgijson.json._serialization import MappingJSONEncoder, MappingJSONDecoder
+from hgijson.json.models import JsonPropertyMapping
 
 
 class _JSONSerializationClassBuilder(metaclass=ABCMeta):

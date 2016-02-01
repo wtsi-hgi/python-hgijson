@@ -1,7 +1,7 @@
 from typing import Dict
 from typing import Tuple
 
-from hgicommon.tests.serialization._models import SimpleModel, ComplexModel
+from hgijson.tests._models import SimpleModel, ComplexModel
 
 
 def create_simple_model_with_json_representation(modifier: int=0) -> Tuple[SimpleModel, Dict]:

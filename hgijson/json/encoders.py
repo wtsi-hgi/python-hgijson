@@ -1,7 +1,7 @@
 from json import JSONEncoder
 
 from hgicommon.collections import Metadata
-from hgicommon.serialization.types import PrimitiveJsonSerializableType
+from hgijson.types import PrimitiveJsonSerializableType
 
 
 class MetadataJSONEncoder(JSONEncoder):

@@ -3,9 +3,9 @@ from abc import ABCMeta
 from json import JSONDecoder, JSONEncoder
 from typing import Any, Dict
 
-from hgicommon.serialization.serialization import Deserializer, Serializer
-from hgicommon.serialization.serializers import PrimitiveSerializer, PrimitiveDeserializer
-from hgicommon.serialization.types import PrimitiveJsonSerializableType, PrimitiveUnionType
+from hgijson.serialization import Deserializer, Serializer
+from hgijson.serializers import PrimitiveSerializer, PrimitiveDeserializer
+from hgijson.types import PrimitiveJsonSerializableType, PrimitiveUnionType
 
 _serializer_cache = dict()  # type: Dict[type, Serializer]
 _deserializer_cache = dict()    # type: Dict[type, Deserializer]

@@ -5,8 +5,10 @@ from typing import Optional
 from typing import List
 
 from hgicommon.models import Model
-from hgicommon.serialization.json.builders import MappingJSONEncoderClassBuilder, MappingJSONDecoderClassBuilder
-from hgicommon.serialization.json.models import JsonPropertyMapping
+
+from hgijson.json.builders import MappingJSONDecoderClassBuilder
+from hgijson.json.builders import MappingJSONEncoderClassBuilder
+from hgijson.json.models import JsonPropertyMapping
 
 
 class Person(Model):
@@ -123,7 +125,3 @@ print(company_as_json_2)
 }
 ```
 """
-
-
-
-# TODO: Consider course with prerequisites

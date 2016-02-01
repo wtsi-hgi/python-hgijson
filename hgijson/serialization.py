@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from typing import Any, Generic, Iterable, Dict
 
-from hgicommon.serialization.types import SerializableType, PrimitiveUnionType, PrimitiveJsonSerializableType
+from hgijson.types import SerializableType, PrimitiveUnionType, PrimitiveJsonSerializableType
 
 
 class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMeta):

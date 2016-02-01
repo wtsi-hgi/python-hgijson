@@ -1,7 +1,6 @@
 import unittest
 
-from hgicommon.serialization.models import PropertyMapping
-from hgicommon.tests.serialization._serializers import SimpleModelSerializer, SimpleModelDeserializer
+from hgijson.models import PropertyMapping
 
 
 class TestPropertyMapping(unittest.TestCase):

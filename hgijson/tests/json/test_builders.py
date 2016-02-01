@@ -1,14 +1,13 @@
 import json
 import unittest
-from numbers import Complex
 
-from hgicommon.serialization.json._serialization import MappingJSONEncoder, MappingJSONDecoder
-from hgicommon.serialization.json.builders import MappingJSONEncoderClassBuilder, MappingJSONDecoderClassBuilder
-from hgicommon.tests._stubs import StubModel
-from hgicommon.tests.serialization._models import SimpleModel, ComplexModel
-from hgicommon.tests.serialization.json._helpers import create_complex_model_with_json_representation,\
+from hgijson.json._serialization import MappingJSONDecoder
+from hgijson.json._serialization import MappingJSONEncoder
+from hgijson.json.builders import MappingJSONEncoderClassBuilder, MappingJSONDecoderClassBuilder
+from hgijson.tests._models import SimpleModel, ComplexModel
+from hgijson.tests.json._helpers import create_complex_model_with_json_representation,\
     create_simple_model_with_json_representation
-from hgicommon.tests.serialization.json._serializers import get_simple_model_json_property_mappings, \
+from hgijson.tests.json._serializers import get_simple_model_json_property_mappings, \
     get_complex_model_json_property_mappings
 
 

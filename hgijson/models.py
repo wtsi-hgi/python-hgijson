@@ -1,7 +1,8 @@
 from typing import Dict, Callable, Any
 
 from hgicommon.models import Model
-from hgicommon.serialization.serializers import PrimitiveDeserializer, PrimitiveSerializer
+
+from hgijson.serializers import PrimitiveDeserializer, PrimitiveSerializer
 
 
 class PropertyMapping(Model):
