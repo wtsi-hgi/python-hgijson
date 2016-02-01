@@ -61,26 +61,20 @@ To define that:
 * The JSON "full_name" property is set from the object's "name" property.
 * The object's "name" property is set from the JSON's "full_name" property.
 ```python
-mapping_schema = [JsonPropertyMapping("full_name", "name")]
+mapping_schema = [
+    JsonPropertyMapping("full_name", "name")
+]
 ```
 
-Build class that will serialize `Person` models to JSON (subclass of `JSONEncoder`):
+Build classes that can serialize/deserialize `Person` instances:
 ```python
-PersonJSONEncoder = MappingJSONEncoderClassBuilder(Person, mapping_schema).build()
+PersonJSONEncoder = MappingJSONEncoderClassBuilder(Person, mapping_schema).build()  # type: JSONEncoder
+PersonJSONDecoder = MappingJSONDecoderClassBuilder(Person, mapping_schema).build()  # type: JSONDecoder
 ```
 
-Serialize instance of `Person` using Python's inbuilt `json.dumps`:
+Serialize/deserialize instance of `Person` using Python's inbuilt `json.dumps` and `json.loads`:
 ```python
-person_as_json = json.dumps(person, cls=PersonJSONEncoder, indent=1)
-```
-
-Build class that will deserialize `Person` models from JSON (subclass of `JSONDecoder`):
-```python
-PersonJSONDecoder = MappingJSONDecoderClassBuilder(Person, mapping_schema).build()
-```
-
-Deserialize JSON representation of `Person` model using Python's inbuilt `json.loads`:
-```python
+person_as_json = json.dumps(person, cls=PersonJSONEncoder)
 person = json.loads(person_as_json, cls=PersonJSONDecoder)
 ```
 
@@ -88,7 +82,7 @@ person = json.loads(person_as_json, cls=PersonJSONDecoder)
 #### Arbitrary mapping to JSON property value
 Model:
 ```
-class Person(Model):
+class Person:
     def __init__(self):
         self.name = None
 
@@ -122,7 +116,7 @@ mapping_schema = [
 #### Arbitrary mapping to object property value
 Model:
 ```
-class Person(Model):
+class Person:
     def __init__(self):
         self.name = None
 ```
