@@ -1,5 +1,4 @@
-# Python 3 JSON Library
-# JSON serialization using mapping schema
+# Python 3 JSON Serialization
 Python 3 library for serializing and deserializing complex class-based Python models using an arbitrary complex schema 
 of mappings. 
 
@@ -15,6 +14,27 @@ of exotic "convert_to_json" methods.
 * Simple to define serialization of subclasses based on how superclasses are serialized.
 * Pure Python 3 - no XML or similar required to describe mappings, not using outdated Python 2.
 
+
+## Table of Contents
+- [Python 3 JSON serialization](#python-3-json-serialization)
+  - [Features](#features)
+  - [Table of Contents](#table-of-contents)
+  - [How to use](#how-to-use)
+    - [Outline](#outline)
+    - [Details](#details)
+      - [One-to-one JSON property to object property mapping](#one-to-one-json-property-to-object-property-mapping)
+      - [Arbitrary mapping to JSON property value](#arbitrary-mapping-to-json-property-value)
+      - [Arbitrary mapping to object property value](#arbitrary-mapping-to-object-property-value)
+      - [Deserializing objects with constructors parameters](#deserializing-objects-with-constructors-parameters)
+      - [Deserializing objects with mutators](#deserializing-objects-with-mutators)
+      - [Conditionally optional JSON properties](#conditionally-optional-json-properties)
+      - [One-way mappings](#one-way-mappings)
+    - [Warning](#warning)
+    - [Notes](#notes)
+  - [Performance](#performance)
+  - [Alternatives](#alternatives)
+  - [License](#license)
+  
 
 ## How to use
 ### Outline
@@ -46,7 +66,7 @@ class Person:
 JSON:
 ```json
 {
-    "full_name": <person.name>
+    "full_name": "<person.name>"
 }
 ```
 
@@ -95,8 +115,8 @@ class Person(Model):
 JSON:
 ```json
 {
-    "first_name": <person.get_first_name()>,
-    "family_name": <person.get_family_name()>
+    "first_name": "<person.get_first_name()>",
+    "family_name": "<person.get_family_name()>"
 }
 ```
 
@@ -109,7 +129,7 @@ mapping_schema = [
     JsonPropertyMapping("family_name", object_property_getter=lambda person: person.get_family_name())
 ]
 ```
-* See <LINK> for how to do the reverse mapping. *
+*See next section for how to do the reverse mapping.*
 
 
 #### Arbitrary mapping to object property value
@@ -123,8 +143,8 @@ class Person(Model):
 JSON:
 ```json
 {
-    "first_name": <person.get_first_name()>,
-    "family_name": <person.get_family_name()>
+    "first_name": "<person.name.split(' ')[0]>",
+    "family_name": "<person.name.split(' ')[1]>"
 }
 ```
 
@@ -150,7 +170,7 @@ class Person:
 JSON:
 ```json
 {
-    "full_name": <person.name>
+    "full_name": "<person.name>"
 }
 ```
 
@@ -177,7 +197,7 @@ class Person:
 JSON:
 ```json
 {
-    "full_name": <person._name>
+    "full_name": "<person._name>"
 }
 ```
 
@@ -199,13 +219,13 @@ class Person:
 
 JSON:
 ```json
-<if person.name is not None:>
+// if person.name is not None:
 {
-    "full_name": <person.name>
+    "full_name": "<person.name>"
 }
-<else:>
+// else:
 {
-    # No `full_name` property
+    // No `full_name` property
 }
 ```
 
@@ -237,8 +257,8 @@ class Employee(Person):
 JSON:
 ```json
 {
-    "full_name": <employee.name>,
-    "job_title": <employee.title>
+    "full_name": "<employee.name>",
+    "job_title": "<employee.title>"
 }
 ```
 
@@ -277,8 +297,8 @@ class Team:
 JSON:
 ```json
 {
-    "team_moto": <team.moto>,
-    "members": <[person in team.people]>
+    "team_moto": "<team.moto>",
+    "members": "<[person in team.people]>"
 }
 ```
 
@@ -307,14 +327,14 @@ class Person:
 JSON input:
 ```json
 {
-    "full_name": <person.name>
+    "full_name": "<person.name>"
 }
 ```
 
 JSON output:
 ```json
 {
-    "age": <person.age>
+    "age": "<person.age>"
 }
 ```
 
@@ -335,13 +355,9 @@ mapping_schema = [
 ```
 
 
-### Warning
-Ensure your serializers are not vulnerable to attack if you are serializing JSON from an untrusted source.
-
-
 ### Notes
 * Decoders and encoders work for iterable collections of instances in the same way as they do for single instances.
-
+* Ensure your serializers are not vulnerable to attack if you are serializing JSON from an untrusted source.
 
 
 ## Performance
@@ -378,4 +394,4 @@ with Python's in-built `json` library.
 
 
 ## License
-[GNU GPL](LICENSE.txt).
+[See LICENSE.txt](LICENSE.txt).
