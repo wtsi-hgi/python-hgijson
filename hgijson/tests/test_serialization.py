@@ -4,8 +4,7 @@ from typing import Dict, Any
 from hgijson.json.models import JsonPropertyMapping
 from hgijson.models import PropertyMapping
 from hgijson.tests._models import SimpleModel
-from hgijson.tests._serializers import ComplexModelSerializer, SimpleModelDeserializer, \
-    ComplexModelDeserializer
+from hgijson.tests._serializers import ComplexModelSerializer, SimpleModelDeserializer, ComplexModelDeserializer
 from hgijson.tests._serializers import SimpleModelSerializer
 from hgijson.tests.json._helpers import create_complex_model_with_json_representation
 from hgijson.tests.json._helpers import create_simple_model_with_json_representation

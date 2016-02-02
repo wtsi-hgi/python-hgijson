@@ -1,6 +1,8 @@
 import json
 import unittest
 
+from hgicommon.models import Model
+
 from hgijson.tests.json._helpers import create_complex_model_with_json_representation, \
     create_simple_model_with_json_representation
 from hgijson.tests.json._serializers import SimpleModelMappingJSONDecoder, ComplexModelMappingJSONDecoder, \
@@ -27,6 +29,16 @@ class TestMappingJSONEncoder(unittest.TestCase):
     def test_default_with_complex(self):
         encoded = ComplexModelMappingJSONEncoder().default(self.complex_model)
         self.assertDictEqual(encoded, self.complex_model_as_json)
+
+    def test_default_with_iterable_with_no_items(self):
+        encoded = SimpleModelMappingJSONEncoder().default([])
+        self.assertCountEqual(encoded, [])
+
+    def test_default_with_iterable(self):
+        simple_models = [create_simple_model_with_json_representation(i)[0] for i in range(10)]
+        simple_models_as_json = [create_simple_model_with_json_representation(i)[1] for i in range(10)]
+        encoded = SimpleModelMappingJSONEncoder().default(simple_models)
+        self.assertCountEqual(encoded, simple_models_as_json)
 
     def test_class_with_json_dumps(self):
         encoded = json.dumps(self.complex_model, cls=ComplexModelMappingJSONEncoder)
@@ -63,6 +75,18 @@ class TestMappingJSONDecoder(unittest.TestCase):
         object_as_json_string = json.dumps(self.complex_model_as_json)
         decoded = ComplexModelMappingJSONDecoder().decode(object_as_json_string)
         self.assertEqual(decoded, self.complex_model)
+
+    def test_decode_with_iterable_with_no_items(self):
+        json_as_string = json.dumps([])
+        decoded = SimpleModelMappingJSONDecoder().decode(json_as_string)
+        self.assertCountEqual(decoded, [])
+
+    def test_decode_with_iterable(self):
+        simple_models = [create_simple_model_with_json_representation(i)[0] for i in range(10)]
+        simple_models_as_json = [create_simple_model_with_json_representation(i)[1] for i in range(10)]
+        json_as_string = json.dumps(simple_models_as_json)
+        decoded = SimpleModelMappingJSONDecoder().decode(json_as_string)
+        self.assertCountEqual(decoded, simple_models)
 
     def test_class_with_json_loads_with_single(self):
         object_as_json_string = json.dumps(self.complex_model_as_json)

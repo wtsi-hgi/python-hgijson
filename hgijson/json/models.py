@@ -11,13 +11,12 @@ class JsonPropertyMapping(PropertyMapping):
     Model of a mapping between a json property and a property of an object.
     """
     def __init__(
-            self,
-            json_property_name=None, object_property_name: str=None, object_constructor_parameter_name: str=None,
+            self, json_property_name=None, object_property_name: str=None, object_constructor_parameter_name: str=None,
             json_property_getter: Callable[[Dict], Any]=None, json_property_setter: Callable[[Any, Any], None]=None,
             object_property_getter: Callable[[Any], Any]=None, object_property_setter: Callable[[Any, Any], None]=None,
             encoder_cls: type=JSONEncoder, decoder_cls: type=JSONDecoder):
         """
-        TODO
+        Constructor.
         :param json_property_name:
         :param object_property_name:
         :param object_constructor_parameter_name:
@@ -35,7 +34,6 @@ class JsonPropertyMapping(PropertyMapping):
                                  "getter of this property has been provided. To avoid confusion, the serialized "
                                  "property cannot be specified in this case.")
 
-            # FIXME: These should be in JSON subclass
             if json_property_getter is None:
                 def json_property_getter(obj_as_json: dict):
                     return obj_as_json[json_property_name]
