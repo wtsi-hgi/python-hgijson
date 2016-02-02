@@ -1,7 +1,6 @@
 from abc import ABCMeta, abstractmethod
-from typing import Any, Generic, Iterable, Dict
-
-import collections
+from typing import Any, Generic, Iterable
+from typing import Dict
 
 from hgijson.types import SerializableType, PrimitiveUnionType, PrimitiveJsonSerializableType
 
@@ -33,37 +32,63 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
         for mapping in self._property_mappings:
             if mapping.object_property_getter is not None and mapping.serialized_property_setter is not None:
                 value = mapping.object_property_getter(serializable)
-                encoded_value = self._serialize_property_value(value, mapping.serializer_cls)
+                serializer = self._create_serializer_with_cache(mapping.serializer_cls)
+                encoded_value = self._serialize_property_value(value, serializer)
                 mapping.serialized_property_setter(serialized, encoded_value)
 
         return serialized
 
-    def _serialize_property_value(self, to_serialize: Any, serializer_type: type) -> PrimitiveUnionType:
+    # TODO: Fix self-referential signature
+    def _serialize_property_value(self, to_serialize: Any, serializer) -> Any:
         """
-        Serialize the given value using an serializer of the given type.
-        :param to_serialize: the value to serialize
-        :param serializer_type: the type of serializer to serialize the value with
+        Serializes the given value using the given serializer.
+        :param to_serialize: the value to deserialize
+        :param serializer: the serializer to serialize the value with
         :return: serialized value
         """
-        if serializer_type not in self._serializers_cache:
-            self._serializers_cache[serializer_type] = self._create_serializer_of_type(serializer_type)
-
-        serializer = self._serializers_cache[serializer_type]
         assert serializer is not None
-
-        if isinstance(to_serialize, collections.Iterable):
-            if isinstance(to_serialize, dict):
-                serialized = {}
-                for key, value in to_serialize.items():
-                    # Not automatically supporting complex keys!
-                    serialized[key] = serializer.serialize(value)
-            else:
-                serialized = []
-                for item in to_serialize:
-                    serialized.append(serializer.serialize(item))
-            return serialized
+        if isinstance(to_serialize, list):
+            return self._serialize_property_value_list(to_serialize, serializer)
+        elif isinstance(to_serialize, dict):
+            return self._serialize_property_value_dict(to_serialize, serializer)
         else:
             return serializer.serialize(to_serialize)
+
+    # TODO: Fix self-referential signature
+    def _serialize_property_value_list(self, to_serialize: list, serializer) -> Any:
+        """
+        Serializes the given value using the given serializer.
+        :param to_serialize: the value to serialize
+        :param serializer: the serializer to serialize the value with
+        :return: serialized value
+        """
+        serialized = []
+        for item in to_serialize:
+            serialized.append(serializer.serialize(item))
+        return serialized
+
+    # TODO: Fix self-referential signature
+    def _serialize_property_value_dict(self, to_serialize: dict, serializer) -> Any:
+        """
+        Serializes the given value using the given serializer.
+        :param to_serialize: the value to serialize
+        :param serializer: the serializer to serialize the value with
+        :return: serialized value
+        """
+        serialized = {}
+        for key, value in to_serialize.items():
+            # Not automatically supporting complex keys!
+            serialized[key] = serializer.serialize(value)
+        return serialized
+
+
+    @abstractmethod
+    def _create_serialized_container(self) -> Any:
+        """
+        Create the container in which serialized representation is built in
+        :return: the container
+        """
+        pass
 
     @abstractmethod
     # FIXME: Signature should be self referential to this class:
@@ -76,13 +101,17 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
         """
         pass
 
-    @abstractmethod
-    def _create_serialized_container(self) -> Any:
+    # TODO: Fix self-referential signature
+    def _create_serializer_with_cache(self, serializer_type: type):
         """
-        Create the container in which serialized representation is built in
-        :return: the container
+        Creates a deserializer of the given type, exploiting a cache.
+        :param serializer_type: the type of deserializer to create
+        :return: the created serializer
         """
-        pass
+        if serializer_type not in self._serializers_cache:
+            self._serializers_cache[serializer_type] = self._create_serializer_of_type(serializer_type)
+        return self._serializers_cache[serializer_type]
+
 
 
 class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMeta):
@@ -90,8 +119,6 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
     Deserializer that uses a mapping that describes how the process should occur for the type of deserializable object
     that this deserializer handles.
     """
-    # TODO: Correct type hinting in signature without causing a cyclic dependency issue
-    # def __init__(self, deserializable_cls: type, property_mappings: Iterable[PropertyMapping], *args, **kwargs):
     def __init__(self, property_mappings: Iterable[Any], deserializable_cls: type):
         """
         Constructor.
@@ -116,7 +143,8 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
             if mapping.object_constructor_parameter_name is not None:
                 assert mapping.serialized_property_getter is not None
                 value = mapping.serialized_property_getter(object_property_value_dict)
-                decoded_value = self._deserialize_property_value(value, mapping.deserializer_cls)
+                deserializer = self._create_deserializer_with_cache(mapping.deserializer_cls)
+                decoded_value = self._deserialize_property_value(value, deserializer)
                 init_kwargs[mapping.object_constructor_parameter_name] = decoded_value
             else:
                 mappings_not_set_in_constructor.append(mapping)
@@ -128,37 +156,54 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
             assert mapping.object_constructor_parameter_name is None
             if mapping.serialized_property_getter is not None and mapping.object_property_setter is not None:
                 value = mapping.serialized_property_getter(object_property_value_dict)
-                decoded_value = self._deserialize_property_value(value, mapping.deserializer_cls)
+                deserializer = self._create_deserializer_with_cache(mapping.deserializer_cls)
+                decoded_value = self._deserialize_property_value(value, deserializer)
                 mapping.object_property_setter(decoded, decoded_value)
 
         return decoded
 
-    def _deserialize_property_value(self, to_deserialize: PrimitiveJsonSerializableType, deserializer_type: type) -> Any:
+    # TODO: Fix self-referential signature
+    def _deserialize_property_value(self, to_deserialize: PrimitiveJsonSerializableType, deserializer) -> Any:
         """
-        Deserializes the given value using a deserializer of the given type.
+        Deserializes the given value using the given deserializer.
         :param to_deserialize: the value to deserialize
-        :param deserializer_type: the type of deserializer to deserialize the value with
+        :param deserializer: the deserializer to deserialize the value with
         :return: deserialized value
         """
-        if deserializer_type not in self._deserializers_cache:
-            self._deserializers_cache[deserializer_type] = self._create_deserializer_of_type(deserializer_type)
-
-        deserializer = self._deserializers_cache[deserializer_type]
         assert deserializer is not None
-
-        if isinstance(to_deserialize, collections.Iterable):
-            if isinstance(to_deserialize, dict):
-                deserialized = {}
-                for key, value in to_deserialize.items():
-                    # Not automatically supporting complex keys!
-                    deserialized[key] = deserializer.deserialize(value)
-            else:
-                deserialized = []
-                for item in to_deserialize:
-                    deserialized.append(deserializer.deserialize(item))
-            return deserialized
+        if isinstance(to_deserialize, list):
+            return self._deserialize_property_value_list(to_deserialize, deserializer)
+        elif isinstance(to_deserialize, dict):
+            return self._deserialize_property_value_dict(to_deserialize, deserializer)
         else:
             return deserializer.deserialize(to_deserialize)
+
+    # TODO: Fix self-referential signature
+    def _deserialize_property_value_list(self, to_deserialize: list, deserializer) -> Any:
+        """
+        Deserializes the given value using the given deserializer.
+        :param to_deserialize: the value to deserialize
+        :param deserializer: the deserializer to deserialize the value with
+        :return: deserialized value
+        """
+        deserialized = []
+        for item in to_deserialize:
+            deserialized.append(deserializer.deserialize(item))
+        return deserialized
+
+    # TODO: Fix self-referential signature
+    def _deserialize_property_value_dict(self, to_deserialize: dict, deserializer) -> Any:
+        """
+        Deserializes the given value using the given deserializer.
+        :param to_deserialize: the value to deserialize
+        :param deserializer: the deserializer to deserialize the value with
+        :return: deserialized value
+        """
+        deserialized = {}
+        for key, value in to_deserialize.items():
+            # Not automatically supporting complex keys!
+            deserialized[key] = deserializer.deserialize(value)
+        return deserialized
 
     @abstractmethod
     def _create_deserializer_of_type(self, deserializer_type: type):
@@ -168,3 +213,14 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
         :return: the created deserializer (of type `Deserializer`)
         """
         pass
+
+    # TODO: Fix self-referential signature
+    def _create_deserializer_with_cache(self, deserializer_type: type):
+        """
+        Creates a deserializer of the given type, exploiting a cache.
+        :param deserializer_type: the type of deserializer to create
+        :return: the deserializer
+        """
+        if deserializer_type not in self._deserializers_cache:
+            self._deserializers_cache[deserializer_type] = self._create_deserializer_of_type(deserializer_type)
+        return self._deserializers_cache[deserializer_type]

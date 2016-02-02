@@ -21,7 +21,13 @@ def get_complex_model_property_mappings() -> Sequence[PropertyMapping]:
         PropertyMapping("d", serialized_property_getter=lambda obj_as_dict: obj_as_dict["serialized_d"],
                         serialized_property_setter=lambda obj_as_dict, value: obj_as_dict.__setitem__(
                             "serialized_d", value),
-                        serializer_cls=SimpleModelSerializer, deserializer_cls=SimpleModelDeserializer)
+                        serializer_cls=SimpleModelSerializer, deserializer_cls=SimpleModelDeserializer),
+        JsonPropertyMapping("serialized_e", "e"),
+        JsonPropertyMapping("serialized_f", "f"),
+        PropertyMapping("serialized_g", "g",
+                        serializer_cls=SimpleModelSerializer, deserializer_cls=SimpleModelDeserializer),
+        JsonPropertyMapping("serialized_h", "h"),
+        JsonPropertyMapping("serialized_i", "i")
     ]
 
 
