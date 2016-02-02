@@ -142,10 +142,12 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
         for mapping in self._property_mappings:
             if mapping.object_constructor_parameter_name is not None:
                 assert mapping.serialized_property_getter is not None
+                assert mapping.object_constructor_argument_modifier is not None
                 value = mapping.serialized_property_getter(object_property_value_dict)
                 deserializer = self._create_deserializer_with_cache(mapping.deserializer_cls)
                 decoded_value = self._deserialize_property_value(value, deserializer)
-                init_kwargs[mapping.object_constructor_parameter_name] = decoded_value
+                argument = mapping.object_constructor_argument_modifier(decoded_value)
+                init_kwargs[mapping.object_constructor_parameter_name] = argument
             else:
                 mappings_not_set_in_constructor.append(mapping)
 

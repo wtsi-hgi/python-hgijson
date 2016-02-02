@@ -87,6 +87,13 @@ class TestDeserializer(unittest.TestCase):
         deserializer = SimpleModelDeserializer(mappings)
         self.assertEqual(deserializer.deserialize(self.simple_model_as_json), self.simple_model)
 
+    def test_deserialize_using_constructor_parameter_with_modifier(self):
+        mappings = [JsonPropertyMapping("serialized_a", "a", object_constructor_parameter_name="constructor_b",
+                                        object_constructor_argument_modifier=lambda value: value + 1)]
+        deserializer = SimpleModelDeserializer(mappings)
+        model = SimpleModel(self.simple_model_as_json["serialized_a"] + 1)
+        self.assertEqual(deserializer.deserialize(self.simple_model_as_json), model)
+
     def test_deserialize_using_deserializer(self):
         mappings = [JsonPropertyMapping("serialized_a", "a"),
                     JsonPropertyMapping("serialized_b", object_constructor_parameter_name="constructor_b"),

@@ -162,6 +162,10 @@ in the constructor:
 mapping_schema = [JsonPropertyMapping("full_name", "name", object_constructor_parameter_name="constructor_name")]
 ```
 
+If further modification of the decoded value is needed, `object_constructor_argument_modifier` can be set, which
+takes the value retrieved by `json_property_getter` after decoded by an instance of `decoder_cls` and returns the value
+that is binded to the constructor parameter.
+
 
 #### Deserializing objects with mutators
 Model:

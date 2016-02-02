@@ -18,6 +18,10 @@ class TestPropertyMapping(unittest.TestCase):
         self.assertRaises(ValueError, PropertyMapping, object_property_name="a",
                           object_property_getter=lambda: None, object_property_setter=lambda: None)
 
+    def test_init_with_constructor_argument_modifier_but_no_constructor_parameter_name(self):
+        self.assertRaises(ValueError, PropertyMapping, object_constructor_parameter_name="a",
+                          object_constructor_argument_modifier=lambda: None)
+
     def test_init_with_no_arguments(self):
         property_mapping = PropertyMapping()
         self.assertIsNone(property_mapping.object_property_getter)
@@ -26,7 +30,7 @@ class TestPropertyMapping(unittest.TestCase):
         self.assertIsNone(property_mapping.serialized_property_setter)
         self.assertIsNone(property_mapping.object_constructor_parameter_name)
 
-    def test_init_with_object__names(self):
+    def test_init_with_object_names(self):
         property_mapping = PropertyMapping("a", "constructor_a", serialized_property_getter=lambda: None)
         self.assertIsNotNone(property_mapping.object_property_getter)
         self.assertIsNone(property_mapping.object_property_setter)

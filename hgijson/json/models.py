@@ -12,6 +12,7 @@ class JsonPropertyMapping(PropertyMapping):
     """
     def __init__(
             self, json_property_name=None, object_property_name: str=None, object_constructor_parameter_name: str=None,
+            object_constructor_argument_modifier: Callable[[Any], Any]=None,
             json_property_getter: Callable[[Dict], Any]=None, json_property_setter: Callable[[Any, Any], None]=None,
             object_property_getter: Callable[[Any], Any]=None, object_property_setter: Callable[[Any, Any], None]=None,
             encoder_cls: type=JSONEncoder, decoder_cls: type=JSONDecoder):
@@ -20,6 +21,7 @@ class JsonPropertyMapping(PropertyMapping):
         :param json_property_name:
         :param object_property_name:
         :param object_constructor_parameter_name:
+        :param object_constructor_argument_modifier:
         :param json_property_getter:
         :param json_property_setter:
         :param object_property_getter:
@@ -45,8 +47,8 @@ class JsonPropertyMapping(PropertyMapping):
         encoder_as_serializer_cls = json_encoder_to_serializer(encoder_cls)
         decoder_as_serializer_cls = json_decoder_to_deserializer(decoder_cls)
 
-        super().__init__(object_property_name, object_constructor_parameter_name, json_property_getter,
-                         json_property_setter, object_property_getter, object_property_setter,
+        super().__init__(object_property_name, object_constructor_parameter_name, object_constructor_argument_modifier,
+                         json_property_getter, json_property_setter, object_property_getter, object_property_setter,
                          encoder_as_serializer_cls, decoder_as_serializer_cls)
 
     @property
