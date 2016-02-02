@@ -27,7 +27,6 @@ class JsonPropertyMapping(PropertyMapping):
         :param object_property_setter:
         :param encoder_cls:
         :param decoder_cls:
-        :return:
         """
         if json_property_name is not None:
             if json_property_getter is not None and json_property_setter is not None:
@@ -51,3 +50,19 @@ class JsonPropertyMapping(PropertyMapping):
         super().__init__(object_property_name, object_constructor_parameter_name, json_property_getter,
                          json_property_setter, object_property_getter, object_property_setter,
                          encoder_as_serializer_cls, decoder_as_serializer_cls)
+
+    @property
+    def json_property_getter(self) -> Callable[[Dict], Any]:
+        return self.serialized_property_getter
+
+    @json_property_getter.setter
+    def json_property_getter(self, getter: Callable[[Dict], Any]):
+        self.serialized_property_getter = getter
+
+    @property
+    def json_property_setter(self) -> Callable[[Any, Any], None]:
+        return self.serialized_property_setter
+
+    @json_property_setter.setter
+    def json_property_setter(self, setter: Callable[[Any, Any], None]):
+        self.serialized_property_setter = setter

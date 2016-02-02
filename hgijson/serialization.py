@@ -28,9 +28,6 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
         """
         serialized = self._create_serialized_container()
 
-        # print(type(self))
-        # print(len(self._property_mappings))
-
         for mapping in self._property_mappings:
             if mapping.object_property_getter is not None and mapping.serialized_property_setter is not None:
                 value = mapping.object_property_getter(serializable)
@@ -82,7 +79,7 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
     # def __init__(self, deserializable_cls: type, property_mappings: Iterable[PropertyMapping], *args, **kwargs):
     def __init__(self, property_mappings: Iterable[Any], deserializable_cls: type):
         """
-        Construtor.
+        Constructor.
         :param property_mappings: the property mappings that this deserialiser uses when deserialing an object
         :param deserializable_cls: the class that should be built as a result of deserialization
         """

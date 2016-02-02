@@ -3,7 +3,7 @@
 
 
 # Python 3 JSON Serialization
-Python 3 library for serializing and deserializing complex class-based Python models using an arbitrary complex mapping 
+Python 3 library for JSON encoding/decoding complex class-based Python models using an arbitrary complex mapping 
 schema.
 
 
@@ -37,7 +37,6 @@ of a specific type. Similar with decode.
   - [Deserializing objects with mutators](#deserializing-objects-with-mutators)
   - [Conditionally optional JSON properties](#conditionally-optional-json-properties)
   - [One-way mappings](#one-way-mappings)
-- [Warning](#warning)
 - [Notes](#notes)
 
 

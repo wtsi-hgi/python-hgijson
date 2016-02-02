@@ -10,8 +10,7 @@ class PropertyMapping(Model):
     Model of a mapping between a json property and a property of an object.
     """
     def __init__(
-            self,
-            object_property_name: str=None, object_constructor_parameter_name: str=None,
+            self, object_property_name: str=None, object_constructor_parameter_name: str=None,
             serialized_property_getter: Callable[[Dict], Any]=None,
             serialized_property_setter: Callable[[Any, Any], None]=None,
             object_property_getter: Callable[[Any], Any]=None, object_property_setter: Callable[[Any, Any], None]=None,
@@ -29,9 +28,8 @@ class PropertyMapping(Model):
         :param object_property_getter: method that, given the object, gets the property of interest to this mapping
         :param object_property_setter: method that, given the object, sets a property to the value returned by
         `serialized_property_getter`
-        :param serializer_cls: class to serialize the value returned by `serialized_property_getter`
-        :param deserializer_cls:
-        :return:
+        :param serializer_cls: class to serialize the value returned by `object_property_getter`
+        :param deserializer_cls: class to deserialize the value returned by `serialized_property_getter`
         """
         if object_property_name is not None:
             # It is not possible to know what the serialized container is therefore default values cannot be set if a
