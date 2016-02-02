@@ -32,17 +32,22 @@ def create_complex_model_with_json_representation(modifier: int=0) -> Tuple[Comp
     complex_model = ComplexModel(5)
     complex_model.a = modifier
     complex_model.c = 4
-    complex_model.d.a = 2
 
     complex_model_as_json = create_simple_model_with_json_representation(modifier)[1]
     complex_model_as_json.update({
         "serialized_a": complex_model.a,
         "serialized_b": complex_model.b,
         "serialized_c": complex_model.c,
-        "serialized_d": {
-            "serialized_a": complex_model.d.a,
-            "serialized_b": complex_model.b
-        }
+        "serialized_d": [{
+            "serialized_a": i,
+            "serialized_b": complex_model.b + i
+        } for i in range(3)],
+        "serialized_e": complex_model.e,
+        "serialized_f": complex_model.f,
+        "serialized_g": {"model": {
+            "serialized_a": None,
+            "serialized_b": 20
+        }}
     })
 
     return complex_model, complex_model_as_json

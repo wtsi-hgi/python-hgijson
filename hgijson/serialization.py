@@ -1,6 +1,8 @@
 from abc import ABCMeta, abstractmethod
 from typing import Any, Generic, Iterable, Dict
 
+import collections
+
 from hgijson.types import SerializableType, PrimitiveUnionType, PrimitiveJsonSerializableType
 
 
@@ -36,10 +38,10 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
 
         return serialized
 
-    def _serialize_property_value(self, value: Any, serializer_type: type) -> PrimitiveUnionType:
+    def _serialize_property_value(self, to_serialize: Any, serializer_type: type) -> PrimitiveUnionType:
         """
         Serialize the given value using an serializer of the given type.
-        :param value: the value to serialize
+        :param to_serialize: the value to serialize
         :param serializer_type: the type of serializer to serialize the value with
         :return: serialized value
         """
@@ -48,7 +50,20 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
 
         serializer = self._serializers_cache[serializer_type]
         assert serializer is not None
-        return serializer.serialize(value)
+
+        if isinstance(to_serialize, collections.Iterable):
+            if isinstance(to_serialize, dict):
+                serialized = {}
+                for key, value in to_serialize.items():
+                    # Not automatically supporting complex keys!
+                    serialized[key] = serializer.serialize(value)
+            else:
+                serialized = []
+                for item in to_serialize:
+                    serialized.append(serializer.serialize(item))
+            return serialized
+        else:
+            return serializer.serialize(to_serialize)
 
     @abstractmethod
     # FIXME: Signature should be self referential to this class:
@@ -118,10 +133,10 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
 
         return decoded
 
-    def _deserialize_property_value(self, value: PrimitiveJsonSerializableType, deserializer_type: type) -> Any:
+    def _deserialize_property_value(self, to_deserialize: PrimitiveJsonSerializableType, deserializer_type: type) -> Any:
         """
         Deserializes the given value using a deserializer of the given type.
-        :param value: the value to deserialize
+        :param to_deserialize: the value to deserialize
         :param deserializer_type: the type of deserializer to deserialize the value with
         :return: deserialized value
         """
@@ -130,7 +145,20 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
 
         deserializer = self._deserializers_cache[deserializer_type]
         assert deserializer is not None
-        return deserializer.deserialize(value)
+
+        if isinstance(to_deserialize, collections.Iterable):
+            if isinstance(to_deserialize, dict):
+                deserialized = {}
+                for key, value in to_deserialize.items():
+                    # Not automatically supporting complex keys!
+                    deserialized[key] = deserializer.deserialize(value)
+            else:
+                deserialized = []
+                for item in to_deserialize:
+                    deserialized.append(deserializer.deserialize(item))
+            return deserialized
+        else:
+            return deserializer.deserialize(to_deserialize)
 
     @abstractmethod
     def _create_deserializer_of_type(self, deserializer_type: type):

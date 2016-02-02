@@ -11,7 +11,7 @@ from hgijson.types import PrimitiveJsonSerializableType, SerializableType
 
 class _JsonSerializer(Serializer):
     """
-    TODO
+    JSON serializer.
     """
     _JSON_ENCODER_ARGS = []
     _JSON_ENCODER_KWARGS = {}
@@ -25,7 +25,7 @@ class _JsonSerializer(Serializer):
 
 class _JsonDeserializer(Deserializer):
     """
-    TODO
+    JSON deserializer.
     """
     _JSON_ENCODER_ARGS = []
     _JSON_ENCODER_KWARGS = {}
@@ -71,8 +71,8 @@ class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
 
     def _create_serializer(self) -> _JsonSerializer:
         """
-        TODO
-        :return:
+        Create serializer that is to be used by this encoder
+        :return: the serializer
         """
         if self._serializer_cache is None:
             serializer_cls = type(
@@ -89,16 +89,16 @@ class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
     @abstractmethod
     def _get_property_mappings(self) -> Iterable[JsonPropertyMapping]:
         """
-        TODO
-        :return:
+        Gets the property mappings that are to be used in this encoder.
+        :return: the property mappings to use
         """
         pass
 
     @abstractmethod
     def _get_serializable_cls(self) -> type:
         """
-        TODO
-        :return:
+        Gets the type of class that this encoder will serialize.
+        :return: the class the encoder will serialize
         """
         pass
 
@@ -134,8 +134,8 @@ class MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
 
     def _create_deserializer(self) -> _JsonDeserializer:
         """
-        TODO
-        :return:
+        Creates a deserializer that is to be used by this decoder.
+        :return: the deserializer
         """
         if self._deserializer_cache is None:
             deserializer_cls = type(
@@ -152,15 +152,15 @@ class MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
     @abstractmethod
     def _get_property_mappings(self) -> Iterable[JsonPropertyMapping]:
         """
-        TODO
-        :return:
+        Gets the property mappings that are to be used in this decoder.
+        :return: the property mappings to use
         """
         pass
 
     @abstractmethod
     def _get_deserializable_cls(self) -> type:
         """
-        TODO
-        :return:
+        Gets the type of class that this decoder will deserialize.
+        :return: the class the decoder will deserialize
         """
         pass

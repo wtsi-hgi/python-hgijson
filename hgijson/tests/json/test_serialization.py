@@ -98,7 +98,7 @@ class TestMappingJSONDecoder(unittest.TestCase):
         complex_models_as_json = [create_complex_model_with_json_representation(i)[1] for i in range(10)]
         json_as_string = json.dumps(complex_models_as_json)
         decoded = json.loads(json_as_string, cls=ComplexModelMappingJSONDecoder)
-        self.assertCountEqual(decoded, complex_models)
+        self.assertEqual(decoded, complex_models)
 
 
 if __name__ == "__main__":

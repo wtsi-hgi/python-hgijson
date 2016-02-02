@@ -55,14 +55,10 @@ class _JSONEncoderAsSerializer(PrimitiveSerializer, metaclass=ABCMeta):
 
     Subclasses must "override" `_ENCODER_CLS` to specify the `JSONEncoder` to wrap.
     """
-    _ENCODER_CLS = type(None)
+    _ENCODER_CLS = object()
 
     def __init__(self, *args, **kwargs):
-        if self._ENCODER_CLS == _JSONEncoderAsSerializer._ENCODER_CLS:
-            raise RuntimeError(
-                    "Subclass of `_JSONEncoderAsSerializer` did not \"override\" `SERIALIZABLE_CLS` constant (it "
-                    "cannot be derived from the generic)")
-
+        assert self._ENCODER_CLS != _JSONEncoderAsSerializer._ENCODER_CLS
         super().__init__(*args, **kwargs)
         self._encoder = self._ENCODER_CLS(*args, **kwargs)  # type: JSONEncoder
 
@@ -80,14 +76,10 @@ class _JSONDecoderAsDeserializer(PrimitiveDeserializer, metaclass=ABCMeta):
 
     Subclasses must "override" `_DECODER_CLS` to specify the `JSONDecoder` to wrap.
     """
-    _DECODER_CLS = type(None)
+    _DECODER_CLS = object()
 
     def __init__(self, *args, **kwargs):
-        if self._DECODER_CLS == _JSONDecoderAsDeserializer._DECODER_CLS:
-            raise RuntimeError(
-                    "Subclass of `_JSONDecoderAsDeserializer` did not \"override\" `SERIALIZABLE_CLS` constant (it "
-                    "cannot be derived from the generic)")
-
+        assert self._DECODER_CLS != _JSONDecoderAsDeserializer._DECODER_CLS
         super().__init__(*args, **kwargs)
         self._decoder = self._DECODER_CLS(*args, **kwargs)  # type: JSONDecoder
 
