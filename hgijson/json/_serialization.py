@@ -2,8 +2,6 @@ from abc import ABCMeta, abstractmethod
 from json import JSONEncoder, JSONDecoder
 from typing import Dict, Union, Iterable, Sequence
 
-import collections
-
 from hgijson.json.models import JsonPropertyMapping
 from hgijson.serialization import Serializer, Deserializer
 from hgijson.types import PrimitiveJsonSerializableType, SerializableType
@@ -55,17 +53,15 @@ class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
     def default(self, serializable: Union[SerializableType, Sequence[SerializableType]]) -> PrimitiveJsonSerializableType:
         serializer = self._create_serializer()
 
-        if isinstance(serializable, collections.Iterable):
+        if isinstance(serializable, list):
             if len(serializable) == 0:
                 return []
             encoded = []
             for to_encode in serializable:
                 encoded.append(serializer.serialize(to_encode))
             return encoded
-
         elif not isinstance(serializable, self._get_serializable_cls()):
             JSONEncoder.default(self, serializable)
-
         else:
             return serializer.serialize(serializable)
 

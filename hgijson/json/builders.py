@@ -25,7 +25,8 @@ class MappingJSONEncoderClassBuilder(_JSONSerializationClassBuilder):
     """
     Builder for `MappingJSONEncoder` concrete subclasses.
     """
-    def __init__(self, target_cls: type=type(None), mappings: Iterable[JsonPropertyMapping]=(), superclass: type=MappingJSONEncoder):
+    def __init__(self, target_cls: type=type(None), mappings: Iterable[JsonPropertyMapping]=(),
+                 superclass: type=MappingJSONEncoder):
         super().__init__(target_cls, mappings, superclass)
 
     def build(self) -> type:
@@ -66,7 +67,8 @@ class MappingJSONDecoderClassBuilder(_JSONSerializationClassBuilder):
     """
     Builder for `MappingJSONDecoder` concrete subclasses.
     """
-    def __init__(self, target_cls: type=type(None), mappings: Iterable[JsonPropertyMapping]=(), superclass: type=MappingJSONDecoder):
+    def __init__(self, target_cls: type=type(None), mappings: Iterable[JsonPropertyMapping]=(),
+                 superclass: type=MappingJSONDecoder):
         super().__init__(target_cls, mappings, superclass)
 
     def build(self) -> type:
