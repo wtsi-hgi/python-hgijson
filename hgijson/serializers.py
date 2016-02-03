@@ -9,7 +9,7 @@ class PrimitiveSerializer(Serializer):
     Serializer for primitive values - just returns them.
     """
     def __init__(self, *args, **kwargs):
-        super().__init__((), *args, **kwargs)
+        super().__init__(())
 
     def serialize(self, serializable: Any):
         return serializable

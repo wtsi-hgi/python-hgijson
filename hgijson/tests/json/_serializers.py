@@ -23,10 +23,8 @@ def get_complex_model_json_property_mappings() -> Sequence[JsonPropertyMapping]:
                             encoder_cls=SimpleModelMappingJSONEncoder, decoder_cls=SimpleModelMappingJSONDecoder),
         JsonPropertyMapping("serialized_e", "e"),
         JsonPropertyMapping("serialized_f", "f"),
-        JsonPropertyMapping("serialized_g", "g",
-                            encoder_cls=SimpleModelMappingJSONEncoder, decoder_cls=SimpleModelMappingJSONDecoder),
-        JsonPropertyMapping("serialized_h", "h"),
-        JsonPropertyMapping("serialized_i", "i")
+        JsonPropertyMapping("serialized_g", "g"),
+        JsonPropertyMapping("serialized_h", "h")
     ]
 
 

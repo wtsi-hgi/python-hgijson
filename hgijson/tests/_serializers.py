@@ -24,10 +24,8 @@ def get_complex_model_property_mappings() -> Sequence[PropertyMapping]:
                         serializer_cls=SimpleModelSerializer, deserializer_cls=SimpleModelDeserializer),
         JsonPropertyMapping("serialized_e", "e"),
         JsonPropertyMapping("serialized_f", "f"),
-        PropertyMapping("serialized_g", "g",
-                        serializer_cls=SimpleModelSerializer, deserializer_cls=SimpleModelDeserializer),
-        JsonPropertyMapping("serialized_h", "h"),
-        JsonPropertyMapping("serialized_i", "i")
+        JsonPropertyMapping("serialized_g", "g"),
+        JsonPropertyMapping("serialized_h", "h")
     ]
 
 
@@ -47,21 +45,23 @@ class SimpleModelSerializer(Serializer):
         return PrimitiveSerializer()
 
 
-class ComplexModelSerializer(SimpleModelSerializer):
+class ComplexModelSerializer(Serializer):
     """
     Serializer for `ComplexModel`.
     """
     def __init__(self, custom_mappings: Iterable[PropertyMapping]=None):
         if custom_mappings is None:
-            custom_mappings = get_complex_model_property_mappings()
-        super().__init__()
-        self._property_mappings = custom_mappings
+            custom_mappings = list(get_simple_model_property_mappings()) + list(get_complex_model_property_mappings())
+        super().__init__(custom_mappings)
+
+    def _create_serialized_container(self) -> Any:
+        return {}
 
     def _create_serializer_of_type(self, serializer_type: type) -> Serializer:
         if serializer_type == SimpleModelSerializer:
             return SimpleModelSerializer()
         else:
-            return super()._create_serializer_of_type(serializer_type)
+            return PrimitiveSerializer()
 
 
 class SimpleModelDeserializer(Deserializer):
@@ -77,19 +77,17 @@ class SimpleModelDeserializer(Deserializer):
         return PrimitiveDeserializer()
 
 
-class ComplexModelDeserializer(SimpleModelDeserializer):
+class ComplexModelDeserializer(Deserializer):
     """
     Deserializer for `ComplexModel`.
     """
     def __init__(self, custom_mappings: Iterable[PropertyMapping]=None):
         if custom_mappings is None:
-            custom_mappings = get_complex_model_property_mappings()
-        super().__init__()
-        self._property_mappings = custom_mappings
-        self._deserializable_cls = ComplexModel
+            custom_mappings = list(get_simple_model_property_mappings()) + list(get_complex_model_property_mappings())
+        super().__init__(custom_mappings, ComplexModel)
 
     def _create_deserializer_of_type(self, deserializer_type: type):
         if deserializer_type == SimpleModelDeserializer:
             return SimpleModelDeserializer()
         else:
-            return super()._create_deserializer_of_type(deserializer_type)
+            return PrimitiveDeserializer()

@@ -1,3 +1,5 @@
+import json
+from json import JSONEncoder, JSONDecoder
 from typing import List
 
 from hgicommon.models import Model
@@ -16,9 +18,8 @@ class ComplexModel(SimpleModel):
         self.d = [SimpleModel(constructor_b + i) for i in range(3)]
         self.e = [4.1, 5.2, 6.3]
         self.f = {"1": 2, "3": 4}
-        self.g = {"model": SimpleModel(20)}
-        self.h = "test"
-        self.i = 123
+        self.g = "test"
+        self.h = 123
 
         for i in range(len(self.d)):
             self.d[i].a = i

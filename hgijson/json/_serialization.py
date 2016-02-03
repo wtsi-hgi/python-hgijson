@@ -7,9 +7,9 @@ from hgijson.serialization import Serializer, Deserializer
 from hgijson.types import PrimitiveJsonSerializableType, SerializableType
 
 
-class _JsonSerializer(Serializer):
+class _JsonObjectSerializer(Serializer):
     """
-    JSON serializer.
+    JSON serializer for models represented by {}.
     """
     _JSON_ENCODER_ARGS = []
     _JSON_ENCODER_KWARGS = {}
@@ -21,9 +21,9 @@ class _JsonSerializer(Serializer):
         return {}
 
 
-class _JsonDeserializer(Deserializer):
+class _JsonObjectDeserializer(Deserializer):
     """
-    JSON deserializer.
+    JSON deserializer for models represented by {}.
     """
     _JSON_ENCODER_ARGS = []
     _JSON_ENCODER_KWARGS = {}
@@ -52,20 +52,12 @@ class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
 
     def default(self, serializable: Union[SerializableType, Sequence[SerializableType]]) -> PrimitiveJsonSerializableType:
         serializer = self._create_serializer()
+        if not isinstance(serializable, list) and not isinstance(serializable, self._get_serializable_cls()):
+            return super().default(serializable)
 
-        if isinstance(serializable, list):
-            if len(serializable) == 0:
-                return []
-            encoded = []
-            for to_encode in serializable:
-                encoded.append(serializer.serialize(to_encode))
-            return encoded
-        elif not isinstance(serializable, self._get_serializable_cls()):
-            JSONEncoder.default(self, serializable)
-        else:
-            return serializer.serialize(serializable)
+        return serializer.serialize(serializable)
 
-    def _create_serializer(self) -> _JsonSerializer:
+    def _create_serializer(self) -> _JsonObjectSerializer:
         """
         Create serializer that is to be used by this encoder
         :return: the serializer
@@ -73,7 +65,7 @@ class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         if self._serializer_cache is None:
             serializer_cls = type(
                 "%sInternalSerializer" % type(self),
-                (_JsonSerializer, ),
+                (_JsonObjectSerializer,),
                 {
                     "_JSON_ENCODER_ARGS": self._args,
                     "_JSON_ENCODER_KWARGS": self._kwargs
@@ -119,16 +111,9 @@ class MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
     def decode(self, json_as_string: str, **kwargs) -> SerializableType:
         parsed_json = super().decode(json_as_string)
         deserializer = self._create_deserializer()
-
-        if isinstance(parsed_json, list):
-            decoded = []
-            for instance_as_json in parsed_json:
-                decoded.append(deserializer._decode_json_as_dict(instance_as_json))
-            return decoded
-
         return deserializer._decode_json_as_dict(parsed_json)
 
-    def _create_deserializer(self) -> _JsonDeserializer:
+    def _create_deserializer(self) -> _JsonObjectDeserializer:
         """
         Creates a deserializer that is to be used by this decoder.
         :return: the deserializer
@@ -136,7 +121,7 @@ class MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
         if self._deserializer_cache is None:
             deserializer_cls = type(
                 "%sInternalDeserializer" % type(self),
-                (_JsonDeserializer, ),
+                (_JsonObjectDeserializer,),
                 {
                     "_JSON_ENCODER_ARGS": self._args,
                     "_JSON_ENCODER_KWARGS": self._kwargs

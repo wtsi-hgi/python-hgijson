@@ -1,4 +1,4 @@
-from typing import Dict, Callable, Any
+from typing import Dict, Callable, Any, Optional, List, Union
 
 from hgicommon.models import Model
 
@@ -54,14 +54,14 @@ class PropertyMapping(Model):
         if object_constructor_parameter_name is not None:
             if serialized_property_getter is None:
                 raise ValueError("`serialized_property_getter` must be defined alongside "
-                                 "`object_constructor_parameter_name`")
+                                 "`object_constructor_parameter_name`.")
 
             if object_property_setter is not None and object_constructor_parameter_name is not None:
                 raise ValueError("`object_property_setter` cannot be defined if `object_constructor_parameter_name` is "
                                  "given as the serialized data will be injected into the object as an argument. If an "
                                  "object property should also be set using a setter, define another mapping. If the "
                                  "constructor argument needs to be modified, use "
-                                 "`object_constructor_argument_modifier`")
+                                 "`object_constructor_argument_modifier`.")
 
             if object_constructor_argument_modifier is None:
                 def object_constructor_argument_modifier(argument: Any) -> Any:
@@ -69,7 +69,7 @@ class PropertyMapping(Model):
         else:
             if object_constructor_argument_modifier is not None:
                 raise ValueError("`object_constructor_argument_modifier` cannot be used without "
-                                 "`object_constructor_parameter_name` being set ")
+                                 "`object_constructor_parameter_name` being set.")
 
         self.serialized_property_getter = serialized_property_getter
         self.serialized_property_setter = serialized_property_setter
