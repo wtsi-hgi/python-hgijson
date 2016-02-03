@@ -1,4 +1,3 @@
-import json
 import unittest
 from typing import Dict
 
@@ -132,47 +131,6 @@ class TestDeserializer(unittest.TestCase):
         complex_models_as_json = [create_complex_model_with_json_representation(i)[1] for i in range(10)]
         decoded = ComplexModelDeserializer().deserialize(complex_models_as_json)
         self.assertEqual(decoded, complex_models)
-
-
-    # def test_deserialize_using_object_property_setter(self):
-    #     def object_property_setter_for_b(obj: SimpleModel, value: Any):
-    #         obj.b = value + 1
-    #
-    #     simple_model_b_plus_one = self.simple_model
-    #     simple_model_b_plus_one.b += 1
-    #     mappings = [JsonPropertyMapping("serialized_a", "a"),
-    #                 JsonPropertyMapping("serialized_b", object_property_setter=object_property_setter_for_b)]
-    #     deserializer = SimpleModelDeserializer(mappings)
-    #     self.assertEqual(deserializer.deserialize(self.simple_model_as_json), simple_model_b_plus_one)
-    #
-    # def _test_deserialize_instance_to_list_when_collection_support_enabled(self):
-    #     # It is not possible to detect this situation - it would depend on the deserializer
-    #     pass
-    #
-    # def test_deserialize_list_when_collection_support_not_enabled(self):
-    #     mappings = [JsonPropertyMapping("contains", "my_list", decoder_cls=MyListJSONDecoder, collection_if_list=False)]
-    #     ModelWithMyListPropertyJSONDecoder = MappingJSONDecoderClassBuilder(ModelContainingMyList, mappings).build()
-    #     decoder = ModelWithMyListPropertyJSONDecoder()  # type: JSONDecoder
-    #     to_decode = json.dumps({"contains": [1, 2]})
-    #     decoded = decoder.decode(to_decode)
-    #     expected = ModelContainingMyList()
-    #     expected.my_list = MyList([1, 2])
-    #     self.assertEqual(decoded, expected)
-    #
-    # def _test_deserialize_list_of_list_when_collection_support_not_enabled(self):
-    #     # It is not possible to detect this situation - it would depend on the deserializer
-    #     pass
-    #
-    # def test_deserialize_list_of_list_when_collection_support_enabled(self):
-    #     mappings = [JsonPropertyMapping("contains", "my_lists", decoder_cls=MyListJSONDecoder, collection_if_list=True)]
-    #     ModelWithMyListPropertyJSONDecoder = MappingJSONDecoderClassBuilder(ModelContainingMyList, mappings).build()
-    #     decoder = ModelWithMyListPropertyJSONDecoder()  # type: JSONDecoder
-    #     my_lists = [[1, i] for i in range(10)]
-    #     to_decode = json.dumps({"contains": my_lists})
-    #     decoded = decoder.decode(to_decode)
-    #     expected = ModelContainingMyList()
-    #     expected.my_lists = [MyList(list_item) for list_item in my_lists]
-    #     self.assertEqual(decoded, expected)
 
 
 if __name__ == "__main__":

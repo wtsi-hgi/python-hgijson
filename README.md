@@ -28,19 +28,17 @@ of a specific type. Similar with decode.
   
 
 ## How to use
-### Table of Contents
-- [Details](#details)
-  - [One-to-one JSON property to object property mapping](#one-to-one-json-property-to-object-property-mapping)
-  - [Arbitrary mapping to JSON property value](#arbitrary-mapping-to-json-property-value)
-  - [Arbitrary mapping to object property value](#arbitrary-mapping-to-object-property-value)
-  - [Deserializing objects with constructors parameters](#deserializing-objects-with-constructors-parameters)
-  - [Deserializing objects with mutators](#deserializing-objects-with-mutators)
-  - [Conditionally optional JSON properties](#conditionally-optional-json-properties)
-  - [One-way mappings](#one-way-mappings)
-- [Notes](#notes)
-
-
 ### Details
+- [One-to-one JSON property to object property mapping](#one-to-one-json-property-to-object-property-mapping)
+- [Arbitrary mapping to JSON property value](#arbitrary-mapping-to-json-property-value)
+- [Arbitrary mapping to object property value](#arbitrary-mapping-to-object-property-value)
+- [Deserializing objects with constructors parameters](#deserializing-objects-with-constructors-parameters)
+- [Deserializing objects with mutators](#deserializing-objects-with-mutators)
+- [Conditionally optional JSON properties](#conditionally-optional-json-properties)
+- [One-way mappings](#one-way-mappings)
+- [Cast JSON "primitives"](#cast-json-primitives)
+
+
 #### One-to-one JSON property to object property mapping
 Model:
 ```python
@@ -335,6 +333,35 @@ mapping_schema = [
         json_property_setter=lambda json_as_dict, age: json_as_dict.__setitem__("age", age),
         object_property_getter=lambda person: person.age
     )
+]
+```
+
+#### Cast JSON primitives
+To help with casting JSON primitives, the following decoders/encoders are provided:
+* `StrJSONEncoder`: serializes as a string (e.g. object property=`123` -> JSON property=`"123"`).
+* `StrJSONDecoder`: deserializes value as an string (e.g. JSON property=`123` -> object property=`"123"`).
+* `IntJSONDecoder`: deserializes value as an int (e.g. JSON property=`"123"` -> object property=`123`).
+* `FloatJSONDecoder`: deserializes value as an float (e.g. JSON property=`"12.3"` -> object property=`12.3`).
+
+Model:
+```python
+class Person:
+    def __init__(self):
+        self.age = 42
+```
+
+JSON:
+```json
+{
+    "years_old": "str(<person.age>)"
+}
+```
+
+To define that:
+* The age property of `Person` instances should be an `int` but given as a string in the JSON representation.
+```
+person_mapping_schema = [
+    JsonPropertyMapping("years_old", "age", encoder_cls=StrJSONEncoder, decoder_cls=IntJSONDecoder)
 ]
 ```
 
