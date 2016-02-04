@@ -1,11 +1,11 @@
 import json
 from abc import ABCMeta
-from json import JSONDecoder, JSONEncoder
+from json import JSONEncoder
 from typing import Any, Dict
 
+from hgijson.json._serialization import MappingJSONDecoder
 from hgijson.serialization import Deserializer, Serializer
-from hgijson.serializers import PrimitiveSerializer, PrimitiveDeserializer
-from hgijson.types import PrimitiveJsonSerializableType, PrimitiveUnionType
+from hgijson.types import PrimitiveJsonSerializableType, PrimitiveUnionType, SerializableType
 
 _serializer_cache = dict()  # type: Dict[type, Serializer]
 _deserializer_cache = dict()    # type: Dict[type, Deserializer]
@@ -49,7 +49,7 @@ def json_decoder_to_deserializer(decoder_cls: type) -> type:
     return _deserializer_cache[decoder_cls]
 
 
-class _JSONEncoderAsSerializer(PrimitiveSerializer, metaclass=ABCMeta):
+class _JSONEncoderAsSerializer(Serializer, metaclass=ABCMeta):
     """
     JSON encoder wrapped to work as a `Serializer`.
 
@@ -59,18 +59,24 @@ class _JSONEncoderAsSerializer(PrimitiveSerializer, metaclass=ABCMeta):
 
     def __init__(self, *args, **kwargs):
         assert self._ENCODER_CLS != _JSONEncoderAsSerializer._ENCODER_CLS
-        super().__init__(*args, **kwargs)
+        super().__init__(())
         self._encoder = self._ENCODER_CLS(*args, **kwargs)  # type: JSONEncoder
 
-    def serialize(self, serializable: Any) -> PrimitiveUnionType:
+    def serialize(self, serializable: SerializableType) -> PrimitiveUnionType:
         if type(self._encoder) == JSONEncoder:
-            # FIXME: There must be a better way of getting the primitive value...
+            # Have to load from string to more rich representation - not possible to stop `encode` going to string :/
             return json.loads(self._encoder.encode(serializable))
         else:
             return self._encoder.default(serializable)
 
+    def _create_serializer_of_type(self, serializer_type: type):
+        assert False
 
-class _JSONDecoderAsDeserializer(PrimitiveDeserializer, metaclass=ABCMeta):
+    def _create_serialized_container(self) -> Any:
+        assert False
+
+
+class _JSONDecoderAsDeserializer(Deserializer, metaclass=ABCMeta):
     """
     JSON decoder wrapped to work as a `Deserializer`.
 
@@ -80,10 +86,18 @@ class _JSONDecoderAsDeserializer(PrimitiveDeserializer, metaclass=ABCMeta):
 
     def __init__(self, *args, **kwargs):
         assert self._DECODER_CLS != _JSONDecoderAsDeserializer._DECODER_CLS
-        super().__init__(*args, **kwargs)
+        super().__init__((), self._DECODER_CLS)
         self._decoder = self._DECODER_CLS(*args, **kwargs)  # type: JSONDecoder
 
-    def deserialize(self, object_property_value_dict: PrimitiveJsonSerializableType):
-        # FIXME: Converting it to a string like this is far from optimal...
-        json_as_string = json.dumps(object_property_value_dict)
-        return self._decoder.decode(json_as_string)
+    def deserialize(self, json_as_dict: PrimitiveJsonSerializableType) -> SerializableType:
+        if not isinstance(self._decoder, MappingJSONDecoder):
+            # Decode must take a string (even though we have a richer representation) :/
+            json_as_string = json.dumps(json_as_dict)
+            return self._decoder.decode(json_as_string)
+        else:
+            # Optimisation - no need to convert are relatively rich representation into a string (just to turn it back
+            # again!)
+            return self._decoder.decode_dict(json_as_dict)
+
+    def _create_deserializer_of_type(self, deserializer_type: type):
+        assert False

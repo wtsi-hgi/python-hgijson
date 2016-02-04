@@ -1,5 +1,4 @@
-from json import JSONDecoder
-from json import JSONEncoder
+from json import JSONDecoder, JSONEncoder
 from typing import Callable, Any, Dict
 
 from hgijson.json._converters import json_decoder_to_deserializer, json_encoder_to_serializer

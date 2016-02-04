@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 from json import JSONEncoder, JSONDecoder
 from typing import Dict, Union, Iterable, Sequence
 
-from hgijson.json.models import JsonPropertyMapping
+from hgijson.models import PropertyMapping
 from hgijson.serialization import Serializer, Deserializer
 from hgijson.types import PrimitiveJsonSerializableType, SerializableType
 
@@ -30,9 +30,6 @@ class _JsonObjectDeserializer(Deserializer):
 
     def _create_deserializer_of_type(self, deserializer_type: type) -> Deserializer:
         return deserializer_type(*self._JSON_ENCODER_ARGS, **self._JSON_ENCODER_KWARGS)
-
-    def _decode_json_as_dict(self, object_as_dict: dict) -> SerializableType:
-        return self.deserialize(object_as_dict)
 
 
 class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
@@ -75,7 +72,7 @@ class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         return self._serializer_cache
 
     @abstractmethod
-    def _get_property_mappings(self) -> Iterable[JsonPropertyMapping]:
+    def _get_property_mappings(self) -> Iterable[PropertyMapping]:
         """
         Gets the property mappings that are to be used in this encoder.
         :return: the property mappings to use
@@ -109,9 +106,17 @@ class MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
         self._deserializer_cache = None
 
     def decode(self, json_as_string: str, **kwargs) -> SerializableType:
-        parsed_json = super().decode(json_as_string)
+        json_as_dict = super().decode(json_as_string)
+        return self.decode_dict(json_as_dict)
+
+    def decode_dict(self, json_as_dict: dict) -> SerializableType:
+        """
+        Decodes the given JSON, represented as a Python dictionary.
+        :param json_as_dict: the JSON represented in a dictionary
+        :return: the decoded object
+        """
         deserializer = self._create_deserializer()
-        return deserializer._decode_json_as_dict(parsed_json)
+        return deserializer.deserialize(json_as_dict)
 
     def _create_deserializer(self) -> _JsonObjectDeserializer:
         """
@@ -131,7 +136,7 @@ class MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
         return self._deserializer_cache
 
     @abstractmethod
-    def _get_property_mappings(self) -> Iterable[JsonPropertyMapping]:
+    def _get_property_mappings(self) -> Iterable[PropertyMapping]:
         """
         Gets the property mappings that are to be used in this decoder.
         :return: the property mappings to use
