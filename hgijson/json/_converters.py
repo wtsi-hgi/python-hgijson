@@ -95,7 +95,7 @@ class _JSONDecoderAsDeserializer(Deserializer, metaclass=ABCMeta):
             json_as_string = json.dumps(json_as_dict)
             return self._decoder.decode(json_as_string)
         else:
-            # Optimisation - no need to convert are relatively rich representation into a string (just to turn it back
+            # Optimisation - no need to convert our relatively rich representation into a string (just to turn it back
             # again!)
             return self._decoder.decode_dict(json_as_dict)
 

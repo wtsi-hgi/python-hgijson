@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 from json import JSONEncoder, JSONDecoder
 from typing import Dict, Union, Iterable, Sequence
 
+from hgijson.json.misc import DictJSONDecoder
 from hgijson.models import PropertyMapping
 from hgijson.serialization import Serializer, Deserializer
 from hgijson.types import PrimitiveJsonSerializableType, SerializableType
@@ -44,10 +45,10 @@ class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         super().__init__(*args, **kwargs)
         self._args = args
         self._kwargs = kwargs
-        # FIXME: Create serializer here?
         self._serializer_cache = None
 
-    def default(self, serializable: Union[SerializableType, Sequence[SerializableType]]) -> PrimitiveJsonSerializableType:
+    def default(self, serializable: Union[SerializableType, Sequence[SerializableType]]) \
+            -> PrimitiveJsonSerializableType:
         serializer = self._create_serializer()
         if not isinstance(serializable, list) and not isinstance(serializable, self._get_serializable_cls()):
             return super().default(serializable)
@@ -88,7 +89,7 @@ class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         pass
 
 
-class MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
+class MappingJSONDecoder(JSONDecoder, DictJSONDecoder, metaclass=ABCMeta):
     """
     JSON decoder that creates an object from JSON based on a mapping from the JSON properties to the object properties,
     mindful that some properties may have to be passed through the constructor.
@@ -110,11 +111,6 @@ class MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
         return self.decode_dict(json_as_dict)
 
     def decode_dict(self, json_as_dict: dict) -> SerializableType:
-        """
-        Decodes the given JSON, represented as a Python dictionary.
-        :param json_as_dict: the JSON represented in a dictionary
-        :return: the decoded object
-        """
         deserializer = self._create_deserializer()
         return deserializer.deserialize(json_as_dict)
 
