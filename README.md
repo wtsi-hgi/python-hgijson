@@ -393,7 +393,6 @@ person_mapping_schema = [
 ```
 
 
-
 ### Notes
 * Decoders and encoders work for iterable collections of instances in the same way as they do for single instances.
 * Encoders will only encode objects into JSON objects (`{}`). A custom `JSONEncoder` must be used to encode Python 

@@ -1,9 +1,9 @@
 import json
 from abc import ABCMeta
-from json import JSONEncoder
+from json import JSONDecoder, JSONEncoder
 from typing import Any, Dict
 
-from hgijson.json._serialization import MappingJSONDecoder
+from hgijson.json.interfaces import DictJSONDecoder
 from hgijson.serialization import Deserializer, Serializer
 from hgijson.types import PrimitiveJsonSerializableType, PrimitiveUnionType, SerializableType
 
@@ -90,7 +90,7 @@ class _JSONDecoderAsDeserializer(Deserializer, metaclass=ABCMeta):
         self._decoder = self._DECODER_CLS(*args, **kwargs)  # type: JSONDecoder
 
     def deserialize(self, json_as_dict: PrimitiveJsonSerializableType) -> SerializableType:
-        if not isinstance(self._decoder, MappingJSONDecoder):
+        if not isinstance(self._decoder, DictJSONDecoder):
             # Decode must take a string (even though we have a richer representation) :/
             json_as_string = json.dumps(json_as_dict)
             return self._decoder.decode(json_as_string)

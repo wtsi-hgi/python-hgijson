@@ -1,36 +1,11 @@
 from abc import ABCMeta, abstractmethod
 from json import JSONEncoder, JSONDecoder
-from typing import Dict, Union, Iterable, Sequence
+from typing import Union, Iterable, Sequence
 
-from hgijson.json.misc import DictJSONDecoder
+from hgijson.json._serializers import JsonObjectSerializer, JsonObjectDeserializer
+from hgijson.json.interfaces import DictJSONDecoder
 from hgijson.models import PropertyMapping
-from hgijson.serialization import Serializer, Deserializer
 from hgijson.types import PrimitiveJsonSerializableType, SerializableType
-
-
-class _JsonObjectSerializer(Serializer):
-    """
-    JSON serializer for models represented by {}.
-    """
-    _JSON_ENCODER_ARGS = []
-    _JSON_ENCODER_KWARGS = {}
-
-    def _create_serializer_of_type(self, serializer_type: type) -> Serializer:
-        return serializer_type(*self._JSON_ENCODER_ARGS, **self._JSON_ENCODER_KWARGS)
-
-    def _create_serialized_container(self) -> Dict:
-        return {}
-
-
-class _JsonObjectDeserializer(Deserializer):
-    """
-    JSON deserializer for models represented by {}.
-    """
-    _JSON_ENCODER_ARGS = []
-    _JSON_ENCODER_KWARGS = {}
-
-    def _create_deserializer_of_type(self, deserializer_type: type) -> Deserializer:
-        return deserializer_type(*self._JSON_ENCODER_ARGS, **self._JSON_ENCODER_KWARGS)
 
 
 class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
@@ -55,7 +30,7 @@ class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
 
         return serializer.serialize(serializable)
 
-    def _create_serializer(self) -> _JsonObjectSerializer:
+    def _create_serializer(self) -> JsonObjectSerializer:
         """
         Create serializer that is to be used by this encoder
         :return: the serializer
@@ -63,7 +38,7 @@ class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         if self._serializer_cache is None:
             serializer_cls = type(
                 "%sInternalSerializer" % type(self),
-                (_JsonObjectSerializer,),
+                (JsonObjectSerializer,),
                 {
                     "_JSON_ENCODER_ARGS": self._args,
                     "_JSON_ENCODER_KWARGS": self._kwargs
@@ -89,7 +64,7 @@ class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         pass
 
 
-class MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
+class MappingJSONDecoder(JSONDecoder, DictJSONDecoder, metaclass=ABCMeta):
     """
     JSON decoder that creates an object from JSON based on a mapping from the JSON properties to the object properties,
     mindful that some properties may have to be passed through the constructor.
@@ -114,7 +89,7 @@ class MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
         deserializer = self._create_deserializer()
         return deserializer.deserialize(json_as_dict)
 
-    def _create_deserializer(self) -> _JsonObjectDeserializer:
+    def _create_deserializer(self) -> JsonObjectDeserializer:
         """
         Creates a deserializer that is to be used by this decoder.
         :return: the deserializer
@@ -122,7 +97,7 @@ class MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
         if self._deserializer_cache is None:
             deserializer_cls = type(
                 "%sInternalDeserializer" % type(self),
-                (_JsonObjectDeserializer,),
+                (JsonObjectDeserializer,),
                 {
                     "_JSON_ENCODER_ARGS": self._args,
                     "_JSON_ENCODER_KWARGS": self._kwargs
