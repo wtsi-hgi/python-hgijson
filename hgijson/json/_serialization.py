@@ -89,7 +89,7 @@ class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         pass
 
 
-class MappingJSONDecoder(JSONDecoder, DictJSONDecoder, metaclass=ABCMeta):
+class MappingJSONDecoder(JSONDecoder, metaclass=ABCMeta):
     """
     JSON decoder that creates an object from JSON based on a mapping from the JSON properties to the object properties,
     mindful that some properties may have to be passed through the constructor.

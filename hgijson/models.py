@@ -15,7 +15,8 @@ class PropertyMapping(Model):
             serialized_property_getter: Callable[[Dict], Any]=None,
             serialized_property_setter: Callable[[Any, Any], None]=None,
             object_property_getter: Callable[[Any], Any]=None, object_property_setter: Callable[[Any, Any], None]=None,
-            serializer_cls: type=PrimitiveSerializer, deserializer_cls: type=PrimitiveDeserializer):
+            serializer_cls: type=PrimitiveSerializer, deserializer_cls: type=PrimitiveDeserializer,
+            optional: bool=False):
         """
         Constructor.
         :param object_property_name: defines the object property to assign the value returned by
@@ -32,6 +33,8 @@ class PropertyMapping(Model):
         `serialized_property_getter`
         :param serializer_cls: class to serialize the value returned by `object_property_getter`
         :param deserializer_cls: class to deserialize the value returned by `serialized_property_getter`
+        :param optional: whether the property is optional - will ignore if `None` in serialized representation and will
+        not serialize if `None` in object
         """
         if object_property_name is not None:
             # It is not possible to know what the serialized container is therefore default values cannot be set if a
@@ -79,3 +82,4 @@ class PropertyMapping(Model):
         self.object_property_setter = object_property_setter
         self.serializer_cls = serializer_cls
         self.deserializer_cls = deserializer_cls
+        self.optional = optional

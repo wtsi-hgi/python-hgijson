@@ -36,7 +36,8 @@ of a specific type. Similar with decode.
 - [Deserializing objects with mutators](#deserializing-objects-with-mutators)
 - [Conditionally optional JSON properties](#conditionally-optional-json-properties)
 - [One-way mappings](#one-way-mappings)
-- [Cast JSON "primitives"](#cast-json-primitives)
+- [Casting JSON "primitives"](#casting-json-primitives)
+- [Optional parameters](#optional-parameters)
 
 
 #### One-to-one JSON property to object property mapping
@@ -336,7 +337,7 @@ mapping_schema = [
 ]
 ```
 
-#### Cast JSON primitives
+#### Casting JSON primitives
 To help with casting JSON primitives, the following decoders/encoders are provided:
 * `StrJSONEncoder`: serializes as a string (e.g. object property=`123` -> JSON property=`"123"`).
 * `StrJSONDecoder`: deserializes value as an string (e.g. JSON property=`123` -> object property=`"123"`).
@@ -364,6 +365,33 @@ person_mapping_schema = [
     JsonPropertyMapping("years_old", "age", encoder_cls=StrJSONEncoder, decoder_cls=IntJSONDecoder)
 ]
 ```
+
+#### Optional parameters
+Model
+```python
+class Person:
+    def __init__(self):
+        self.name = None
+        self.age = 42
+```
+
+JSON:
+```json
+{
+    "years_old": "<person.age>"
+}
+```
+
+To define that:
+* A JSON parameter is optional (i.e. it may/may not appear in the JSON representation).
+* An object parameter should not be included in the JSON if it takes the value `None`.
+```
+person_mapping_schema = [
+    JsonPropertyMapping("full_name", "name", optional=True), 
+    JsonPropertyMapping("years_old", "age")
+]
+```
+
 
 
 ### Notes
