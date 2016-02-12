@@ -3,18 +3,18 @@
 
 
 # Python 3 JSON Serialization
-Python 3 library for JSON encoding/decoding complex class-based Python models using an arbitrary complex mapping 
+Python 3 library for easily JSON encoding/decoding complex class-based Python models, using an arbitrary complex mapping
 schema.
 
 
 ## Features
-* Ability to create serializers and deserializers for complex Python class-based models using a mapping schema.
+* Ability to create serializers and deserializers for complex class-based models using a mapping schema.
+* Works seamlessly with Python's in-built `json.dumps` and `json.loads` serialization methods - does not require the use
+of exotic "convert_to_json" methods.
 * Python models need not be coupled to the serialization process - models do not have to inherit from a particular
 superclass or implement an interface with a "to_json" (or similar) method.
 * JSON representations produced are not coupled to the Python model - an arbitrary mapping between the JSON and the
 model can be defined.
-* Works seamlessly with Python's in-built `json.dumps` and `json.loads` serialization methods - does not require the use
-of exotic "convert_to_json" methods.
 * Simple to define serialization of subclasses based on how superclasses are serialized.
 * Pure Python 3 - no XML or similar required to describe mappings, not using outdated Python 2.
 
