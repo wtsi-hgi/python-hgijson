@@ -56,7 +56,6 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
         Create the container in which serialized representation is built in
         :return: the container
         """
-        pass
 
     @abstractmethod
     # FIXME: Signature should be self referential to this class:
@@ -67,7 +66,6 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
         :param serializer_type: the type of serializer to instantiate (a subclass of `Serializer`)
         :return: the created serializer
         """
-        pass
 
     # TODO: Fix self-referential signature
     def _create_serializer_of_type_with_cache(self, serializer_type: type):
@@ -147,14 +145,6 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
         assert deserializer is not None
         return deserializer.deserialize(to_deserialize)
 
-        # if isinstance(to_deserialize, list) and mapping.collection_if_list:
-        #     deserialized = []
-        #     for item in to_deserialize:
-        #         deserialized.append(deserializer.deserialize(item))
-        #     return deserialized
-        # else:
-        #     return deserializer.deserialize(to_deserialize)
-
     @abstractmethod
     def _create_deserializer_of_type(self, deserializer_type: type):
         """
@@ -162,7 +152,6 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
         :param deserializer_type: the type of deserializer to create
         :return: the created deserializer (of type `Deserializer`)
         """
-        pass
 
     # TODO: Fix self-referential signature
     def _create_deserializer_of_type_with_cache(self, deserializer_type: type):

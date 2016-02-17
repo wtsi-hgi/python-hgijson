@@ -48,7 +48,6 @@ class _RegisteredTypeJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         :param type_to_encode: the type to encode
         :return: the encoder for the given type
         """
-        pass
 
 
 RegisteredTypeJSONEncoderType = TypeVar("RegisteredTypeJSONEncoder", bound=_RegisteredTypeJSONEncoder)

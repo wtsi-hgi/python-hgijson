@@ -53,7 +53,6 @@ class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         Gets the property mappings that are to be used in this encoder.
         :return: the property mappings to use
         """
-        pass
 
     @abstractmethod
     def _get_serializable_cls(self) -> type:
@@ -61,7 +60,6 @@ class MappingJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         Gets the type of class that this encoder will serialize.
         :return: the class the encoder will serialize
         """
-        pass
 
 
 class MappingJSONDecoder(JSONDecoder, DictJSONDecoder, metaclass=ABCMeta):
@@ -112,7 +110,6 @@ class MappingJSONDecoder(JSONDecoder, DictJSONDecoder, metaclass=ABCMeta):
         Gets the property mappings that are to be used in this decoder.
         :return: the property mappings to use
         """
-        pass
 
     @abstractmethod
     def _get_deserializable_cls(self) -> type:
@@ -120,4 +117,3 @@ class MappingJSONDecoder(JSONDecoder, DictJSONDecoder, metaclass=ABCMeta):
         Gets the type of class that this decoder will deserialize.
         :return: the class the decoder will deserialize
         """
-        pass

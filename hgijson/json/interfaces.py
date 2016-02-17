@@ -14,4 +14,3 @@ class DictJSONDecoder(metaclass=ABCMeta):
         :param json_as_dict: the JSON represented in a dictionary
         :return: the decoded object
         """
-        pass
