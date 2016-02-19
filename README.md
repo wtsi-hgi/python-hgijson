@@ -15,8 +15,9 @@ of exotic "convert_to_json" methods.
 superclass or implement an interface with a "to_json" (or similar) method.
 * JSON representations produced are not coupled to the Python model - an arbitrary mapping between the JSON and the
 model can be defined.
-* Simple to define serialization of subclasses based on how superclasses are serialized.
+* Simple to define serialization of subclasses, based on how superclasses are serialized.
 * Pure Python 3 - no XML or similar required to describe mappings, not using outdated Python 2.
+* Well tested.
 
 
 ## Overview
@@ -35,6 +36,8 @@ of a specific type. Similar with decode.
 - [Deserializing objects with constructors parameters](#deserializing-objects-with-constructors-parameters)
 - [Deserializing objects with mutators](#deserializing-objects-with-mutators)
 - [Conditionally optional JSON properties](#conditionally-optional-json-properties)
+- [Inheritance](#inheritance)
+- [Nested complex objects](#nestsed-complex-objects)
 - [One-way mappings](#one-way-mappings)
 - [Casting JSON "primitives"](#casting-json-primitives)
 - [Optional parameters](#optional-parameters)
@@ -225,13 +228,16 @@ mapping_schema = [JsonPropertyMapping("full_name", json_property_setter=add_name
 
 #### Inheritance
 Models:
-```python
-class Person:
+```python        
+class Identifiable:
+    def __init__(self):
+        self.id = None
+
+class Named:
     def __init__(self):
         self.name = None
-        
-    
-class Employee(Person):
+   
+class Employee(Identifiable, Named):
     def __init__(self):
         super().__init__()
         self.title = None
@@ -240,22 +246,26 @@ class Employee(Person):
 JSON:
 ```json
 {
+    "identifier": "<employee.id>",
     "full_name": "<employee.name>",
     "job_title": "<employee.title>"
 }
 ```
 
 To define that:
-* Serialization of `Employee` should "extend" the way `Person` is serialized.
+* Serialization of `Employee` should "extend" the way `Named` and `Identifiable` are serialized.
 ```python
-person_mapping_schema = [JsonPropertyMapping("full_name", "name")]
+identifiable_mapping_schema = [JsonPropertyMapping("identifier", "id")]
+named_mapping_schema = [JsonPropertyMapping("full_name", "name")]
 employee_mapping_schema = [JsonPropertyMapping("job_title", "title")]
 
-PersonJSONEncoder = MappingJSONEncoderClassBuilder(Person, person_mapping_schema).build()
-EmployeeJSONEncoder = MappingJSONEncoderClassBuilder(Employee, employee_mapping_schema, Person).build()
+IdentifiableJSONEncoder = MappingJSONEncoderClassBuilder(Identifiable, identifiable_mapping_schema).build()
+NamedJSONEncoder = MappingJSONEncoderClassBuilder(Named, named_mapping_schema).build()
+EmployeeJSONEncoder = MappingJSONEncoderClassBuilder(Employee, employee_mapping_schema, (IdentifiableJSONEncoder, NamedJSONEncoder)).build()
 
-PersonJSONDecoder = MappingJSONDecoderClassBuilder(Person, person_mapping_schema).build()
-EmployeeJSONDecoder = MappingJSONDecoderClassBuilder(Employee, employee_mapping_schema, Person).build()
+IdentifiableJSONDecoder = MappingJSONDecoderClassBuilder(Identifiable, identifiable_mapping_schema).build()
+NamedJSONDecoder = MappingJSONDecoderClassBuilder(Named, named_mapping_schema).build()
+EmployeeJSONDecoder = MappingJSONDecoderClassBuilder(Employee, employee_mapping_schema, (IdentifiableJSONDecoder, NamedJSONDecoder)).build()
 ```
 
 Note: Mappings of properties for superclass are done first and can subsequently be "overriden" by mappings for the
