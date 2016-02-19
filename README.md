@@ -268,9 +268,8 @@ NamedJSONDecoder = MappingJSONDecoderClassBuilder(Named, named_mapping_schema).b
 EmployeeJSONDecoder = MappingJSONDecoderClassBuilder(Employee, employee_mapping_schema, (IdentifiableJSONDecoder, NamedJSONDecoder)).build()
 ```
 
-Note: Mappings of properties for superclass are done first and can subsequently be "overriden" by mappings for the
-subclass. For obvious reasons, mappings to constructor parameters of superclass are not used if serialization involves
-the subclass.
+Note: Mappings of properties for superclasses are done first and in order. Each value mapping can be "overriden" by 
+encoders used afterwards. For obvious reasons, mappings to constructor parameters of superclasses are not used.
 
 
 #### Nested complex objects
