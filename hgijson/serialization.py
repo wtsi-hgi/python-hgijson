@@ -38,7 +38,6 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
 
             return serialized
 
-    # TODO: Does this need the whole mapping object?
     def _serialize_property_value(self, to_serialize: Any, serializer_cls: type) -> Any:
         """
         Serializes the given value using the given serializer.

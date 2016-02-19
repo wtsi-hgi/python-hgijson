@@ -1,14 +1,33 @@
 import json
 import unittest
 
+from hgicommon.models import Model
+
 from hgijson.json._serialization import MappingJSONDecoder
 from hgijson.json._serialization import MappingJSONEncoder
 from hgijson.json.builders import MappingJSONEncoderClassBuilder, MappingJSONDecoderClassBuilder
+from hgijson.json.models import JsonPropertyMapping
 from hgijson.tests._models import SimpleModel, ComplexModel
 from hgijson.tests.json._helpers import create_complex_model_with_json_representation,\
     create_simple_model_with_json_representation
 from hgijson.tests.json._serializers import get_simple_model_json_property_mappings, \
     get_complex_model_json_property_mappings
+
+
+class _Named(Model):
+    def __init__(self):
+        self.name = None    # type: str
+
+
+class _Identifiable(Model):
+    def __init__(self):
+        self.id = None    # type: int
+
+
+class _Employee(_Named, _Identifiable, Model):
+    def __init__(self):
+        super().__init__()
+        self.title = None
 
 
 class TestMappingJSONEncoderClassBuilder(unittest.TestCase):
@@ -27,25 +46,47 @@ class TestMappingJSONEncoderClassBuilder(unittest.TestCase):
         encoder_builder.mappings = get_simple_model_json_property_mappings()
 
         encoder_cls = encoder_builder.build()
-        encoder = encoder_cls() # type: MappingJSONEncoder
+        encoder = encoder_cls()     # type: MappingJSONEncoder
 
         encoded = encoder.default(self.simple_model)
         self.assertDictEqual(encoded, self.simple_model_as_json)
 
     def test_build_with_superclass(self):
         SimpleModelJSONEncoder = MappingJSONEncoderClassBuilder(
-            target_cls=SimpleModel, mappings=get_simple_model_json_property_mappings()).build()
+            SimpleModel, get_simple_model_json_property_mappings()).build()
 
         encoder_builder = MappingJSONEncoderClassBuilder()
-        encoder_builder.superclass = SimpleModelJSONEncoder
         encoder_builder.target_cls = ComplexModel
         encoder_builder.mappings = get_complex_model_json_property_mappings()
+        encoder_builder.superclasses = (SimpleModelJSONEncoder, )
 
         encoder_cls = encoder_builder.build()
         encoder = encoder_cls()     # type: MappingJSONEncoder
 
         encoded = encoder.default(self.complex_model)
         self.assertDictEqual(encoded, self.complex_model_as_json)
+
+    def test_build_with_multiple_superclasses(self):
+        NamedJSONEncoder = MappingJSONEncoderClassBuilder(_Named, [
+            JsonPropertyMapping("name", "name")
+        ]).build()
+        IdentifiableJSONEncoder = MappingJSONEncoderClassBuilder(_Named, [
+            JsonPropertyMapping("id", "id")
+        ]).build()
+        EmployeeJSONEncoder = MappingJSONEncoderClassBuilder(_Employee, [
+           JsonPropertyMapping("title", "title"),
+        ], (NamedJSONEncoder, IdentifiableJSONEncoder)).build()
+
+        employee = _Employee()
+        employee.name = "Bob"
+        employee.id = 42
+        employee.title = "Software Dev"
+        employee_as_json = {
+            "name": employee.name,
+            "id": employee.id,
+            "title": employee.title
+        }
+        self.assertEqual(EmployeeJSONEncoder().default(employee), employee_as_json)
 
 
 class TestMappingJSONDecoderClassBuilder(unittest.TestCase):
@@ -74,7 +115,7 @@ class TestMappingJSONDecoderClassBuilder(unittest.TestCase):
             target_cls=SimpleModel, mappings=get_simple_model_json_property_mappings()).build()
 
         decoder_builder = MappingJSONDecoderClassBuilder()
-        decoder_builder.superclass = SimpleModelJSONDecoder
+        decoder_builder.superclasses = (SimpleModelJSONDecoder, )
         decoder_builder.target_cls = ComplexModel
         decoder_builder.mappings = get_complex_model_json_property_mappings()
 
@@ -83,6 +124,29 @@ class TestMappingJSONDecoderClassBuilder(unittest.TestCase):
 
         decoded = decoder.decode(json.dumps(self.complex_model_as_json))
         self.assertEqual(decoded, self.complex_model)
+
+    def test_build_with_multiple_superclasses(self):
+        NamedJSONDecoder = MappingJSONDecoderClassBuilder(_Named, [
+            JsonPropertyMapping("name", "name")
+        ]).build()
+        IdentifiableJSONDecoder = MappingJSONDecoderClassBuilder(_Named, [
+            JsonPropertyMapping("id", "id")
+        ]).build()
+        EmployeeJSONDecoder = MappingJSONDecoderClassBuilder(_Employee, [
+           JsonPropertyMapping("title", "title"),
+        ], (NamedJSONDecoder, IdentifiableJSONDecoder)).build()
+
+        employee = _Employee()
+        employee.name = "Bob"
+        employee.id = 42
+        employee.title = "Software Dev"
+        employee_as_json = {
+            "name": employee.name,
+            "id": employee.id,
+            "title": employee.title
+        }
+        employee_as_json_string = json.dumps(employee_as_json)
+        self.assertEqual(EmployeeJSONDecoder().decode(employee_as_json_string), employee)
 
 
 if __name__ == "__main__":
