@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from typing import Any, Generic, Iterable, Union, Sequence, Dict
+from typing import Any, Generic, Iterable, Union, Sequence, Dict, List
 
 from hgijson.types import SerializableType, PrimitiveUnionType, PrimitiveJsonSerializableType
 
@@ -24,7 +24,7 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
         :param serializable: the object to serialize
         :return: a serialization of the given object
         """
-        if isinstance(serializable, list):
+        if isinstance(serializable, List):
             return [self.serialize(item) for item in serializable]
         else:
             serialized = self._create_serialized_container()

@@ -1,8 +1,6 @@
 import json
 import unittest
 
-from hgicommon.models import Model
-
 from hgijson.tests.json._helpers import create_complex_model_with_json_representation, \
     create_simple_model_with_json_representation
 from hgijson.tests.json._serializers import SimpleModelMappingJSONDecoder, ComplexModelMappingJSONDecoder, \

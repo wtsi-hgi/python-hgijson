@@ -86,7 +86,7 @@ class TestMappingJSONEncoderClassBuilder(unittest.TestCase):
             "id": employee.id,
             "title": employee.title
         }
-        self.assertEqual(EmployeeJSONEncoder().default(employee), employee_as_json)
+        self.assertEqual(EmployeeJSONEncoder().default([employee]), [employee_as_json])
 
 
 class TestMappingJSONDecoderClassBuilder(unittest.TestCase):
@@ -145,8 +145,8 @@ class TestMappingJSONDecoderClassBuilder(unittest.TestCase):
             "id": employee.id,
             "title": employee.title
         }
-        employee_as_json_string = json.dumps(employee_as_json)
-        self.assertEqual(EmployeeJSONDecoder().decode(employee_as_json_string), employee)
+        employee_as_json_string = json.dumps([employee_as_json])
+        self.assertEqual(EmployeeJSONDecoder().decode(employee_as_json_string), [employee])
 
 
 if __name__ == "__main__":

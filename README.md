@@ -279,7 +279,6 @@ class Person:
     def __init__(self):
         self.name = None
 
-
 class Team:
     def __init__(self):
         self.moto = None
@@ -297,7 +296,7 @@ JSON:
 To define that:
 * `Person` instances, nested inside `Employee` objects, should be serialized and deserialized by specific encoder and 
 decoders.
-```
+```python
 employee_mapping_schema = [
     JsonPropertyMapping("team_moto", "moto"),
     JsonPropertyMapping("members", "people", encoder_cls=PersonJSONEncoder, decoder_cls=PersonJSONDecoder)
@@ -369,7 +368,7 @@ JSON:
 
 To define that:
 * The age property of `Person` instances should be an `int` but given as a string in the JSON representation.
-```
+```python
 person_mapping_schema = [
     JsonPropertyMapping("years_old", "age", encoder_cls=StrJSONEncoder, decoder_cls=IntJSONDecoder)
 ]
@@ -394,7 +393,7 @@ JSON:
 To define that:
 * A JSON parameter is optional (i.e. it may/may not appear in the JSON representation).
 * An object parameter should not be included in the JSON if it takes the value `None`.
-```
+```python
 person_mapping_schema = [
     JsonPropertyMapping("full_name", "name", optional=True), 
     JsonPropertyMapping("years_old", "age")

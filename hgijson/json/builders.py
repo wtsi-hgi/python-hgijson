@@ -1,5 +1,5 @@
 from abc import ABCMeta
-from typing import Iterable, Tuple
+from typing import Iterable, Tuple, List, Dict
 
 from hgijson.json._serialization import MappingJSONEncoder, MappingJSONDecoder, PropertyMapper
 from hgijson.json.models import JsonPropertyMapping
@@ -61,17 +61,21 @@ class MappingJSONEncoderClassBuilder(_JSONSerializationClassBuilder):
         def get_serializable_cls(encoder: MappingJSONEncoder) -> type:
             return self.target_cls
 
-        def default(encoder: MappingJSONEncoder, *args, **kwargs):
-            # Sort subclasses so subclass' default method is called last
-            superclasses_as_list = list(self.superclasses)
-            superclasses_as_list.sort(key=lambda superclass: 1 if superclass == MappingJSONEncoder else -1)
+        def default(encoder: MappingJSONEncoder, serializable):
+            if isinstance(serializable, List):
+                # Fix for #8
+                return [encoder.default(item) for item in serializable]
+            else:
+                # Sort subclasses so subclass' default method is called last
+                superclasses_as_list = list(self.superclasses)
+                superclasses_as_list.sort(key=lambda superclass: 1 if superclass == MappingJSONEncoder else -1)
 
-            encoded_combined = {}
-            for superclass in superclasses_as_list:
-                encoded = superclass.default(encoder, *args, **kwargs)
-                encoded_combined.update(encoded)
+                encoded_combined = {}
+                for superclass in superclasses_as_list:
+                    encoded = superclass.default(encoder, serializable)
+                    encoded_combined.update(encoded)
 
-            return encoded_combined
+                return encoded_combined
 
         return type(
             "%sDynamicMappingJSONEncoder" % self.target_cls.__name__,
