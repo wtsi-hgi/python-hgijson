@@ -3,20 +3,20 @@
 
 
 # Python 3 JSON Serialization
-Python 3 library for easily JSON encoding/decoding complex class-based Python models, using an arbitrary complex mapping
-schema.
+Python 3 library for easily JSON encoding/decoding complex class-based Python models, using an arbitrarily complex
+mapping schema.
 
 
 ## Features
 * Ability to create serializers and deserializers for complex class-based models using a mapping schema.
 * Works seamlessly with Python's in-built `json.dumps` and `json.loads` serialization methods - does not require the use
-of exotic "convert_to_json" methods.
-* Python models need not be coupled to the serialization process - models do not have to inherit from a particular
+of exotic "convert_to_json"/"convert_from_json" methods.
+* Python models are not be coupled to the serialization process - models do not have to inherit from a particular
 superclass or implement an interface with a "to_json" (or similar) method.
 * JSON representations produced are not coupled to the Python model - an arbitrary mapping between the JSON and the
 model can be defined.
 * Simple to define serialization of subclasses, based on how superclasses are serialized.
-* Pure Python 3 - no XML or similar required to describe mappings, not using outdated Python 2.
+* Pure Python 3 - no DSL, XML or similar required to describe mappings, not using outdated Python 2.
 * Well tested.
 
 
@@ -37,7 +37,7 @@ of a specific type. Similar with decode.
 - [Deserializing objects with mutators](#deserializing-objects-with-mutators)
 - [Conditionally optional JSON properties](#conditionally-optional-json-properties)
 - [Inheritance](#inheritance)
-- [Nested complex objects](#nestsed-complex-objects)
+- [Nested complex objects](#nested-complex-objects)
 - [One-way mappings](#one-way-mappings)
 - [Casting JSON "primitives"](#casting-json-primitives)
 - [Optional parameters](#optional-parameters)
@@ -69,20 +69,20 @@ mapping_schema = [
 
 Build classes that can serialize/deserialize `Person` instances:
 ```python
-PersonJSONEncoder = MappingJSONEncoderClassBuilder(Person, mapping_schema).build()  # type: JSONEncoder
-PersonJSONDecoder = MappingJSONDecoderClassBuilder(Person, mapping_schema).build()  # type: JSONDecoder
+PersonJSONEncoder = MappingJSONEncoderClassBuilder(Person, mapping_schema).build()
+PersonJSONDecoder = MappingJSONDecoderClassBuilder(Person, mapping_schema).build()
 ```
 
 Serialize/deserialize instance of `Person` using Python's inbuilt `json.dumps` and `json.loads`:
 ```python
 person_as_json = json.dumps(person, cls=PersonJSONEncoder)
-person = json.loads(person_as_json, cls=PersonJSONDecoder)
+person = json.loads("<person_as_json>", cls=PersonJSONDecoder)
 ```
 
 
 #### Arbitrary mapping to JSON property value
 Model:
-```
+```python
 class Person:
     def __init__(self):
         self.name = None
@@ -111,12 +111,12 @@ mapping_schema = [
     JsonPropertyMapping("family_name", object_property_getter=lambda person: person.get_family_name())
 ]
 ```
-*See next section for how to do the reverse mapping.*
+*See [next section](#arbitrary-mapping-to-object-property-value) for how to do the reverse mapping.*
 
 
 #### Arbitrary mapping to object property value
 Model:
-```
+```python
 class Person:
     def __init__(self):
         self.name = None
@@ -157,16 +157,18 @@ JSON:
 ```
 
 To define that:
-* Serialization to the JSON "full_name" property value uses the object's "name" property value.
 * Deserialization requires the value of the JSON "full_name" property be binded to the "constructor_name" parameter
-in the constructor:
+in the constructor.
+* Serialization to the JSON "full_name" property value uses the object's "name" property value.
 ```python
-mapping_schema = [JsonPropertyMapping("full_name", "name", object_constructor_parameter_name="constructor_name")]
+mapping_schema = [
+    JsonPropertyMapping("full_name", "name", object_constructor_parameter_name="constructor_name")
+]
 ```
 
-If further modification of the decoded value is needed, `object_constructor_argument_modifier` can be set, which
-takes the value retrieved by `json_property_getter` after decoded by an instance of `decoder_cls` and returns the value
-that is binded to the constructor parameter.
+If further modification of the decoded value is needed, `object_constructor_argument_modifier` can be set as a function
+that takes the value retrieved by `json_property_getter` after it is decoded by using the `decoder_cls` JSON encoder and
+returns the value that is binded to the constructor parameter.
 
 
 #### Deserializing objects with mutators
@@ -191,7 +193,9 @@ To define that:
 * Deserialization requires the private "_name" property be set via the "set_name" mutator from the "full_name" JSON
 property.
 ```python
-mapping_schema = [JsonPropertyMapping("full_name", object_property_setter=lambda person, name: person.set_name(name))]
+mapping_schema = [
+    JsonPropertyMapping("full_name", object_property_setter=lambda person, name: person.set_name(name))
+]
 ```
 
 
@@ -404,20 +408,20 @@ person_mapping_schema = [
 ### Notes
 * Decoders and encoders work for iterable collections of instances in the same way as they do for single instances.
 * Encoders will only encode objects into JSON objects (`{}`). A custom `JSONEncoder` must be used to encode Python 
-objects that should be represented in any other way (e.g. as a JSON list(`[]`)).
+objects that should be represented in any other way (e.g. as a JSON list (`[]`)).
 * Ensure your serializers are not vulnerable to attack if you are serializing JSON from an untrusted source.
 
 
 ## Performance
 If you are performing serialization, chances are that you are going to be doing/have done I/O. Given how relatively slow
-the I/O will be, **the performance** of this library, compared with that of any other (including the endless JSON
+the I/O will be, the performance of this library, compared with that of any other (including the endless JSON
 libraries touted as "ultra fast"), **is not going to be of realistic concern** given reasonable amounts of data.
 
 However, if you happen to be serializing huge numbers of objects and need it done extraordinarily fast (in Python?), use
 of JSON encoders/decoders produced by this library will add a small amount of overhead on-top of the in-built JSON
 serialization methods. In addition, the complexity of the mappings used will influence the performance (i.e. if the
-value of a JSON property is calculated from an object method that finds the answer to life, the universe and everything,
-serialization is going to be rather slow).
+value of a JSON property is calculated from an object method that deduces the answer to life, the universe and 
+everything, serialization is going to be rather slow).
 
 
 ## Alternatives
@@ -425,8 +429,8 @@ serialization is going to be rather slow).
     * [Python's in-built `json` library](https://docs.python.org/3/library/json.html) will work out the box with its 
     default encoder (`JSONEncode`) and decoder (`JSONDecode`).
     * [demjson](https://github.com/dmeranda/demjson) can encode and decode JSON with added syntax checking.
-    * [ultrajson](https://github.com/esnme/ultrajson) claimed as "ultra fast" JSON encoder and decoder.
-    * [py-yajl](https://github.com/rtyler/py-yajl) yet another "fast" JSON encoder/decoder.
+    * [ultrajson](https://github.com/esnme/ultrajson) is claimed as an "ultra fast" JSON encoder and decoder.
+    * [py-yajl](https://github.com/rtyler/py-yajl) is yet another "fast" JSON encoder/decoder.
 * If you are using class-based Python models but your JSON need not be human readable and you are not concerned with
 interoperability:
     * [jsonpickle](https://github.com/jsonpickle/jsonpickle) will automatically serialize objects.
