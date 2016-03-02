@@ -2,6 +2,9 @@ from json import JSONDecoder, JSONEncoder
 
 from typing import Any
 
+from datetime import datetime
+from time import mktime
+
 
 class StrJSONEncoder(JSONEncoder):
     """
@@ -33,3 +36,17 @@ class StrJSONDecoder(JSONDecoder):
     """
     def decode(self, to_decode: str, **kwargs) -> str:
         return str(to_decode)
+
+class DatetimeEpochJSONEncoder(JSONEncoder):
+    """
+    JSON encoder for datetime
+    """
+    def default(self, to_encode: datetime) -> int:
+        return int(mktime(to_encode.timetuple()))
+
+class DatetimeEpochJSONDecoder(JSONDecoder):
+    """
+    JSON decoder for datetime
+    """
+    def decode(self, to_decode: str, **kwargs) -> datetime:
+        return datetime.fromtimestamp(to_decode)
