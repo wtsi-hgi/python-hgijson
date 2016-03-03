@@ -67,4 +67,4 @@ class DatetimeEpochJSONDecoder(JSONDecoder):
     JSON decoder for datetime
     """
     def decode(self, to_decode: str, **kwargs) -> datetime:
-        return datetime.fromtimestamp(to_decode)
+        return datetime.fromtimestamp(int(to_decode))
