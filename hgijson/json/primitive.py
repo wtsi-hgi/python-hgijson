@@ -58,7 +58,7 @@ class DatetimeEpochJSONEncoder(JSONEncoder):
     JSON encoder for datetime.
     """
     def default(self, to_encode: datetime) -> int:
-        return int(to_encode.replace(tzinfo=timezone.utc).timestamp())
+        return int(to_encode.timestamp())
 
 
 class DatetimeEpochJSONDecoder(JSONDecoder):
