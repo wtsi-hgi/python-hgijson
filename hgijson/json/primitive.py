@@ -51,12 +51,12 @@ class FloatJSONDecoder(JSONDecoder):
     JSON decoder for floats.
     """
     def decode(self, to_decode: str, **kwargs) -> str:
-        return str(to_decode)
+        return float(to_decode)
 
 
 class DatetimeEpochJSONEncoder(JSONEncoder):
     """
-    JSON encoder for datetime
+    JSON encoder for datetime.
     """
     def default(self, to_encode: datetime) -> int:
         return int(mktime(to_encode.timetuple()))
@@ -64,7 +64,7 @@ class DatetimeEpochJSONEncoder(JSONEncoder):
 
 class DatetimeEpochJSONDecoder(JSONDecoder):
     """
-    JSON decoder for datetime
+    JSON decoder for datetime.
     """
     def decode(self, to_decode: str, **kwargs) -> datetime:
         return datetime.fromtimestamp(int(to_decode))
