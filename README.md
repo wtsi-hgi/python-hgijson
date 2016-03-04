@@ -351,9 +351,11 @@ mapping_schema = [
 
 #### Casting JSON primitives
 To help with casting JSON primitives, the following decoders/encoders are provided:
-* `StrJSONEncoder`: serializes as a string (e.g. object property=`123` -> JSON property=`"123"`).
-* `StrJSONDecoder`: deserializes value as an string (e.g. JSON property=`123` -> object property=`"123"`).
+* `StrJSONEncoder`: serializes value to a string (e.g. object property=`123` -> JSON property=`"123"`).
+* `StrJSONDecoder`: deserializes value as a string (e.g. JSON property=`123` -> object property=`"123"`).
+* `IntJSONEncoder`: serializes value to an int (e.g. object property=`"123"` -> JSON property=`123`).
 * `IntJSONDecoder`: deserializes value as an int (e.g. JSON property=`"123"` -> object property=`123`).
+* `FloatJSONEncoder`: serializes value to a float (e.g. object property=`"123.5"` -> JSON property=`123.5`).
 * `FloatJSONDecoder`: deserializes value as an float (e.g. JSON property=`"12.3"` -> object property=`12.3`).
 
 Model:
