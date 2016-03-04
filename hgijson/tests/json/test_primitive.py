@@ -1,8 +1,6 @@
 import json
 import unittest
-from datetime import datetime
-
-import pytz
+from datetime import datetime, timezone
 
 from hgijson.json.primitive import StrJSONEncoder, FloatJSONDecoder, IntJSONDecoder, StrJSONDecoder, IntJSONEncoder, \
     FloatJSONEncoder, DatetimeEpochJSONDecoder, DatetimeEpochJSONEncoder
@@ -88,8 +86,8 @@ class TestDatetimeEpochJSONEncoder(unittest.TestCase):
     Tests for `DatetimeEpochJSONEncoder`.
     """
     def test_decode(self):
-        value = datetime(1970, 1, 1, tzinfo=pytz.UTC)
-        self.assertEqual(DatetimeEpochJSONEncoder().encode(value), 0)
+        value = datetime(1970, 1, 1)
+        self.assertEqual(DatetimeEpochJSONEncoder().encode(value), "0")
 
 
 class TestDatetimeEpochJSONDecoder(unittest.TestCase):
@@ -97,11 +95,11 @@ class TestDatetimeEpochJSONDecoder(unittest.TestCase):
     Tests for `DatetimeEpochJSONEncoder`.
     """
     def test_default(self):
-        expected_value = datetime(1970, 1, 1, tzinfo=pytz.UTC)
+        expected_value = datetime(1970, 1, 1, tzinfo=timezone.utc)
         self.assertEqual(DatetimeEpochJSONDecoder().decode(0), expected_value)
 
     def test_with_json_loads(self):
-        expected_value = datetime(1970, 1, 1, tzinfo=pytz.UTC)
+        expected_value = datetime(1970, 1, 1, tzinfo=timezone.utc)
         self.assertEqual(json.loads("0", cls=DatetimeEpochJSONDecoder), expected_value)
 
 

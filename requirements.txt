@@ -1,2 +1,1 @@
-pytz==2011rc0
 git+https://github.com/wtsi-hgi/python-common.git@b2ea5807efc9ec640a4cd024ea78442120801767#egg=hgicommon

@@ -2,8 +2,7 @@ from json import JSONDecoder, JSONEncoder
 
 from typing import Any
 
-from datetime import datetime
-from time import mktime
+from datetime import datetime, timezone
 
 
 class StrJSONEncoder(JSONEncoder):
@@ -59,11 +58,12 @@ class DatetimeEpochJSONEncoder(JSONEncoder):
     JSON encoder for datetime.
     """
     def default(self, to_encode: datetime) -> int:
-        return int(mktime(to_encode.timetuple()))
+        return int(to_encode.replace(tzinfo=timezone.utc).timestamp())
+
 
 class DatetimeEpochJSONDecoder(JSONDecoder):
     """
     JSON decoder for datetime
     """
     def decode(self, to_decode: str, **kwargs) -> datetime:
-        return datetime.fromtimestamp(int(to_decode))
+        return datetime.fromtimestamp(int(to_decode), timezone.utc)
