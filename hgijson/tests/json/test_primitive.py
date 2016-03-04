@@ -87,7 +87,7 @@ class TestDatetimeEpochJSONEncoder(unittest.TestCase):
     """
     Tests for `DatetimeEpochJSONEncoder`.
     """
-    def test_decode_with_no_timezone(self):
+    def test_decode(self):
         value = datetime(1970, 1, 1, tzinfo=pytz.UTC)
         self.assertEqual(DatetimeEpochJSONEncoder().encode(value), 0)
 
