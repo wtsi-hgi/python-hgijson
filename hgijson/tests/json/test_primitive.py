@@ -96,7 +96,7 @@ class TestDatetimeEpochJSONDecoder(unittest.TestCase):
     """
     def test_default(self):
         expected_value = datetime(1970, 1, 1, tzinfo=timezone.utc)
-        self.assertEqual(DatetimeEpochJSONDecoder().decode(0), expected_value)
+        self.assertEqual(DatetimeEpochJSONDecoder().decode("0"), expected_value)
 
     def test_with_json_loads(self):
         expected_value = datetime(1970, 1, 1, tzinfo=timezone.utc)
