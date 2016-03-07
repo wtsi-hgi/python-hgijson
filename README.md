@@ -357,9 +357,10 @@ To help with casting JSON primitives, the following decoders/encoders are provid
 * `IntJSONDecoder`: deserializes value as an int (e.g. JSON property=`"123"` -> object property=`123`).
 * `FloatJSONEncoder`: serializes value to a float (e.g. object property=`"123.5"` -> JSON property=`123.5`).
 * `FloatJSONDecoder`: deserializes value as an float (e.g. JSON property=`"12.3"` -> object property=`12.3`).
+* `DatetimeEpochJSONEncoder`: serializes datetime to epoch, truncated to seconds (e.g. object property=`datetime(1970, 1, 1, tzinfo=timezone.utc)` -> JSON property=`0`).
+* `DatetimeEpochJSONDecoder`: deserializes datetime as epoch (e.g. JSON property=`0` -> object property=`datetime(1970, 1, 1, tzinfo=timezone.utc)`).
 * `DatetimeISOFormatJSONEncoder`: serializes datetime to a ISO 8601 datetime representation (e.g. object property=`datetime(1970, 1, 1, tzinfo=timezone.utc)` -> JSON property=`1970-01-01T00:00:00+00:00`).
 * `DatetimeISOFormatJSONDecoder`: deserializes ISO 8601 datetime representation to a datetime (e.g. JSON property=`"1970-01-01T00:00:00+00:00"` -> object property=`datetime(1970, 1, 1, tzinfo=timezone.utc)`).
-
 
 Model:
 ```python
