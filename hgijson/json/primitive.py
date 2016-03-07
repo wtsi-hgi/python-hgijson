@@ -1,6 +1,8 @@
+from datetime import datetime
 from json import JSONDecoder, JSONEncoder
 
 from typing import Any
+from dateutil.parser import parser
 
 
 class StrJSONEncoder(JSONEncoder):
@@ -49,3 +51,21 @@ class FloatJSONDecoder(JSONDecoder):
     """
     def decode(self, to_decode: str, **kwargs) -> float:
         return float(to_decode)
+
+
+class DatetimeISOFormatJSONEncoder(JSONEncoder):
+    """
+    JSON encoder for datetime to ISO 8601 format.
+    """
+    def default(self, to_encode: datetime) -> str:
+        return to_encode.isoformat()
+
+
+class DatetimeISOFormatJSONDecoder(JSONDecoder):
+    """
+    JSON decoder for datetime as ISO 8601 formatted string.
+    """
+    _DATE_PARSER = parser()
+
+    def decode(self, to_decode: str, **kwargs) -> datetime:
+        return DatetimeISOFormatJSONDecoder._DATE_PARSER.parse(to_decode)
