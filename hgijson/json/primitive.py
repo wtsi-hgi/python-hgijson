@@ -75,7 +75,8 @@ class DatetimeISOFormatJSONDecoder(JSONDecoder):
 
 class DatetimeEpochJSONEncoder(JSONEncoder):
     """
-    JSON encoder for datetime.
+    JSON encoder for datetime to seconds since the epoch (1970-01-01). If the datetime has microsecond precision, it
+    will be rounded to the nearest corresponding second since the epoch.
     """
     def default(self, to_encode: datetime) -> int:
         return int(to_encode.timestamp())
@@ -83,7 +84,7 @@ class DatetimeEpochJSONEncoder(JSONEncoder):
 
 class DatetimeEpochJSONDecoder(JSONDecoder):
     """
-    JSON decoder for datetime
+    JSON decoder for datetime as seconds since the epoch (1970-01-01).
     """
     def decode(self, to_decode: str, **kwargs) -> datetime:
         return datetime.fromtimestamp(int(to_decode), timezone.utc)
