@@ -80,6 +80,11 @@ class TestSerializer(unittest.TestCase):
         serializer = SimpleModelSerializer(mappings)
         self.assertDictEqual(serializer.serialize(self.simple_model), self.simple_model_as_json)
 
+    def test_serialize_when_property_does_not_exist(self):
+        mappings = [JsonPropertyMapping("serialized_a", "z")]
+        serializer = SimpleModelSerializer(mappings)
+        self.assertRaises(AttributeError, serializer.serialize, self.simple_model)
+
 
 class TestDeserializer(unittest.TestCase):
     """
@@ -156,7 +161,7 @@ class TestDeserializer(unittest.TestCase):
         deserializer = SimpleModelDeserializer(mappings)
         self.assertEqual(deserializer.deserialize(self.simple_model_as_json), self.simple_model)
 
-    def test_deserialise_when_property_does_not_exist(self):
+    def test_deserialize_when_property_does_not_exist(self):
         mappings = [JsonPropertyMapping("serialized_a", "z")]
         deserializer = SimpleModelDeserializer(mappings)
         self.assertRaises(AttributeError, deserializer.deserialize, self.simple_model_as_json)
