@@ -52,6 +52,9 @@ class PropertyMapping(Model):
 
             if object_property_setter is None and object_constructor_parameter_name is None:
                 def object_property_setter(obj: Any, value: Any):
+                    if not hasattr(obj, object_property_name):
+                        raise AttributeError("Object `%s` does not have the attribute `%s`"
+                                             % (obj, object_property_name))
                     obj.__setattr__(object_property_name, value)
 
         if object_constructor_parameter_name is not None:
