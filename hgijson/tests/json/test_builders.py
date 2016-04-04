@@ -16,11 +16,13 @@ from hgijson.tests.json._serializers import get_simple_model_json_property_mappi
 
 class _Named(Model):
     def __init__(self):
+        super().__init__()
         self.name = None    # type: str
 
 
 class _Identifiable(Model):
     def __init__(self):
+        super().__init__()
         self.id = None    # type: int
 
 
