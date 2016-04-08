@@ -1,16 +1,16 @@
 from abc import abstractmethod, ABCMeta
 
-from hgijson.types import SerializableType
+from hgijson.types import SerializableType, PrimitiveJsonSerializableType
 
 
-class DictJSONDecoder(metaclass=ABCMeta):
+class ParsedJSONDecoder(metaclass=ABCMeta):
     """
-    Decoder of JSON represented as a Python dictionary.
+    Decoder of JSON parsed from a string into primitive Python objects.
     """
     @abstractmethod
-    def decode_dict(self, json_as_dict: dict) -> SerializableType:
+    def decode_parsed(self, parsed_json: PrimitiveJsonSerializableType) -> SerializableType:
         """
-        Decodes the given JSON, represented as a Python dictionary.
-        :param json_as_dict: the JSON represented in a dictionary
+        Decodes the given JSON, represented as primitive Python objects.
+        :param parsed_json: the JSON
         :return: the decoded object
         """

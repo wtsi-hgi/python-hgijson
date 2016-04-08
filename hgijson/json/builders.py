@@ -1,8 +1,10 @@
 from abc import ABCMeta
-from typing import Iterable, Tuple, List, Dict
+from json import JSONEncoder
+from typing import Iterable, Tuple, List
 
 from hgijson.json._serialization import MappingJSONEncoder, MappingJSONDecoder, PropertyMapper
 from hgijson.json.models import JsonPropertyMapping
+from hgijson.json.primitive import SetJSONEncoder, SetJSONDecoder
 
 
 def _get_all_property_mappings(property_mapper: PropertyMapper, property_mappings: Iterable[JsonPropertyMapping],
@@ -113,5 +115,63 @@ class MappingJSONDecoderClassBuilder(_JSONSerializationClassBuilder):
             {
                 "_get_property_mappings": _get_property_mappings,
                 "_get_deserializable_cls": get_deserializable_cls
+            }
+        )
+
+
+class SetJSONEncoderClassBuilder:
+    """
+    Builder for `SetJSONEncoder` concrete subclasses.
+
+    Required for: https://github.com/wtsi-hgi/python-json/issues/11.
+    """
+    def __init__(self, item_encoder_cls: type):
+        """
+        Constructor.
+        :param item_encoder_cls: type of encoder for items in the set
+        """
+        self.item_encoder_cls = item_encoder_cls
+
+    def build(self) -> type:
+        """
+        Build a subclass of `SetJSONEncoder`.
+        :return: the built subclass
+        """
+        name = self.item_encoder_cls.__name__.replace("JSONEncoder", "")
+
+        return type(
+            "%sSetJSONEncoder" % name,
+            (SetJSONEncoder, ),
+            {
+                "item_encoder_cls": self.item_encoder_cls,
+            }
+        )
+
+
+class SetJSONDecoderClassBuilder:
+    """
+    Builder for `SetJSONDecoder` concrete subclasses.
+
+    Required for: https://github.com/wtsi-hgi/python-json/issues/11.
+    """
+    def __init__(self, item_decoder_cls: type):
+        """
+        Constructor.
+        :param item_decoder_cls: type of decoder for items in the set
+        """
+        self.item_decoder_cls = item_decoder_cls
+
+    def build(self) -> type:
+        """
+        Build a subclass of `SetJSONDecoder`.
+        :return: the built subclass
+        """
+        name = self.item_decoder_cls.__name__.replace("JSONDecoder", "")
+
+        return type(
+            "%sSetJSONDecoder" % name,
+            (SetJSONDecoder, ),
+            {
+                "item_decoder_cls": self.item_decoder_cls,
             }
         )

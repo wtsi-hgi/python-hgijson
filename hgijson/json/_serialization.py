@@ -1,9 +1,9 @@
 from abc import ABCMeta, abstractmethod
 from json import JSONEncoder, JSONDecoder
-from typing import Union, Iterable, Sequence, List
+from typing import Union, Iterable, Sequence, List, Set
 
 from hgijson.json._serializers import JsonObjectSerializer, JsonObjectDeserializer
-from hgijson.json.interfaces import DictJSONDecoder
+from hgijson.json.interfaces import ParsedJSONDecoder
 from hgijson.models import PropertyMapping
 from hgijson.types import PrimitiveJsonSerializableType, SerializableType
 
@@ -67,7 +67,7 @@ class MappingJSONEncoder(JSONEncoder, PropertyMapper, metaclass=ABCMeta):
         """
 
 
-class MappingJSONDecoder(JSONDecoder, DictJSONDecoder, PropertyMapper, metaclass=ABCMeta):
+class MappingJSONDecoder(JSONDecoder, ParsedJSONDecoder, PropertyMapper, metaclass=ABCMeta):
     """
     JSON decoder that creates an object from JSON based on a mapping from the JSON properties to the object properties,
     mindful that some properties may have to be passed through the constructor.
@@ -78,6 +78,13 @@ class MappingJSONDecoder(JSONDecoder, DictJSONDecoder, PropertyMapper, metaclass
     decoded class and the mappings between the object properties and the json properties cannot be passed through the
     constructor. Instead this class must be subclassed and the subclass must define the relevant constants.
     """
+    @abstractmethod
+    def _get_deserializable_cls(self) -> type:
+        """
+        Gets the type of class that this decoder will deserialize.
+        :return: the class the decoder will deserialize
+        """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._args = args
@@ -86,11 +93,11 @@ class MappingJSONDecoder(JSONDecoder, DictJSONDecoder, PropertyMapper, metaclass
 
     def decode(self, json_as_string: str, **kwargs) -> SerializableType:
         json_as_dict = super().decode(json_as_string)
-        return self.decode_dict(json_as_dict)
+        return self.decode_parsed(json_as_dict)
 
-    def decode_dict(self, json_as_dict: dict) -> SerializableType:
+    def decode_parsed(self, parsed_json: PrimitiveJsonSerializableType) -> SerializableType:
         deserializer = self._create_deserializer()
-        return deserializer.deserialize(json_as_dict)
+        return deserializer.deserialize(parsed_json)
 
     def _create_deserializer(self) -> JsonObjectDeserializer:
         """
@@ -108,10 +115,3 @@ class MappingJSONDecoder(JSONDecoder, DictJSONDecoder, PropertyMapper, metaclass
             )
             self._deserializer_cache = deserializer_cls(self._get_property_mappings(), self._get_deserializable_cls())
         return self._deserializer_cache
-
-    @abstractmethod
-    def _get_deserializable_cls(self) -> type:
-        """
-        Gets the type of class that this decoder will deserialize.
-        :return: the class the decoder will deserialize
-        """
