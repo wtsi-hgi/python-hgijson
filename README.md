@@ -41,6 +41,7 @@ of a specific type. Similar with decode.
 - [One-way mappings](#one-way-mappings)
 - [Casting JSON "primitives"](#casting-json-primitives)
 - [Optional parameters](#optional-parameters)
+- [Sets](#sets)
 
 
 #### One-to-one JSON property to object property mapping
@@ -385,7 +386,7 @@ person_mapping_schema = [
 ```
 
 #### Optional parameters
-Model
+Model:
 ```python
 class Person:
     def __init__(self):
@@ -407,6 +408,45 @@ To define that:
 person_mapping_schema = [
     JsonPropertyMapping("full_name", "name", optional=True), 
     JsonPropertyMapping("years_old", "age")
+]
+```
+
+#### Sets
+JSON supports less "primitive types" than Python implying that there cannot be an unambiguous, one-to-one mapping
+between all Python and JSON "primitive types". Python's built-in JSON library "handles" this by raising a `TypeError` if
+you attempt to use it to deserialize a `set`.
+
+`SetJSONEncoder` and `SetJSONDecoder` are supplied in this library to support the serialization of `set`s. They work by
+encoding sets as JSON lists then decoding these lists back into sets. As the mapping between JSON and objects is well 
+defined when using this library (i.e. it never has to guess the type of the Python object that is to be constructed from
+a JSON representation), it is known if a JSON list should be decoded as `list` or as `set`.
+
+Build classes that can serialize/deserialize sets of strings:
+```python
+StringSetJSONEncoder = SetJSONEncoderClassBuilder(StrJSONEncoder).build()
+StringSetJSONDecoder = SetJSONDecoderClassBuilder(StrJSONDecoder).build()
+```
+
+Model:
+```python
+class Person:
+    def __init__(self):
+        self.nicknames = {"Rob", "Bob"}
+```
+
+JSON:
+```json
+{
+    "short_names": <list(person.nicknames)>
+}
+```
+
+To define that:
+* The JSON "short_names" property is set from the object's "nicknames" property, which is of type `set`.
+* The object's "nicknames" property is set from the JSON's "full_name" property.
+```python
+mapping_schema = [
+    JsonPropertyMapping("short_names", "nicknames", encoder_cls=StringSetJSONEncoder, decoder_cls=StringSetJSONDecoder)
 ]
 ```
 
