@@ -1,17 +1,13 @@
 import json
 from abc import ABCMeta, abstractproperty
-from datetime import datetime
+from datetime import datetime, timezone
 from json import JSONDecoder, JSONEncoder
+from typing import Any, Set, TypeVar, Generic, Union, Dict, List
 
-from typing import Any, List, Dict, Set, TypeVar, Generic
 from dateutil.parser import parser
 
-from datetime import datetime, timezone
-
-from hgijson.json.interfaces import DictJSONDecoder
-from hgijson.serialization import Deserializer
-from hgijson.types import PrimitiveJsonSerializableType
-
+from hgijson.json.interfaces import ParsedJSONDecoder
+from hgijson.types import PrimitiveJsonSerializableType, SerializableType
 
 ItemType = TypeVar("ItemType")
 
@@ -123,7 +119,7 @@ class SetJSONEncoder(Generic[ItemType], JSONEncoder, metaclass=ABCMeta):
         return encoded_set
 
 
-class SetJSONDecoder(Generic[ItemType], JSONDecoder, metaclass=ABCMeta):
+class SetJSONDecoder(Generic[ItemType], JSONDecoder, ParsedJSONDecoder, metaclass=ABCMeta):
     """
     Decoder for sets, which deserialises JSON lists into Python sets.
     """
@@ -140,11 +136,14 @@ class SetJSONDecoder(Generic[ItemType], JSONDecoder, metaclass=ABCMeta):
 
     def decode(self, to_decode: str, **kwargs) -> Set[ItemType]:
         to_decode_as_list = json.loads(to_decode)
+        return self.decode_parsed(to_decode_as_list)
+
+    def decode_parsed(self, parsed_json: PrimitiveJsonSerializableType) -> SerializableType:
         decoded_set = set()
-        for item in to_decode_as_list:
-            if isinstance(self._item_decoder, DictJSONDecoder):
-                # Optimisation: `DictJSONDecoder` knows how to decode a dict
-                decoded_item = self._item_decoder.decode_dict(item)
+        for item in parsed_json:
+            if isinstance(self._item_decoder, ParsedJSONDecoder):
+                # Optimisation: `ParsedJSONDecoder` knows how to decode a dict - no need to convert to JSON as string
+                decoded_item = self._item_decoder.decode_parsed(item)
             else:
                 item_as_string = json.dumps(item)
                 decoded_item = self._item_decoder.decode(item_as_string)
