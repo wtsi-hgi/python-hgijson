@@ -1,10 +1,17 @@
+import json
+from abc import ABCMeta, abstractproperty
 from datetime import datetime
 from json import JSONDecoder, JSONEncoder
 
-from typing import Any
+from typing import Any, List, Dict, Set, TypeVar, Generic
 from dateutil.parser import parser
 
 from datetime import datetime, timezone
+
+from hgijson.types import PrimitiveJsonSerializableType
+
+
+ItemType = TypeVar("ItemType")
 
 
 class StrJSONEncoder(JSONEncoder):
@@ -88,3 +95,44 @@ class DatetimeEpochJSONDecoder(JSONDecoder):
     """
     def decode(self, to_decode: str, **kwargs) -> datetime:
         return datetime.fromtimestamp(int(to_decode), timezone.utc)
+
+
+class SetJSONEncoder(Generic[ItemType], JSONEncoder, metaclass=ABCMeta):
+    """
+    Encoder for sets, which serialises sets into JSON lists.
+    """
+    @abstractproperty
+    def item_encoder(self) -> JSONEncoder:
+        """
+        JSON encoder for each item in a set.
+        :return: item JSON encoder
+        """
+
+    def default(self, to_encode: Set[ItemType]) -> PrimitiveJsonSerializableType:
+        if not isinstance(to_encode, Set):
+            super().default(to_encode)
+        encoded_set = []
+        for item in to_encode:
+            encoded_item = self.item_encoder.default(item)
+            encoded_set.append(encoded_item)
+        return encoded_set
+
+
+class SetJSONDecoder(Generic[ItemType], JSONDecoder, metaclass=ABCMeta):
+    """
+    Decoder for sets, which deserialises JSON lists into Python sets.
+    """
+    @abstractproperty
+    def item_decoder(self) -> JSONDecoder:
+        """
+        JSON decoder for each item in a set that has been encoded as a JSON list.
+        :return: item JSON decoder
+        """
+
+    def decode(self, to_decode: str, **kwargs) -> Set[ItemType]:
+        to_decode_as_list = json.loads(to_decode)
+        decoded_set = set()
+        for item in to_decode_as_list:
+            decoded_item = self.item_decoder.decode(item)
+            decoded_set.add(decoded_item)
+        return decoded_set
