@@ -138,14 +138,12 @@ class TestSetJSONEncoder(unittest.TestCase):
     Tests for `SetJSONEncoder`.
     """
     def setUp(self):
-        self.item_encoder = MagicMock()
-        self.item_encoder.default.side_effect = lambda to_encode: to_encode
-        self.encoder = MockSetJSONEncoder(self.item_encoder)
+        self.item_encoder_cls = IntJSONEncoder
+        self.encoder = MockSetJSONEncoder(self.item_encoder_cls)
         self.values = {1, 5, 7, 9}
 
     def test_default(self):
         self.assertEqual(self.encoder.encode(self.values), json.dumps(list(self.values)))
-        self.assertEqual(self.item_encoder.default.call_count, len(self.values))
 
 
 class TestSetJSONDecoder(unittest.TestCase):
@@ -153,9 +151,8 @@ class TestSetJSONDecoder(unittest.TestCase):
     Tests for `SetJSONDecoder`.
     """
     def setUp(self):
-        self.item_decoder = MagicMock()
-        self.item_decoder.decode.side_effect = lambda to_decode: to_decode
-        self.decoder = MockSetJSONDecoder(self.item_decoder)
+        self.item_decoder_cls = IntJSONDecoder
+        self.decoder = MockSetJSONDecoder(self.item_decoder_cls)
         self.values = {1, 5, 7, 9}
 
     def test_decode(self):

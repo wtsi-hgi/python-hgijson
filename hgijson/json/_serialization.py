@@ -78,6 +78,13 @@ class MappingJSONDecoder(JSONDecoder, DictJSONDecoder, PropertyMapper, metaclass
     decoded class and the mappings between the object properties and the json properties cannot be passed through the
     constructor. Instead this class must be subclassed and the subclass must define the relevant constants.
     """
+    @abstractmethod
+    def _get_deserializable_cls(self) -> type:
+        """
+        Gets the type of class that this decoder will deserialize.
+        :return: the class the decoder will deserialize
+        """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._args = args
@@ -108,10 +115,3 @@ class MappingJSONDecoder(JSONDecoder, DictJSONDecoder, PropertyMapper, metaclass
             )
             self._deserializer_cache = deserializer_cls(self._get_property_mappings(), self._get_deserializable_cls())
         return self._deserializer_cache
-
-    @abstractmethod
-    def _get_deserializable_cls(self) -> type:
-        """
-        Gets the type of class that this decoder will deserialize.
-        :return: the class the decoder will deserialize
-        """
