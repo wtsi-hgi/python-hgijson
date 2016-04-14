@@ -15,10 +15,14 @@ class PrimitiveSerializer(Serializer):
         return serializable
 
     def _create_serializer_of_type(self, serializer_type: type):
-        assert False
+        """
+        Unused - implemented to satisfy the interface only.
+        """
 
     def _create_serialized_container(self) -> Any:
-        assert False
+        """
+        Unused - implemented to satisfy the interface only.
+        """
 
 
 class PrimitiveDeserializer(Deserializer):
@@ -32,4 +36,6 @@ class PrimitiveDeserializer(Deserializer):
         return object_property_value_dict
 
     def _create_deserializer_of_type(self, deserializer_type: type):
-        assert False
+        """
+        Unused - implemented to satisfy the interface only.
+        """

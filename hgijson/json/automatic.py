@@ -1,5 +1,5 @@
 import copy
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta, abstractstaticmethod
 from json import JSONEncoder
 from typing import Dict, Optional, Iterable, Any, TypeVar
 
@@ -16,6 +16,14 @@ class _RegisteredTypeJSONEncoder(JSONEncoder, metaclass=ABCMeta):
     json.dumps(object_to_serialise, target_cls=_RegisteredTypeJSONEncoder)
     ```
     """
+    @abstractstaticmethod
+    def _get_json_encoders_for_type(type_to_encode: type) -> Optional[Iterable[JSONEncoder]]:
+        """
+        Gets the correct JSON encoder for the given type.
+        :param type_to_encode: the type to encode
+        :return: the encoder for the given type
+        """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._args = args
@@ -39,15 +47,6 @@ class _RegisteredTypeJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         assert isinstance(encoder, JSONEncoder)
 
         return encoder.default(to_encode)
-
-    @staticmethod
-    @abstractmethod
-    def _get_json_encoders_for_type(type_to_encode: type) -> Optional[Iterable[JSONEncoder]]:
-        """
-        Gets the correct JSON encoder for the given type.
-        :param type_to_encode: the type to encode
-        :return: the encoder for the given type
-        """
 
 
 RegisteredTypeJSONEncoderType = TypeVar("RegisteredTypeJSONEncoder", bound=_RegisteredTypeJSONEncoder)

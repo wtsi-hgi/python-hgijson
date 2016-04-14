@@ -10,7 +10,7 @@ from hgijson.types import PrimitiveJsonSerializableType, SerializableType
 
 class PropertyMapper(metaclass=ABCMeta):
     """
-    TODO
+    Model of a mapping from a property of a JSON model to a property of a native Python object.
     """
     def _get_property_mappings(self) -> Iterable[PropertyMapping]:
         """
@@ -28,6 +28,13 @@ class MappingJSONEncoder(JSONEncoder, PropertyMapper, metaclass=ABCMeta):
     encoded class and the mappings between the object properties and the json properties cannot be passed through the
     constructor. Instead this class must be subclassed and the subclass must define the relevant constants.
     """
+    @abstractmethod
+    def _get_serializable_cls(self) -> type:
+        """
+        Gets the type of class that this encoder will serialize.
+        :return: the class the encoder will serialize
+        """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._args = args
@@ -58,13 +65,6 @@ class MappingJSONEncoder(JSONEncoder, PropertyMapper, metaclass=ABCMeta):
             )
             self._serializer_cache = serializer_cls(self._get_property_mappings())
         return self._serializer_cache
-
-    @abstractmethod
-    def _get_serializable_cls(self) -> type:
-        """
-        Gets the type of class that this encoder will serialize.
-        :return: the class the encoder will serialize
-        """
 
 
 class MappingJSONDecoder(JSONDecoder, ParsedJSONDecoder, PropertyMapper, metaclass=ABCMeta):

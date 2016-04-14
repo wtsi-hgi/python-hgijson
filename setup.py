@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="hgi-python-json",
+    name="hgijson",
 
-    version="0.1.0",
+    version="0.5.0",
 
     author="Colin Nolan",
     author_email="hgi@sanger.ac.uk",

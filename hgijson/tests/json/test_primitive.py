@@ -145,6 +145,9 @@ class TestSetJSONEncoder(unittest.TestCase):
     def test_default(self):
         self.assertEqual(self.encoder.encode(self.values), json.dumps(list(self.values)))
 
+    def test_default_with_unsupported_type(self):
+        self.assertRaises(TypeError, self.encoder.encode, object())
+
 
 class TestSetJSONDecoder(unittest.TestCase):
     """

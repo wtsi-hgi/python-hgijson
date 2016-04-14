@@ -10,6 +10,22 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
     this serializer handles.
     """
     # TODO: Correct type hinting in signature without causing a cyclic dependency issue
+    @abstractmethod
+    # def _create_serializer_of_type(self, serializer_type: type) -> Serializer:
+    def _create_serializer_of_type(self, serializer_type: type):
+        """
+        Create an instance of an serializer of the given type.
+        :param serializer_type: the type of serializer to instantiate (a subclass of `Serializer`)
+        :return: the created serializer
+        """
+
+    @abstractmethod
+    def _create_serialized_container(self) -> Any:
+        """
+        Create the container in which serialized representation is built in
+        :return: the container
+        """
+
     def __init__(self, property_mappings: Iterable):
         """
         Constructor.
@@ -49,23 +65,6 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
         assert serializer is not None
         return serializer.serialize(to_serialize)
 
-    @abstractmethod
-    def _create_serialized_container(self) -> Any:
-        """
-        Create the container in which serialized representation is built in
-        :return: the container
-        """
-
-    @abstractmethod
-    # FIXME: Signature should be self referential to this class:
-    # def _create_serializer_of_type(self, serializer_type: type) -> Serializer:
-    def _create_serializer_of_type(self, serializer_type: type):
-        """
-        Create an instance of an serializer of the given type.
-        :param serializer_type: the type of serializer to instantiate (a subclass of `Serializer`)
-        :return: the created serializer
-        """
-
     # TODO: Fix self-referential signature
     def _create_serializer_of_type_with_cache(self, serializer_type: type):
         """
@@ -83,6 +82,14 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
     Deserializer that uses a mapping that describes how the process should occur for the type of deserializable object
     that this deserializer handles.
     """
+    @abstractmethod
+    def _create_deserializer_of_type(self, deserializer_type: type):
+        """
+        Creates a deserializer of the given type.
+        :param deserializer_type: the type of deserializer to create
+        :return: the created deserializer (of type `Deserializer`)
+        """
+
     def __init__(self, property_mappings: Iterable, deserializable_cls: type):
         """
         Constructor.
@@ -143,14 +150,6 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
         deserializer = self._create_deserializer_of_type_with_cache(deserializer_cls)
         assert deserializer is not None
         return deserializer.deserialize(to_deserialize)
-
-    @abstractmethod
-    def _create_deserializer_of_type(self, deserializer_type: type):
-        """
-        Creates a deserializer of the given type.
-        :param deserializer_type: the type of deserializer to create
-        :return: the created deserializer (of type `Deserializer`)
-        """
 
     # TODO: Fix self-referential signature
     def _create_deserializer_of_type_with_cache(self, deserializer_type: type):
