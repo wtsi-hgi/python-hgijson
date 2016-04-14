@@ -1,2 +1,2 @@
-python-dateutil==2.5.0
-git+https://github.com/wtsi-hgi/python-common.git@b2ea5807efc9ec640a4cd024ea78442120801767#egg=hgicommon
+python-dateutil==2.5.2
+git+https://github.com/wtsi-hgi/python-common.git@91c7d03922ae0e693c7993541277022dce0f1fc5#egg=hgicommon
