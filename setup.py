@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name="hgijson",
 
-    version="0.5.0",
+    version="1.0.0",
 
     author="Colin Nolan",
     author_email="hgi@sanger.ac.uk",
