@@ -17,7 +17,7 @@ superclass or implement an interface with a "to_json" (or similar) method.
 model can be defined.
 * Simple to define serialization of subclasses, based on how superclasses are serialized.
 * Pure Python 3 - no DSL, XML or similar required to describe mappings, not using outdated Python 2.
-* Well tested.
+* [Well tested](https://codecov.io/gh/wtsi-hgi/python-json/).
 
 
 ## Overview
