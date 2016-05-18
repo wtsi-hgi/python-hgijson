@@ -418,9 +418,9 @@ person_mapping_schema = [
 ```
 
 #### Sets
-JSON supports less "primitive types" than Python implying that there cannot be an unambiguous, one-to-one mapping
-between all Python and JSON "primitive types". Python's built-in JSON library "handles" this by raising a `TypeError` if
-you attempt to use it to deserialize a `set`.
+JSON supports less "primitive types" than Python, implying that there cannot be an unambiguous, one-to-one mapping
+between all Python and JSON "primitive types". One such type without an equivalent in JSON is `set`. Python's built-in 
+JSON library "handles" the serialiation of sets by raising a `TypeError`.
 
 `SetJSONEncoder` and `SetJSONDecoder` are supplied in this library to support the serialization of `set`s. They work by
 encoding sets as JSON lists then decoding these lists back into sets. As the mapping between JSON and objects is well 
