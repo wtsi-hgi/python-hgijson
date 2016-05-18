@@ -29,6 +29,18 @@ of a specific type. Similar with decode.
   
 
 ## How to use
+### Imports
+All methods and classes can be imported with:
+```python
+from hgijson import *
+```
+Once what is required is known, [it is good practice]
+(http://python.net/~goodger/projects/pycon/2007/idiomatic/handout.html#importing) to import things explicitly, e.g.:
+```python
+from hgijson import JsonPropertyMapping, MappingJSONEncoderClassBuilder, MappingJSONDecoderClassBuilder
+```
+
+
 ### Details
 - [One-to-one JSON property to object property mapping](#one-to-one-json-property-to-object-property-mapping)
 - [Arbitrary mapping to JSON property value](#arbitrary-mapping-to-json-property-value)
