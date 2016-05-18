@@ -7,26 +7,6 @@ from hgijson.json.models import JsonPropertyMapping
 from hgijson.json.primitive import SetJSONEncoder, SetJSONDecoder
 
 
-def _get_all_property_mappings(property_mapper: PropertyMapper, property_mappings: Iterable[JsonPropertyMapping],
-                               superclasses: Tuple[type]) -> Iterable[JsonPropertyMapping]:
-    """
-    TODO
-    :param property_mapper:
-    :param property_mappings:
-    :param superclasses:
-    :return:
-    """
-    mappings = []
-    for superclass in superclasses:
-        if superclass != MappingJSONEncoder:
-            super_mappings = superclass._get_property_mappings(property_mapper)
-            mappings.extend(super_mappings)
-
-    # FIXME: Favour subclass mappings for constructor! Also ensure evaluated in order (superclass' first)
-    mappings.extend(property_mappings)
-    return mappings
-
-
 class _JSONSerializationClassBuilder(metaclass=ABCMeta):
     """
     Subclass of serialization class builders.
@@ -44,6 +24,32 @@ class _JSONSerializationClassBuilder(metaclass=ABCMeta):
         self.mappings = mappings
 
 
+def _get_all_property_mappings(encoder: MappingJSONEncoder, property_mappings: Iterable[JsonPropertyMapping],
+                               superclasses: Tuple[PropertyMapper]) -> List[JsonPropertyMapping]:
+    """
+    Gets all of the property mappings from the given property mapper, considering the property mappings for self and the
+    property mappings defined by the superclass.
+    :param encoder: `self` when binded as class method
+    :param property_mappings: mappings defined for the given encoder, excluding mappings defined by superclasses
+    :param superclasses: superclasses of the given encoder. Property mappers in later superclasses may override the
+    effects of property mappers defined by superclasses closer to the start of the list
+    :return: all of the property mappings for the given encoder
+    """
+    mappings = []
+    for superclass in superclasses:
+        super_mappings = superclass._get_property_mappings(superclass)
+        mappings.extend(super_mappings)
+
+    # Add property mappings of own to end of the mappings list
+    mappings.extend(property_mappings)
+
+    # Note: It is very difficult to cull all property mappers that target the same properties, leaving only the ones
+    # from the lowest class in the hierarchy. This is because such mappers may be encoded as functions. Given that such
+    # overloading is unlikely to be used much and the cost of doing a mapping and then mapping again over the top of it
+    # will likely be small, there will be no attempt of such a cull.
+    return mappings
+
+
 class MappingJSONEncoderClassBuilder(_JSONSerializationClassBuilder):
     """
     Builder for `MappingJSONEncoder` concrete subclasses.
@@ -57,7 +63,7 @@ class MappingJSONEncoderClassBuilder(_JSONSerializationClassBuilder):
         Build a subclass of `MappingJSONEncoder`.
         :return: the built subclass
         """
-        def _get_property_mappings(encoder: MappingJSONEncoder) -> Iterable[JsonPropertyMapping]:
+        def _get_property_mappings(encoder: MappingJSONEncoder) -> List[JsonPropertyMapping]:
             return _get_all_property_mappings(encoder, self.mappings, self.superclasses)
 
         def get_serializable_cls(encoder: MappingJSONEncoder) -> type:
@@ -103,7 +109,7 @@ class MappingJSONDecoderClassBuilder(_JSONSerializationClassBuilder):
         Build a subclass of `MappingJSONDecoder`.
         :return: the built subclass
         """
-        def _get_property_mappings(encoder: MappingJSONEncoder) -> Iterable[JsonPropertyMapping]:
+        def _get_property_mappings(encoder: MappingJSONEncoder) -> List[JsonPropertyMapping]:
             return _get_all_property_mappings(encoder, self.mappings, self.superclasses)
 
         def get_deserializable_cls(decoder: MappingJSONDecoder) -> type:

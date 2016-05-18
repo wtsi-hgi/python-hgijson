@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from json import JSONEncoder, JSONDecoder
-from typing import Union, Iterable, Sequence, List, Set
+from typing import Union, Iterable, Sequence, List
 
 from hgijson.json._serializers import JsonObjectSerializer, JsonObjectDeserializer
 from hgijson.json.interfaces import ParsedJSONDecoder
@@ -12,10 +12,10 @@ class PropertyMapper(metaclass=ABCMeta):
     """
     Model of a mapping from a property of a JSON model to a property of a native Python object.
     """
-    def _get_property_mappings(self) -> Iterable[PropertyMapping]:
+    def _get_property_mappings(self) -> List[PropertyMapping]:
         """
         Gets the property mappings that are to be used in this encoder.
-        :return: the property mappings to use
+        :return: the property mappings to use in the order in which they should be applied
         """
         return []
 

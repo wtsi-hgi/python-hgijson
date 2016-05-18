@@ -1,7 +1,6 @@
 import json
 import unittest
 from datetime import datetime, timezone
-from unittest.mock import MagicMock
 
 from hgijson.json.primitive import StrJSONDecoder, IntJSONEncoder, FloatJSONEncoder, FloatJSONDecoder, \
     DatetimeEpochJSONEncoder, DatetimeEpochJSONDecoder, DatetimeISOFormatJSONDecoder, DatetimeISOFormatJSONEncoder, \

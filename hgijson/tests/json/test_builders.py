@@ -1,7 +1,6 @@
 import json
 import unittest
-from json import JSONDecoder
-from json import JSONEncoder
+from json import JSONDecoder, JSONEncoder
 
 from hgicommon.models import Model
 

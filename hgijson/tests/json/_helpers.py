@@ -1,5 +1,4 @@
-from typing import Dict
-from typing import Tuple
+from typing import Dict, Tuple
 
 from hgijson.tests._models import SimpleModel, ComplexModel
 
