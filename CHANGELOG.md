@@ -1,5 +1,5 @@
 # Change Log
-## [Unreleased]
+## [1.2.0 - 2016-05-18]
 ### Changed
 - Sorted packing to allow upload as package to PyPI.
 - Removed dependency on `hgicommon` library (still required for testing though).
