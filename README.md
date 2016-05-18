@@ -492,4 +492,6 @@ with Python's in-built `json` library.
 
 
 ## License
-[See LICENSE.txt](LICENSE.txt).
+[MIT License](LICENSE.txt).
+
+Copyright (c) 2016 Genome Research Limited
