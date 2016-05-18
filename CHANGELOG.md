@@ -1,4 +1,8 @@
 # Change Log
+## [1.2.2 - 2016-05-18]
+### Changed
+- Hotfix for dependency installation when installed via PyPI.
+
 ## [1.2.1 - 2016-05-18]
 ### Changed
 - Hotfix for package installation via PyPI.
