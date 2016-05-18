@@ -1,5 +1,4 @@
 from abc import ABCMeta
-from json import JSONEncoder
 from typing import Iterable, Tuple, List
 
 from hgijson.json._serialization import MappingJSONEncoder, MappingJSONDecoder, PropertyMapper

@@ -273,8 +273,14 @@ NamedJSONDecoder = MappingJSONDecoderClassBuilder(Named, named_mapping_schema).b
 EmployeeJSONDecoder = MappingJSONDecoderClassBuilder(Employee, employee_mapping_schema, (IdentifiableJSONDecoder, NamedJSONDecoder)).build()
 ```
 
-Note: Mappings of properties for superclasses are done first and in order. Each value mapping can be "overriden" by 
-encoders used afterwards. For obvious reasons, mappings to constructor parameters of superclasses are not used.
+Note: Each value mapping can be "overriden" by encoders used afterwards. Mappings of properties for superclasses are 
+done before those defined in the current class; the mappings for superclasses are completed in the order defined by the
+tuple. e.g. In the example above, the mappings defined in `IdentifiableJSONDecoder` are applied first, then those in
+`NamedJSONDecoder`, followed by those in `EmployeeJSONDecoder`. If `EmployeeJSONDecoder` redefined a mapping for the 
+`id` object property, the value for this property would first be written by the mapper from `IdentifiableJSONDecoder` 
+before been overwritten by a mapper defined in `EmployeeJSONDecoder`.
+
+For obvious reasons, the mappings to constructor parameters defined in superclasses are not used.
 
 
 #### Nested complex objects
