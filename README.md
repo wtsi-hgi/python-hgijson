@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/wtsi-hgi/python-json.svg)](https://travis-ci.org/wtsi-hgi/python-json)
-[![codecov.io](https://codecov.io/github/wtsi-hgi/python-json/coverage.svg?branch=develop)](https://codecov.io/github/wtsi-hgi/python-json?branch=develop)
+[![codecov.io](https://codecov.io/gh/wtsi-hgi/python-json/graph/badge.svg)](https://codecov.io/gh/wtsi-hgi/python-json/)
 
 
 # Python 3 JSON Serialization
@@ -437,7 +437,7 @@ class Person:
 JSON:
 ```json
 {
-    "short_names": <list(person.nicknames)>
+    "short_names": ["<person.nicknames>"]
 }
 ```
 
