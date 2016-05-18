@@ -1,4 +1,8 @@
 # Change Log
+## [1.2.1 - 2016-05-18]
+### Changed
+- Hotfix for package installation via PyPI.
+
 ## [1.2.0 - 2016-05-18]
 ### Changed
 - Sorted packing to allow upload as package to PyPI.
