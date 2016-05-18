@@ -1,6 +1,7 @@
 # Change Log
 ## [Unreleased]
 ### Changed
+- Sorted packing to allow upload as package to PyPI.
 - Removed dependency on `hgicommon` library (still required for testing though).
 - Expanded documentation on how the order of mappings is determined when using mappers and inheritance.
 - Changed license from GPL to MIT.
