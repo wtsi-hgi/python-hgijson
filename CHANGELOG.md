@@ -1,4 +1,8 @@
 # Change Log
+## [1.3.1 - 2016-05-19]
+### Changed
+- Corrections to `setup.py`.
+
 ## [1.3.0 - 2016-05-19]
 ### Added
 - Documentation on how to serialize to/from a dictionary opposed to a string.
