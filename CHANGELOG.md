@@ -1,4 +1,9 @@
 # Change Log
+## [1.2.3 - 2016-05-19]
+### Added
+- Documentation on how to install the library and import methods/classes.
+- imports via `__init__.py`.
+
 ## [1.2.2 - 2016-05-18]
 ### Changed
 - Hotfix for dependency installation when installed via PyPI.
@@ -8,12 +13,15 @@
 - Hotfix for package installation via PyPI.
 
 ## [1.2.0 - 2016-05-18]
+### Added
+- Added documentation on how the order of mappings is determined when using mappers and inheritance.
+
 ### Changed
 - Sorted packing to allow upload as package to PyPI.
-- Removed dependency on `hgicommon` library (still required for testing though).
-- Expanded documentation on how the order of mappings is determined when using mappers and inheritance.
 - Changed license from GPL to MIT.
 
+### Removed
+- Dependency on `hgicommon` library (still required for testing though).
+
 ## 1.0.0 - 2016-04-14
-### Added
 - First stable release.
