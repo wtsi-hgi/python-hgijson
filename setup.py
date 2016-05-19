@@ -18,7 +18,7 @@ setup(
     url="https://github.com/wtsi-hgi/python-json",
     license="MIT",
     description="Python 3 library for easily JSON encoding/decoding complex class-based Python models, using an "
-                "arbitrarily complex mapping schema.",
+                "arbitrarily complex (but easy to write!) mapping schema.",
     long_description=read_markdown("README.md"),
     keywords=["json", "serialization"],
     test_suite="hgijson.tests",
