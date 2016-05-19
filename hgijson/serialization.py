@@ -26,7 +26,7 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
         :return: the container
         """
 
-    def __init__(self, property_mappings: Iterable):
+    def __init__(self, property_mappings: List):
         """
         Constructor.
         :param property_mappings: TODO
@@ -90,7 +90,7 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
         :return: the created deserializer (of type `Deserializer`)
         """
 
-    def __init__(self, property_mappings: Iterable, deserializable_cls: type):
+    def __init__(self, property_mappings: List, deserializable_cls: type):
         """
         Constructor.
         :param property_mappings: TODO
