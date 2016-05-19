@@ -1,8 +1,15 @@
 # Change Log
-## [1.2.3 - 2016-05-19]
+## [Unreleased]
 ### Added
-- Documentation on how to install the library and import methods/classes.
+- Documentation on how to serialize to/from a dictionary opposed to a string.
+- Documentation on how to install the library, import methods/classes and develop.
 - imports via `__init__.py`.
+
+### Changed
+- Improvements to documentation.
+
+### Removed
+- Helper test runner scripts.
 
 ## [1.2.2 - 2016-05-18]
 ### Changed

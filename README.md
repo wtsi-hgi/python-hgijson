@@ -3,8 +3,8 @@
 
 
 # Python 3 JSON Serialization
-Python 3 library for easily JSON encoding/decoding complex class-based Python models, using an arbitrarily complex
-mapping schema.
+Python library for easily JSON encoding/decoding complex class-based Python models, using an arbitrarily complex (but
+easy to write!) mapping schema.
 
 
 ## Features
@@ -26,18 +26,43 @@ definitions.
 2. Use `MappingJSONEncoderClassBuilder` with the mappings to build a subclass of `JSONEncode` for serializing instances 
 of a specific type. Similar with decode.
 3. Use created encoder class with Python's in-built `json.dumps` via the `cls` parameter. Similar with decoder.
-  
+
+
+A mapping can be written that allows complex classes, such as that below, to be mapped to and from any JSON
+representation:
+```python
+class CustomClass(SupportFor, MultipleInheritance):
+    self __init__(self, support_for_constructor_parameters):
+        self.support_for_all_types_of_properties = ""
+        self.including_sets = set()
+        self.and_lists = list()
+        self.and_dictionaries = dict()
+        self.and_complex_properties = ComplexClass()
+        self.and_properties_not_in_json_if_none = None
+
+    self support_for_setters(self, value):
+        ...
+
+    self support_for_getters(self):
+        ...
+        
+CustomClassJSONEncoder = MappingJSONEncoderClassBuilder(...).build()    # type: JSONEncoder
+CustomClassJSONDecoder = MappingJSONDecoderClassBuilder(...).build()    # type: JSONDecoder
+
+custom_class_as_json = json.dumps(custom_class, cls=CustomClassJSONEncoder)     # type: str
+custom_class = json.loads("<custom_class_as_json>", cls=CustomClassJSONDecoder)     # type: CustomClass
+```
 
 ## How to use
 ### Installation
 Stable releases can be installed via PyPI:
 ```bash
-pip3 install hgijson
+$ pip3 install hgijson
 ```
 
 Bleeding edge versions can be installed directly from GitHub:
 ```bash
-pip3 install git+https://github.com/wtsi-hgi/python-json.git@<commit_id_or_branch_or_tag>#egg=hgijson
+$ pip3 install git+https://github.com/wtsi-hgi/python-json.git@<commit_id_or_branch_or_tag>#egg=hgijson
 ```
 
 To declare this library as a dependency of your project, add it to your `requirement.txt` file.
@@ -56,7 +81,7 @@ from hgijson import JsonPropertyMapping, MappingJSONEncoderClassBuilder, Mapping
 ```
 
 
-### Details
+### Functionality
 - [One-to-one JSON property to object property mapping](#one-to-one-json-property-to-object-property-mapping)
 - [Arbitrary mapping to JSON property value](#arbitrary-mapping-to-json-property-value)
 - [Arbitrary mapping to object property value](#arbitrary-mapping-to-object-property-value)
@@ -69,6 +94,7 @@ from hgijson import JsonPropertyMapping, MappingJSONEncoderClassBuilder, Mapping
 - [Casting JSON "primitives"](#casting-json-primitives)
 - [Optional parameters](#optional-parameters)
 - [Sets](#sets)
+- [Serialization to/from a `dict`](#serialization-tofrom-a-dict)
 
 
 #### One-to-one JSON property to object property mapping
@@ -76,7 +102,7 @@ Model:
 ```python
 class Person:
     def __init__(self):
-        self.name = None
+        self.name = "Bob Smith"
 ```
 
 JSON:
@@ -113,7 +139,7 @@ Model:
 ```python
 class Person:
     def __init__(self):
-        self.name = None
+        self.name = "Bob Smith"
 
     def get_first_name(self) -> str:
         return self.name.split(" ")[0]
@@ -484,6 +510,23 @@ mapping_schema = [
 ```
 
 
+#### Serialization to/from a `dict`
+To serialize an object to a dictionary, opposed to a string:
+```python
+custom_object_as_dict = CustomJSONEncoder().default("<custom_object>")  # type: dict
+```
+*You can use this with any encoder that inherits from `JSONEncoder` and overrides `default`.*
+
+To deserialize an object from a dictionary, opposed to from a string:
+```python
+custom_object = CustomJSONDecoder().decode_parsed("<custom_object_as_dict>")
+```
+*You can only use this with decoders defined by this library as they implement the [`ParsedJSONDecoder`]
+(https://github.com/wtsi-hgi/python-json/blob/master/hgijson/json/interfaces.py) interface. To achieve this
+functionality with other `JSONDecoder` implementations, you would have to (wastefully) convert the dictionary to a 
+string using `json.dump` before using the decoder's standard `decode` method.*
+
+
 ### Notes
 * Decoders and encoders work for iterable collections of instances in the same way as they do for single instances.
 * Encoders will only encode objects into JSON objects (`{}`). A custom `JSONEncoder` must be used to encode Python 
@@ -496,11 +539,11 @@ If you are performing serialization, chances are that you are going to be doing/
 the I/O will be, the performance of this library, compared with that of any other (including the endless JSON
 libraries touted as "ultra fast"), **is not going to be of realistic concern** given reasonable amounts of data.
 
-However, if you happen to be serializing huge numbers of objects and need it done extraordinarily fast (in Python?), use
-of JSON encoders/decoders produced by this library will add a small amount of overhead on-top of the in-built JSON
-serialization methods. In addition, the complexity of the mappings used will influence the performance (i.e. if the
-value of a JSON property is calculated from an object method that deduces the answer to life, the universe and 
-everything, serialization is going to be rather slow).
+However, if you happen to be serializing huge numbers of objects and need it done extraordinarily fast (in Python?), 
+bare in mind that use of JSON encoders/decoders produced by this library will add a small amount of overhead on-top of 
+the in-built JSON serialization methods. In addition, the complexity of the mappings used will influence the performance
+(i.e. if the value of a JSON property is calculated from an object method that deduces the answer to life, the universe 
+and everything, serialization is going to be rather slow).
 
 
 ## Alternatives
@@ -524,7 +567,27 @@ with Python's in-built `json` library.
     methods to JSON.
 
 
-## License
-[MIT License](LICENSE.txt).
+## Development
+### Setup
+Install both library dependencies and the dependencies needed for testing:
+```bash
+$ pip3 install -q -r requirements.txt
+$ pip3 install -q -r test_requirements.txt
+```
 
-Copyright (c) 2016 Genome Research Limited
+### Testing
+Using nosetests, in the project directory, run:
+```bash
+$ nosetests -v
+```
+
+To generate a test coverage report with nosetests:
+```bash
+$ nosetests -v --with-coverage --cover-package=hgijson --cover-inclusive
+```
+
+
+## License
+[MIT license](LICENSE.txt).
+
+Copyright (c) 2015, 2016 Genome Research Limited
