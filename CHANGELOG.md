@@ -1,5 +1,5 @@
 # Change Log
-## [Unreleased]
+## [1.3.0 - 2016-05-19]
 ### Added
 - Documentation on how to serialize to/from a dictionary opposed to a string.
 - Documentation on how to install the library, import methods/classes and develop.
