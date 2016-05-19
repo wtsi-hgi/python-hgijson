@@ -10,7 +10,7 @@ except ImportError:
 
 setup(
     name="hgijson",
-    version="1.2.2",
+    version="1.3.0",
     author="Colin Nolan",
     author_email="colin.nolan@sanger.ac.uk",
     packages=find_packages(exclude=["tests"]),
