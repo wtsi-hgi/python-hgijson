@@ -26,7 +26,7 @@ setup(
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.5",
         "License :: OSI Approved :: MIT License"
     ]
 )
