@@ -85,25 +85,12 @@ class PropertyMapping():
         self.deserializer_cls = deserializer_cls
         self.optional = optional
 
-    def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return False
-        for property_name, value in vars(self).items():
-            if other.__dict__[property_name] != self.__dict__[property_name]:
-                return False
-        return True
-
     def __str__(self) -> str:
         string_builder = []
         for property, value in vars(self).items():
-            if isinstance(value, Set):
-                value = str(sorted(value, key=id))
             string_builder.append("%s: %s" % (property, value))
         string_builder = sorted(string_builder)
         return "{ %s }" % ', '.join(string_builder)
 
     def __repr__(self) -> str:
         return "<%s object at %s: %s>" % (type(self), id(self), str(self))
-
-    def __hash__(self):
-        return hash(str(self))

@@ -6,6 +6,7 @@
 - imports via `__init__.py`.
 
 ### Changed
+- Removed useless equality and hash calculation methods on `PropertyMapping`.
 - Improvements to documentation.
 
 ### Removed
