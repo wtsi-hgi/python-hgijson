@@ -25,7 +25,7 @@ class _JSONEncoderAsSerializer(Serializer, metaclass=ABCMeta):
         """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(())
+        super().__init__([])
         json_encoder_cls = self._get_encoder_type()
         self._encoder = json_encoder_cls(*args, **kwargs)  # type: JSONEncoder
 
@@ -60,7 +60,7 @@ class _JSONDecoderAsDeserializer(Deserializer, metaclass=ABCMeta):
 
     def __init__(self, *args, **kwargs):
         json_decoder_cls = self._get_decoder_type()
-        super().__init__((), json_decoder_cls)
+        super().__init__([], json_decoder_cls)
         self._decoder = json_decoder_cls(*args, **kwargs)  # type: JSONDecoder
 
     def deserialize(self, json_as_dict: PrimitiveJsonSerializableType) -> SerializableType:

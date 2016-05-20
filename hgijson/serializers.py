@@ -9,7 +9,7 @@ class PrimitiveSerializer(Serializer):
     Serializer for primitive values - just returns them.
     """
     def __init__(self, *args, **kwargs):
-        super().__init__(())
+        super().__init__([])
 
     def serialize(self, serializable: Any):
         return serializable
@@ -30,7 +30,7 @@ class PrimitiveDeserializer(Deserializer):
     Deserializer for primitive values - just returns them.
     """
     def __init__(self, *args, **kwargs):
-        super().__init__((), object)
+        super().__init__([], object)
 
     def deserialize(self, object_property_value_dict: PrimitiveJsonSerializableType):
         return object_property_value_dict

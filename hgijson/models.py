@@ -1,4 +1,4 @@
-from typing import Dict, Callable, Any, Set
+from typing import Dict, Callable, Any
 
 from hgijson.serializers import PrimitiveDeserializer, PrimitiveSerializer
 

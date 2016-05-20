@@ -1,7 +1,6 @@
 [![Build Status](https://travis-ci.org/wtsi-hgi/python-json.svg)](https://travis-ci.org/wtsi-hgi/python-json)
 [![codecov.io](https://codecov.io/gh/wtsi-hgi/python-json/graph/badge.svg)](https://codecov.io/gh/wtsi-hgi/python-json/)
 
-
 # Python 3 JSON Serialization
 Python library for easily JSON encoding/decoding complex class-based Python models, using an arbitrarily complex (but
 easy to write!) mapping schema.
