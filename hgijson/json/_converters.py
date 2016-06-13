@@ -36,12 +36,12 @@ class _JSONEncoderAsSerializer(Serializer, metaclass=ABCMeta):
         else:
             return self._encoder.default(serializable)
 
-    def _create_serializer_of_type(self, serializer_type: type):
+    def _create_serializer_of_type(self, serializer_type: type) -> None:
         """
         Unused - implemented to satisfy the interface only.
         """
 
-    def _create_serialized_container(self) -> Any:
+    def _create_serialized_container(self) -> None:
         """
         Unused - implemented to satisfy the interface only.
         """
@@ -73,7 +73,7 @@ class _JSONDecoderAsDeserializer(Deserializer, metaclass=ABCMeta):
             # again!)
             return self._decoder.decode_parsed(json_as_dict)
 
-    def _create_deserializer_of_type(self, deserializer_type: type):
+    def _create_deserializer_of_type(self, deserializer_type: type) -> None:
         """
         Unused - implemented to satisfy the interface only.
         """

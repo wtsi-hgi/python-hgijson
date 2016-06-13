@@ -11,15 +11,15 @@ class PrimitiveSerializer(Serializer):
     def __init__(self, *args, **kwargs):
         super().__init__([])
 
-    def serialize(self, serializable: Any):
+    def serialize(self, serializable: Any) -> Any:
         return serializable
 
-    def _create_serializer_of_type(self, serializer_type: type):
+    def _create_serializer_of_type(self, serializer_type: type) -> None:
         """
         Unused - implemented to satisfy the interface only.
         """
 
-    def _create_serialized_container(self) -> Any:
+    def _create_serialized_container(self) -> None:
         """
         Unused - implemented to satisfy the interface only.
         """
@@ -32,10 +32,10 @@ class PrimitiveDeserializer(Deserializer):
     def __init__(self, *args, **kwargs):
         super().__init__([], object)
 
-    def deserialize(self, object_property_value_dict: PrimitiveJsonSerializableType):
+    def deserialize(self, object_property_value_dict: PrimitiveJsonSerializableType) -> PrimitiveJsonSerializableType:
         return object_property_value_dict
 
-    def _create_deserializer_of_type(self, deserializer_type: type):
+    def _create_deserializer_of_type(self, deserializer_type: type) -> None:
         """
         Unused - implemented to satisfy the interface only.
         """

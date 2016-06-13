@@ -9,10 +9,8 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
     Serializer that uses a mapping that describes how the process should occur for the type of serializable object that
     this serializer handles.
     """
-    # TODO: Correct type hinting in signature without causing a cyclic dependency issue
     @abstractmethod
-    # def _create_serializer_of_type(self, serializer_type: type) -> Serializer:
-    def _create_serializer_of_type(self, serializer_type: type):
+    def _create_serializer_of_type(self, serializer_type: type) -> "Serializer":
         """
         Create an instance of an serializer of the given type.
         :param serializer_type: the type of serializer to instantiate (a subclass of `Serializer`)
@@ -29,7 +27,7 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
     def __init__(self, property_mappings: List):
         """
         Constructor.
-        :param property_mappings: TODO
+        :param property_mappings: the property mappings (of type `List[PropertyMapping]`)
         """
         self._property_mappings = property_mappings     # type_but_do_not_import: Iterable[PropertyMapping]
         self._serializers_cache = dict()    # type: Dict[type, Serializer]
@@ -65,8 +63,7 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
         assert serializer is not None
         return serializer.serialize(to_serialize)
 
-    # TODO: Fix self-referential signature
-    def _create_serializer_of_type_with_cache(self, serializer_type: type):
+    def _create_serializer_of_type_with_cache(self, serializer_type: type) -> "Serializer":
         """
         Creates a deserializer of the given type, exploiting a cache.
         :param serializer_type: the type of deserializer to create
@@ -83,11 +80,11 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
     that this deserializer handles.
     """
     @abstractmethod
-    def _create_deserializer_of_type(self, deserializer_type: type):
+    def _create_deserializer_of_type(self, deserializer_type: type) -> "Deserializer":
         """
         Creates a deserializer of the given type.
         :param deserializer_type: the type of deserializer to create
-        :return: the created deserializer (of type `Deserializer`)
+        :return: the created deserializer
         """
 
     def __init__(self, property_mappings: List, deserializable_cls: type):
@@ -151,8 +148,7 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
         assert deserializer is not None
         return deserializer.deserialize(to_deserialize)
 
-    # TODO: Fix self-referential signature
-    def _create_deserializer_of_type_with_cache(self, deserializer_type: type):
+    def _create_deserializer_of_type_with_cache(self, deserializer_type: type) -> "Deserializer":
         """
         Creates a deserializer of the given type, exploiting a cache.
         :param deserializer_type: the type of deserializer to create

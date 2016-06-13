@@ -67,7 +67,6 @@ $ pip3 install git+https://github.com/wtsi-hgi/python-json.git@<commit_id_or_bra
 To declare this library as a dependency of your project, add it to your `requirement.txt` file.
 
 
-
 ### Imports
 All methods and classes can be imported with:
 ```python
