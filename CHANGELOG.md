@@ -1,4 +1,9 @@
 # Change Log
+## 1.4.2 - 2016-08-04
+### Changed
+- Fix for issue with fix in `1.4.1`.
+
+
 ## 1.4.1 - 2016-08-04
 ### Changed
 - Fixed bug in serialisation of `None`, 
