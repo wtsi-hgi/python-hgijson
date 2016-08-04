@@ -97,7 +97,7 @@ class TestMappingJSONDecoder(unittest.TestCase):
         json_as_string = json.dumps(complex_models_as_json)
         decoded = json.loads(json_as_string, cls=ComplexModelMappingJSONDecoder)
         self.assertEqual(decoded, complex_models)
-
+8
 
 if __name__ == "__main__":
     unittest.main()

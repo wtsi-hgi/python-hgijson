@@ -85,6 +85,10 @@ class TestSerializer(unittest.TestCase):
         serializer = SimpleModelSerializer(mappings)
         self.assertRaises(AttributeError, serializer.serialize, self.simple_model)
 
+    def test_serialize_when_none(self):
+        serializer = SimpleModelSerializer()
+        self.assertIsNone(serializer.serialize(None))
+
 
 class TestDeserializer(unittest.TestCase):
     """
@@ -165,6 +169,10 @@ class TestDeserializer(unittest.TestCase):
         mappings = [JsonPropertyMapping("serialized_a", "z")]
         deserializer = SimpleModelDeserializer(mappings)
         self.assertRaises(AttributeError, deserializer.deserialize, self.simple_model_as_json)
+
+    def test_deserialize_none(self):
+        deserializer = SimpleModelDeserializer()
+        self.assertIsNone(deserializer.deserialize(None))
 
 
 if __name__ == "__main__":
