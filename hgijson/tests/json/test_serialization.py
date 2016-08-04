@@ -4,7 +4,7 @@ import unittest
 from hgijson.tests.json._helpers import create_complex_model_with_json_representation, \
     create_simple_model_with_json_representation
 from hgijson.tests.json._serializers import SimpleModelMappingJSONDecoder, ComplexModelMappingJSONDecoder, \
-    SimpleModelMappingJSONEncoder, ComplexModelMappingJSONEncoder
+    SimpleModelMappingJSONEncoder, ComplexModelMappingJSONEncoder, get_complex_model_json_property_mappings
 
 
 class TestMappingJSONEncoder(unittest.TestCase):
@@ -31,6 +31,11 @@ class TestMappingJSONEncoder(unittest.TestCase):
     def test_default_with_complex(self):
         encoded = ComplexModelMappingJSONEncoder().default(self.complex_model)
         self.assertDictEqual(encoded, self.complex_model_as_json)
+
+    def test_default_when_none_property(self):
+        self.complex_model.d = None
+        encoded = ComplexModelMappingJSONEncoder().default(self.complex_model)
+        self.assertIsNone(encoded["serialized_d"])
 
     def test_default_with_iterable_with_no_items(self):
         encoded = SimpleModelMappingJSONEncoder().default([])
@@ -83,6 +88,12 @@ class TestMappingJSONDecoder(unittest.TestCase):
         decoded = ComplexModelMappingJSONDecoder().decode(object_as_json_string)
         self.assertEqual(decoded, self.complex_model)
 
+    def test_decode_when_none_property(self):
+        self.complex_model_as_json["serialized_d"] = None
+        object_as_json_string = json.dumps(self.complex_model_as_json)
+        decoded = ComplexModelMappingJSONDecoder().decode(object_as_json_string)
+        self.assertIsNone(decoded.d)
+
     def test_decode_with_iterable_with_no_items(self):
         json_as_string = json.dumps([])
         decoded = SimpleModelMappingJSONDecoder().decode(json_as_string)
@@ -106,7 +117,7 @@ class TestMappingJSONDecoder(unittest.TestCase):
         json_as_string = json.dumps(complex_models_as_json)
         decoded = json.loads(json_as_string, cls=ComplexModelMappingJSONDecoder)
         self.assertEqual(decoded, complex_models)
-8
+
 
 if __name__ == "__main__":
     unittest.main()
