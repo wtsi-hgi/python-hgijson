@@ -1,10 +1,15 @@
 # Change Log
+## [Unreleased]
+### Changed
+- Fixed bug in serialisation of `None`, 
+[reported](https://github.com/wtsi-hgi/python-json/issues/16#issuecomment-237527405) by 
+[YuriIvanov](https://github.com/YuriIvanov) ([#18](https://github.com/wtsi-hgi/python-json/issues/18)).
+
 ## 1.4.0 - 2016-08-04
 ### Changed
-- Encoders now serialise `None` to `null` and visa-versa for decoders 
-([#17](https://github.com/wtsi-hgi/python-json/issues/17)). (Thanks to 
+- Encoders now serialise `None` to `null` and visa-versa for decoders (thanks to 
 [YuriIvanov](https://github.com/YuriIvanov) for bringing this improvement to light in 
-[#16](https://github.com/wtsi-hgi/python-json/issues/16)).
+[#16](https://github.com/wtsi-hgi/python-json/issues/16)) ([#17](https://github.com/wtsi-hgi/python-json/issues/17)).
 - Corrected self-referential type hinting. 
 
 ## 1.3.1 - 2016-05-19
