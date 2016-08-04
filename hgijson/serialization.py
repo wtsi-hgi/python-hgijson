@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from typing import Any, Generic, Union, Sequence, Dict, List
+from typing import Any, Generic, Union, Sequence, Dict, List, Optional
 
 from hgijson.types import SerializableType, PrimitiveUnionType, PrimitiveJsonSerializableType
 
@@ -32,13 +32,17 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
         self._property_mappings = property_mappings     # type_but_do_not_import: Iterable[PropertyMapping]
         self._serializers_cache = dict()    # type: Dict[type, Serializer]
 
-    def serialize(self, serializable: Union[SerializableType, Sequence[SerializableType]]) -> PrimitiveUnionType:
+    def serialize(self, serializable: Optional[Union[SerializableType, List[SerializableType]]]) \
+            -> PrimitiveUnionType:
         """
         Serializes the given serializable object or collection of serializable objects.
-        :param serializable: the object to serialize
+        :param serializable: the object or objects to serialize
         :return: a serialization of the given object
         """
-        if isinstance(serializable, List):
+        if serializable is None:
+            # Implements #17
+            return None
+        elif isinstance(serializable, List):
             return [self.serialize(item) for item in serializable]
         else:
             serialized = self._create_serialized_container()
@@ -98,13 +102,16 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
         self._deserializers_cache = dict()    # type: Dict[type, Deserializer]
 
     def deserialize(self, to_deserialize: PrimitiveJsonSerializableType) \
-            -> Union[SerializableType, Sequence[SerializableType]]:
+            -> Optional[Union[SerializableType, List[SerializableType]]]:
         """
         Deserializes the given representation of the serialized object.
         :param to_deserialize: the serialized object as a dictionary
         :return: the deserialized object or collection of deserialized objects
         """
-        if isinstance(to_deserialize, list):
+        if to_deserialize is None:
+            # Implements #17
+            return None
+        elif isinstance(to_deserialize, List):
             deserialized = []
             for item in to_deserialize:
                 item_deserialized = self.deserialize(item)

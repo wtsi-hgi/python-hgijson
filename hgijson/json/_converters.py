@@ -1,7 +1,7 @@
 import json
 from abc import ABCMeta, abstractproperty
 from json import JSONDecoder, JSONEncoder
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from hgijson.json.interfaces import ParsedJSONDecoder
 from hgijson.serialization import Deserializer, Serializer
@@ -29,7 +29,7 @@ class _JSONEncoderAsSerializer(Serializer, metaclass=ABCMeta):
         json_encoder_cls = self._get_encoder_type()
         self._encoder = json_encoder_cls(*args, **kwargs)  # type: JSONEncoder
 
-    def serialize(self, serializable: SerializableType) -> PrimitiveUnionType:
+    def serialize(self, serializable: Optional[SerializableType]) -> PrimitiveUnionType:
         if type(self._encoder) == JSONEncoder:
             # Have to load from string to more rich representation - not possible to stop `encode` going to string :/
             return json.loads(self._encoder.encode(serializable))
@@ -63,7 +63,7 @@ class _JSONDecoderAsDeserializer(Deserializer, metaclass=ABCMeta):
         super().__init__([], json_decoder_cls)
         self._decoder = json_decoder_cls(*args, **kwargs)  # type: JSONDecoder
 
-    def deserialize(self, json_as_dict: PrimitiveJsonSerializableType) -> SerializableType:
+    def deserialize(self, json_as_dict: PrimitiveJsonSerializableType) -> Optional[SerializableType]:
         if not isinstance(self._decoder, ParsedJSONDecoder):
             # Decode must take a string (even though we have a richer representation) :/
             json_as_string = json.dumps(json_as_dict)
