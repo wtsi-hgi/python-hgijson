@@ -44,7 +44,9 @@ class MappingJSONEncoder(JSONEncoder, PropertyMapper, metaclass=ABCMeta):
     def default(self, serializable: Optional[Union[SerializableType, List[SerializableType]]]) \
             -> PrimitiveJsonSerializableType:
         serializer = self._create_serializer()
-        if not isinstance(serializable, List) and not isinstance(serializable, self._get_serializable_cls()):
+        if serializable is not None \
+                and not isinstance(serializable, List) \
+                and not isinstance(serializable, self._get_serializable_cls()):
             return super().default(serializable)
 
         return serializer.serialize(serializable)
