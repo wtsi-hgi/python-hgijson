@@ -1,4 +1,11 @@
 # Change Log
+## [Unreleased]
+### Changed
+- Encoders now serialise `None` to `null` and visa-versa for decoders 
+([#17](https://github.com/wtsi-hgi/python-json/issues/17)). (Thanks to 
+[YuriIvanov](https://github.com/YuriIvanov) for bringing this improvement to light in 
+[#16](https://github.com/wtsi-hgi/python-json/issues/16)).
+
 ## [1.3.1 - 2016-05-19]
 ### Changed
 - Corrections to `setup.py`.
