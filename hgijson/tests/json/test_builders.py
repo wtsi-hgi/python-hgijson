@@ -22,16 +22,22 @@ class _Named(Model):
         self.name = None    # type: str
 
 
+class _Office(_Named):
+    def __init__(self):
+        super().__init__()
+
+
 class _Identifiable(Model):
     def __init__(self):
         super().__init__()
         self.id = None    # type: int
 
 
-class _Employee(_Named, _Identifiable, Model):
+class _Employee(_Named, _Identifiable):
     def __init__(self):
         super().__init__()
         self.title = None
+        self.office = None
 
 
 class TestMappingJSONEncoderClassBuilder(unittest.TestCase):
@@ -74,23 +80,52 @@ class TestMappingJSONEncoderClassBuilder(unittest.TestCase):
         NamedJSONEncoder = MappingJSONEncoderClassBuilder(_Named, [
             JsonPropertyMapping("name", "name")
         ]).build()
-        IdentifiableJSONEncoder = MappingJSONEncoderClassBuilder(_Named, [
+        OfficeJSONEncoder = MappingJSONEncoderClassBuilder(_Office, [], (NamedJSONEncoder, )).build()
+        IdentifiableJSONEncoder = MappingJSONEncoderClassBuilder(_Identifiable, [
             JsonPropertyMapping("id", "id")
         ]).build()
         EmployeeJSONEncoder = MappingJSONEncoderClassBuilder(_Employee, [
-           JsonPropertyMapping("title", "title"),
+            JsonPropertyMapping("title", "title"),
+            JsonPropertyMapping("office", "office", encoder_cls=OfficeJSONEncoder),
         ], (NamedJSONEncoder, IdentifiableJSONEncoder)).build()
+
+        office = _Office()
+        office.name = "Cambridge"
 
         employee = _Employee()
         employee.name = "Bob"
         employee.id = 42
         employee.title = "Software Dev"
+        employee.office = office
+
         employee_as_json = {
             "name": employee.name,
             "id": employee.id,
-            "title": employee.title
+            "title": employee.title,
+            "office": {
+                "name": office.name
+            }
         }
-        self.assertEqual(EmployeeJSONEncoder().default([employee]), [employee_as_json])
+        self.assertEqual(EmployeeJSONEncoder().default(employee), employee_as_json)
+
+    def test_build_with_none_property(self):
+        NamedJSONEncoder = MappingJSONEncoderClassBuilder(_Named, [
+            JsonPropertyMapping("name", "name")
+        ]).build()
+        OfficeJSONEncoder = MappingJSONEncoderClassBuilder(_Office, [], (NamedJSONEncoder,)).build()
+        EmployeeJSONEncoder = MappingJSONEncoderClassBuilder(_Employee, [
+            JsonPropertyMapping("office", "office", encoder_cls=OfficeJSONEncoder),
+        ], (NamedJSONEncoder, )).build()
+
+        employee = _Employee()
+        employee.name = "Bob"
+        employee.office = None
+
+        employee_as_json = {
+            "name": employee.name,
+            "office": None
+        }
+        self.assertEqual(employee_as_json, EmployeeJSONEncoder().default(employee))
 
 
 class TestMappingJSONDecoderClassBuilder(unittest.TestCase):
@@ -133,21 +168,53 @@ class TestMappingJSONDecoderClassBuilder(unittest.TestCase):
         NamedJSONDecoder = MappingJSONDecoderClassBuilder(_Named, [
             JsonPropertyMapping("name", "name")
         ]).build()
-        IdentifiableJSONDecoder = MappingJSONDecoderClassBuilder(_Named, [
+        OfficeJSONDecoder = MappingJSONDecoderClassBuilder(_Office, [], (NamedJSONDecoder,)).build()
+        IdentifiableJSONDecoder = MappingJSONDecoderClassBuilder(_Identifiable, [
             JsonPropertyMapping("id", "id")
         ]).build()
         EmployeeJSONDecoder = MappingJSONDecoderClassBuilder(_Employee, [
-           JsonPropertyMapping("title", "title"),
+            JsonPropertyMapping("title", "title"),
+            JsonPropertyMapping("office", "office", decoder_cls=OfficeJSONDecoder)
         ], (NamedJSONDecoder, IdentifiableJSONDecoder)).build()
+
+        office = _Office()
+        office.name = "Cambridge"
 
         employee = _Employee()
         employee.name = "Bob"
         employee.id = 42
         employee.title = "Software Dev"
+        employee.office = office
+
         employee_as_json = {
             "name": employee.name,
             "id": employee.id,
-            "title": employee.title
+            "title": employee.title,
+            "office": {
+                "name": office.name
+            }
+        }
+        employee_as_json_string = json.dumps([employee_as_json])
+        self.assertEqual(EmployeeJSONDecoder().decode(employee_as_json_string), [employee])
+
+    def test_build_with_none_property(self):
+        NamedJSONDecoder = MappingJSONDecoderClassBuilder(_Named, [
+            JsonPropertyMapping("name", "name")
+        ]).build()
+        OfficeJSONDecoder = MappingJSONDecoderClassBuilder(_Office, [], (NamedJSONDecoder,)).build()
+        EmployeeJSONDecoder = MappingJSONDecoderClassBuilder(_Employee, [
+            JsonPropertyMapping("office", "office", decoder_cls=OfficeJSONDecoder)
+        ], (NamedJSONDecoder, )).build()
+
+        employee = _Employee()
+        employee.name = "Bob"
+        employee.office = None
+
+        employee_as_json = {
+            "name": employee.name,
+            "id": employee.id,
+            "title": employee.title,
+            "office": None
         }
         employee_as_json_string = json.dumps([employee_as_json])
         self.assertEqual(EmployeeJSONDecoder().decode(employee_as_json_string), [employee])
