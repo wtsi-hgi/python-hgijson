@@ -69,7 +69,10 @@ class MappingJSONEncoderClassBuilder(_JSONSerializationClassBuilder):
             return self.target_cls
 
         def default(encoder: MappingJSONEncoder, serializable):
-            if isinstance(serializable, List):
+            if serializable is None:
+                # Fix for #18
+                return None
+            elif isinstance(serializable, List):
                 # Fix for #8
                 return [encoder.default(item) for item in serializable]
             else:
