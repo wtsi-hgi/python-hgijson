@@ -1,5 +1,5 @@
 # Change Log
-## [Unreleased]
+## 1.4.1 - 2016-08-04
 ### Changed
 - Fixed bug in serialisation of `None`, 
 [reported](https://github.com/wtsi-hgi/python-json/issues/16#issuecomment-237527405) by 
