@@ -20,6 +20,10 @@ class TestMappingJSONEncoder(unittest.TestCase):
     def test_default_with_unknown(self):
         self.assertRaises(TypeError, SimpleModelMappingJSONEncoder().default, object())
 
+    def test_default_with_none(self):
+        encoded = SimpleModelMappingJSONEncoder().default(None)
+        self.assertIsNone(encoded)
+
     def test_default_with_simple(self):
         encoded = SimpleModelMappingJSONEncoder().default(self.simple_model)
         self.assertDictEqual(encoded, self.simple_model_as_json)
@@ -63,6 +67,11 @@ class TestMappingJSONDecoder(unittest.TestCase):
 
     def test_decode_with_malformed_json(self):
         self.assertRaises(ValueError, SimpleModelMappingJSONDecoder().decode, ":)")
+
+    def test_decode_with_none(self):
+        null_json_value = json.dumps(None)
+        decoded = SimpleModelMappingJSONDecoder().decode(null_json_value)
+        self.assertIsNone(decoded)
 
     def test_decode_with_simple(self):
         object_as_json_string = json.dumps(self.simple_model_as_json)
