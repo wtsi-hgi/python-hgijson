@@ -33,8 +33,12 @@ class JsonPropertyMapping(PropertyMapping):
 
             if json_property_getter is None:
                 def json_property_getter(obj_as_json: dict):
-                    if optional and json_property_name not in obj_as_json:
-                        return None
+                    if json_property_name not in obj_as_json:
+                        if optional:
+                            return None
+                        else:
+                            raise KeyError("No value associated to the non-optional key `%s` in the input JSON: `%s`"
+                                             % (json_property_name, obj_as_json))
                     return obj_as_json[json_property_name]
 
             if json_property_setter is None:

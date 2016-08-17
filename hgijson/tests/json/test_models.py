@@ -31,6 +31,10 @@ class TestPropertyMapping(unittest.TestCase):
         property_mapping.json_property_setter = setter
         self.assertEqual(property_mapping.json_property_setter, setter)
 
+    def test_json_property_setter_property_when_non_optional_property_is_missing(self):
+        property_mapping = JsonPropertyMapping("a")
+        self.assertRaises(KeyError, property_mapping.json_property_getter, {})
+
 
 if __name__ == "__main__":
     unittest.main()
