@@ -38,6 +38,7 @@ class _Employee(_Named, _Identifiable):
         super().__init__()
         self.title = None
         self.office = None
+        self.manager = None
 
 
 class TestMappingJSONEncoderClassBuilder(unittest.TestCase):
@@ -75,6 +76,23 @@ class TestMappingJSONEncoderClassBuilder(unittest.TestCase):
 
         encoded = encoder.default(self.complex_model)
         self.assertDictEqual(encoded, self.complex_model_as_json)
+
+    def test_build_with_superclass_as_string(self):
+        IdentifiableJSONEncoder = MappingJSONEncoderClassBuilder(_Identifiable, [
+            JsonPropertyMapping("id", "id")
+        ]).build()
+        EmployeeJSONEncoder = MappingJSONEncoderClassBuilder(_Employee, [
+            JsonPropertyMapping("manager", "manager", encoder_cls="EmployeeJSONEncoder")
+        ], (IdentifiableJSONEncoder,)).build()
+        encoder = EmployeeJSONEncoder()
+
+        manager = _Employee()
+        manager.id = 123
+        employee = _Employee()
+        employee.id = 456
+        employee.manager = manager
+
+        self.assertEqual({"id": 456, "manager": {"id": 123}}, encoder.default(employee))
 
     def test_build_with_multiple_superclasses(self):
         NamedJSONEncoder = MappingJSONEncoderClassBuilder(_Named, [
@@ -163,6 +181,23 @@ class TestMappingJSONDecoderClassBuilder(unittest.TestCase):
 
         decoded = decoder.decode(json.dumps(self.complex_model_as_json))
         self.assertEqual(decoded, self.complex_model)
+
+    def test_build_with_superclass_string(self):
+        IdentifiableJSONDecoder = MappingJSONDecoderClassBuilder(_Identifiable, [
+            JsonPropertyMapping("id", "id")
+        ]).build()
+        EmployeeJSONDecoder = MappingJSONDecoderClassBuilder(_Employee, [
+            JsonPropertyMapping("manager", "manager", decoder_cls="OfficeJSONDecoder")
+        ], (IdentifiableJSONDecoder, )).build()
+        decoder = EmployeeJSONDecoder()
+
+        manager = _Employee()
+        manager.id = 123
+        employee = _Employee()
+        employee.id = 456
+        employee.manager = manager
+
+        self.assertEqual(employee, decoder.decode({"id": 456, "manager": {"id": 123}}))
 
     def test_build_with_multiple_superclasses(self):
         NamedJSONDecoder = MappingJSONDecoderClassBuilder(_Named, [
