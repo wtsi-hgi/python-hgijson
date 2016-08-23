@@ -1,0 +1,9 @@
+pages:
+  - 'index.md'
+  - 'setup.md'
+  - 'functionality.md'
+  - 'notes.md'
+  - 'performance.md'
+  - 'alternatives.md'
+  - 'development.md'
+  - 'license.md'
