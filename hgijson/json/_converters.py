@@ -1,16 +1,11 @@
 import json
 from abc import ABCMeta, abstractproperty
 from json import JSONDecoder, JSONEncoder
-from typing import Any, Dict, Optional
+from typing import Optional, Union, Callable
 
 from hgijson.json.interfaces import ParsedJSONDecoder
 from hgijson.serialization import Deserializer, Serializer
 from hgijson.types import PrimitiveJsonSerializableType, PrimitiveUnionType, SerializableType
-
-_serializer_cache = dict()  # type: Dict[type, Serializer]
-_deserializer_cache = dict()    # type: Dict[type, Deserializer]
-
-_PLACEHOLDER = object
 
 
 class _JSONEncoderAsSerializer(Serializer, metaclass=ABCMeta):
@@ -18,7 +13,7 @@ class _JSONEncoderAsSerializer(Serializer, metaclass=ABCMeta):
     JSON encoder wrapped to work as a `Serializer`.
     """
     @abstractproperty
-    def _get_encoder_type(self, *args) -> type:
+    def encoder_type(self) -> type:
         """
         Gets the `JSONEncoder` type that is used by this serialiser.
         :return: the encoder type (must be a subclass of `JSONEncoder`)
@@ -26,8 +21,7 @@ class _JSONEncoderAsSerializer(Serializer, metaclass=ABCMeta):
 
     def __init__(self, *args, **kwargs):
         super().__init__([])
-        json_encoder_cls = self._get_encoder_type()
-        self._encoder = json_encoder_cls(*args, **kwargs)  # type: JSONEncoder
+        self._encoder = self.encoder_type(*args, **kwargs)  # type: JSONEncoder
 
     def serialize(self, serializable: Optional[SerializableType]) -> PrimitiveUnionType:
         if type(self._encoder) == JSONEncoder:
@@ -52,16 +46,15 @@ class _JSONDecoderAsDeserializer(Deserializer, metaclass=ABCMeta):
     JSON decoder wrapped to work as a `Deserializer`.
     """
     @abstractproperty
-    def _get_decoder_type(self, *args) -> type:
+    def decoder_type(self) -> type:
         """
         Gets the `JSONDecoder` type that is used by this deserialiser.
         :return: the decoder type (must be a subclass of `JSONDecoder`)
         """
 
     def __init__(self, *args, **kwargs):
-        json_decoder_cls = self._get_decoder_type()
-        super().__init__([], json_decoder_cls)
-        self._decoder = json_decoder_cls(*args, **kwargs)  # type: JSONDecoder
+        super().__init__([], self.decoder_type)
+        self._decoder = self.decoder_type(*args, **kwargs)  # type: JSONDecoder
 
     def deserialize(self, json_as_dict: PrimitiveJsonSerializableType) -> Optional[SerializableType]:
         if not isinstance(self._decoder, ParsedJSONDecoder):
@@ -79,39 +72,33 @@ class _JSONDecoderAsDeserializer(Deserializer, metaclass=ABCMeta):
         """
 
 
-def json_encoder_to_serializer(encoder_cls: type) -> type:
+def json_encoder_to_serializer(encoder_cls: Union[type, Callable[[], type]]) -> type:
     """
     Converts a `JSONEncoder` class into an equivalent `Serializer` class.
-    :param encoder_cls: the encoder class
+    :param encoder_cls: the encoder class type or a function that returns the type
     :return: the equivalent `Serializer` class
     """
-    if encoder_cls not in _serializer_cache:
-        encoder_as_serializer_cls = type(
-            "%sAsSerializer" % encoder_cls.__class__.__name__,
-            (_JSONEncoderAsSerializer,),
-            {
-                "_get_encoder_type": lambda self: encoder_cls
-            }
-        )
-        _serializer_cache[encoder_cls] = encoder_as_serializer_cls
-
-    return _serializer_cache[encoder_cls]
+    name = encoder_cls.__class__.__name__ if isinstance(encoder_cls, type) else "%sLambdaTypeReturn" % id(encoder_cls)
+    return type(
+        "%sAsSerializer" % name,
+        (_JSONEncoderAsSerializer,),
+        {
+            "encoder_type": property(lambda self: encoder_cls if isinstance(encoder_cls, type) else encoder_cls())
+        }
+    )
 
 
-def json_decoder_to_deserializer(decoder_cls: type) -> type:
+def json_decoder_to_deserializer(decoder_cls: Union[type, Callable[[], type]]) -> type:
     """
     Converts a `JSONDecoder` class into an equivalent `Deserializer` class.
-    :param decoder_cls: the decoder class
+    :param decoder_cls: the decoder class type or a function that returns the type
     :return: the equivalent `Deserializer` class
     """
-    if decoder_cls not in _deserializer_cache:
-        encoder_as_deserializer_cls = type(
-            "%sAsDeserializer" % decoder_cls.__class__.__name__,
-            (_JSONDecoderAsDeserializer,),
-            {
-                "_get_decoder_type": lambda self: decoder_cls
-            }
-        )
-        _deserializer_cache[decoder_cls] = encoder_as_deserializer_cls
-
-    return _deserializer_cache[decoder_cls]
+    name = decoder_cls.__class__.__name__ if isinstance(decoder_cls, type) else "%sLambdaTypeReturn" % id(decoder_cls)
+    return type(
+        "%sAsDeserializer" % name,
+        (_JSONDecoderAsDeserializer,),
+        {
+            "decoder_type": property(lambda self: decoder_cls if isinstance(decoder_cls, type) else decoder_cls())
+        }
+    )
