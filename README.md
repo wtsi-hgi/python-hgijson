@@ -365,6 +365,19 @@ employee_mapping_schema = [
 ]
 ```
 
+If a property is encoded/decoded by the same encoder/decoder that is currently being defined, the type should be 
+returned by a function to work around the scoping problem, e.g.:
+```
+python
+class Person:
+   def __init__(self):
+       self.nemesis = None
+
+PersonJSONEncoder = MappingJSONEncoderClassBuilder(Person, [
+    JsonPropertyMapping("nemesis", "nemesis", encoder_cls=lambda: PersonJSONEncoder)
+]).build()
+```
+
 
 #### One-way mappings
 *Contrived example warning...*
