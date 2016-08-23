@@ -2,10 +2,11 @@ site_name: HGI JSON Documentation
 site_url: https://hgi-json.readthedocs.io
 repo_url: https://github.com/wtsi-hgi/python-json
 theme: readthedocs
+site_author: Colin Nolan
 pages:
   - 'index.md'
   - 'setup.md'
-  - 'functionality.md'
+  - 'Defining Encoders/Decoders': 'functionality.md'
   - 'notes.md'
   - 'performance.md'
   - 'alternatives.md'

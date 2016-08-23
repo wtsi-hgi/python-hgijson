@@ -39,6 +39,7 @@ class CustomClass(SupportFor, MultipleInheritance):
     self.and_lists = list()
     self.and_dictionaries = dict()
     self.and_complex_properties = ComplexClass()
+    self.and_nested_objects_of_the_same_type = CustomClass()
     self.and_properties_not_in_json_if_none = None
 
     self support_for_setters(self, value):

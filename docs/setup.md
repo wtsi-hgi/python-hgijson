@@ -18,8 +18,9 @@ All methods and classes can be imported with:
 ```python
 from hgijson import *
 ```
-Once what is required is known, [it is good practice]
-(http://python.net/~goodger/projects/pycon/2007/idiomatic/handout.html#importing) to import things explicitly, e.g.:
+Once what is required is known, 
+[it is good practice](http://python.net/~goodger/projects/pycon/2007/idiomatic/handout.html#importing) to import things 
+explicitly, e.g.:
 ```python
 from hgijson import JsonPropertyMapping, MappingJSONEncoderClassBuilder, MappingJSONDecoderClassBuilder
 ```
