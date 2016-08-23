@@ -4,8 +4,7 @@ from json import JSONDecoder, JSONEncoder
 
 from hgicommon.models import Model
 
-from hgijson.json._serialization import MappingJSONDecoder
-from hgijson.json._serialization import MappingJSONEncoder
+from hgijson.json._serialization import MappingJSONDecoder, MappingJSONEncoder
 from hgijson.json.builders import MappingJSONEncoderClassBuilder, MappingJSONDecoderClassBuilder, \
     SetJSONEncoderClassBuilder, SetJSONDecoderClassBuilder
 from hgijson.json.models import JsonPropertyMapping
@@ -38,6 +37,12 @@ class _Employee(_Named, _Identifiable):
         super().__init__()
         self.title = None
         self.office = None
+
+
+class _Container(Model):
+    def __init__(self, colour: str, container: "_Container" = None):
+        self.colour = colour
+        self.contains = container
 
 
 class TestMappingJSONEncoderClassBuilder(unittest.TestCase):
@@ -75,6 +80,15 @@ class TestMappingJSONEncoderClassBuilder(unittest.TestCase):
 
         encoded = encoder.default(self.complex_model)
         self.assertDictEqual(encoded, self.complex_model_as_json)
+
+    def test_build_with_superclass_as_string(self):
+        ContainerJSONEncoder = MappingJSONEncoderClassBuilder(_Container, [
+            JsonPropertyMapping("colour", "colour", object_constructor_parameter_name="colour"),
+            JsonPropertyMapping("contains", "contains", encoder_cls=lambda: ContainerJSONEncoder, optional=True)
+        ]).build()
+        encoder = ContainerJSONEncoder()
+        container = _Container("red", _Container("blue"))
+        self.assertEqual({"colour": "red", "contains": {"colour": "blue"}}, encoder.default(container))
 
     def test_build_with_multiple_superclasses(self):
         NamedJSONEncoder = MappingJSONEncoderClassBuilder(_Named, [
@@ -163,6 +177,15 @@ class TestMappingJSONDecoderClassBuilder(unittest.TestCase):
 
         decoded = decoder.decode(json.dumps(self.complex_model_as_json))
         self.assertEqual(decoded, self.complex_model)
+
+    def test_build_with_superclass_string(self):
+        ContainerJSONDecoder = MappingJSONDecoderClassBuilder(_Container, [
+            JsonPropertyMapping("colour", "colour", object_constructor_parameter_name="colour"),
+            JsonPropertyMapping("contains", "contains", decoder_cls=lambda: ContainerJSONDecoder, optional=True)
+        ]).build()
+        decoder = ContainerJSONDecoder()
+        container = _Container("red", _Container("blue"))
+        self.assertEqual(container, decoder.decode(json.dumps({"colour": "red", "contains": {"colour": "blue"}})))
 
     def test_build_with_multiple_superclasses(self):
         NamedJSONDecoder = MappingJSONDecoderClassBuilder(_Named, [

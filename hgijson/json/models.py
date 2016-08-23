@@ -1,5 +1,5 @@
 from json import JSONDecoder, JSONEncoder
-from typing import Callable, Any, Dict
+from typing import Callable, Any, Dict, Union
 
 from hgijson.json._converters import json_decoder_to_deserializer, json_encoder_to_serializer
 from hgijson.models import PropertyMapping
@@ -12,7 +12,8 @@ class JsonPropertyMapping(PropertyMapping):
     def __init__(
             self, json_property_name=None, object_property_name: str=None, object_constructor_parameter_name: str=None,
             json_property_getter: Callable[[Dict], Any]=None, json_property_setter: Callable[[Any, Any], None]=None,
-            encoder_cls: type=JSONEncoder, decoder_cls: type=JSONDecoder, optional: bool=False, **kwargs):
+            encoder_cls: Union[type, Callable[[], type]]=JSONEncoder,
+            decoder_cls: Union[type, Callable[[], type]]=JSONDecoder, optional: bool=False, **kwargs):
         """
         Constructor.
         :param json_property_name:
@@ -44,6 +45,7 @@ class JsonPropertyMapping(PropertyMapping):
             if json_property_setter is None:
                 def json_property_setter(obj_as_json: dict, value: Any):
                     obj_as_json[json_property_name] = value
+
 
         encoder_as_serializer_cls = json_encoder_to_serializer(encoder_cls)
         decoder_as_serializer_cls = json_decoder_to_deserializer(decoder_cls)

@@ -1,4 +1,9 @@
 # Change Log
+## [Unreleased]
+### Added
+- Support for defining encoders/decoders for objects with properties of the same type 
+([#19](https://github.com/wtsi-hgi/python-json/issues/19)).
+
 ## 1.4.2 - 2016-08-04
 ### Changed
 - Fix for issue with fix in `1.4.1`.
