@@ -424,7 +424,7 @@ mapping_schema = [
 ```
 
 
-## Serialization to/from a `dict`
+## Serialization to/from a dict
 To serialize an object to a dictionary, opposed to a string:
 ```python
 custom_object_as_dict = CustomJSONEncoder().default(custom_object)  # type: dict
@@ -435,7 +435,7 @@ To deserialize an object from a dictionary, opposed to from a string:
 ```python
 custom_object = CustomJSONDecoder().decode_parsed(custom_object_as_dict)
 ```
-*You can only use this with decoders defined by this library as they implement the [`ParsedJSONDecoder`]
-(https://github.com/wtsi-hgi/python-json/blob/master/hgijson/json/interfaces.py) interface. To achieve this
-functionality with other `JSONDecoder` implementations, you would have to (wastefully) convert the dictionary to a 
-string using `json.dump` before using the decoder's standard `decode` method.*
+*You can only use this with decoders defined by this library as they implement the 
+[`ParsedJSONDecoder`](https://github.com/wtsi-hgi/python-json/blob/master/hgijson/json/interfaces.py) interface. To 
+achieve this functionality with other `JSONDecoder` implementations, you would have to (wastefully) convert the 
+dictionary to a string using `json.dump` before using the decoder's standard `decode` method.*
