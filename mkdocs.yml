@@ -7,6 +7,7 @@ pages:
   - 'index.md'
   - 'setup.md'
   - 'Defining Encoders/Decoders': 'functionality.md'
+  - 'examples.md'
   - 'notes.md'
   - 'performance.md'
   - 'alternatives.md'
