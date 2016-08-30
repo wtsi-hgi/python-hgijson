@@ -1,11 +1,12 @@
 # Change Log
-## [Unreleased]
+## 1.4.3 - 2016-08-30
 ### Added
 - Support for defining encoders/decoders for objects with properties of the same type 
 ([#19](https://github.com/wtsi-hgi/python-json/issues/19)).
 
 ### Changed
 - Moved the documentation over to ReadTheDocs, opposed to bundling it all the README.
+
 
 ## 1.4.2 - 2016-08-04
 ### Changed
@@ -18,6 +19,7 @@
 [reported](https://github.com/wtsi-hgi/python-json/issues/16#issuecomment-237527405) by 
 [YuriIvanov](https://github.com/YuriIvanov) ([#18](https://github.com/wtsi-hgi/python-json/issues/18)).
 
+
 ## 1.4.0 - 2016-08-04
 ### Changed
 - Encoders now serialise `None` to `null` and visa-versa for decoders (thanks to 
@@ -25,9 +27,11 @@
 [#16](https://github.com/wtsi-hgi/python-json/issues/16)) ([#17](https://github.com/wtsi-hgi/python-json/issues/17)).
 - Corrected self-referential type hinting. 
 
+
 ## 1.3.1 - 2016-05-19
 ### Changed
 - Corrections to `setup.py`.
+
 
 ## 1.3.0 - 2016-05-19
 ### Added
@@ -42,13 +46,16 @@
 ### Removed
 - Helper test runner scripts.
 
+
 ## 1.2.2 - 2016-05-18
 ### Changed
 - Hotfix for dependency installation when installed via PyPI.
 
+
 ## 1.2.1 - 2016-05-18
 ### Changed
 - Hotfix for package installation via PyPI.
+
 
 ## 1.2.0 - 2016-05-18
 ### Added
