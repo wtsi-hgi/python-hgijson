@@ -9,11 +9,12 @@ A Python 3 library for easily JSON encoding/decoding complex class-based Python 
 
 
 ## Features
-* Ability to create serializers and deserializers for complex class-based models using a mapping schema.
-* Works seamlessly with Python's in-built `json.dumps` and `json.loads` serialization methods - does not require the use
-of exotic "convert_to_json"/"convert_from_json" methods.
+* Ability to create serializers and deserializers for complex class-based models using a mapping schema defined in 
+Python.
+* Works seamlessly with Python's in-built `json.dumps` and `json.loads` serialization methods - does not require the use 
+of exotic `convert_to_json`/`convert_from_json` methods.
 * Python models are not be coupled to the serialization process - models do not have to inherit from a particular
-superclass or implement an interface with a "to_json" (or similar) method.
+superclass or implement an interface with a `to_json` (or similar) method.
 * JSON representations produced are not coupled to the Python model - an arbitrary mapping between the JSON and the
 model can be defined.
 * Simple to define serialization of subclasses, based on how superclasses are serialized.
@@ -22,6 +23,7 @@ model can be defined.
 
 
 ## Overview
+### Basic Steps
 1. Define schema for mapping an object to and/or from JSON representation using a list of `JsonPropertyMapping`
 definitions.
 2. Use `MappingJSONEncoderClassBuilder` with the mappings to build a subclass of `JSONEncode` for serializing instances 
@@ -29,8 +31,9 @@ of a specific type. Similar with decode.
 3. Use created encoder class with Python's in-built `json.dumps` via the `cls` parameter. Similar with decoder.
 
 
-A mapping can be written that allows complex classes, such as that below, to be mapped to and from any JSON
-representation:
+### Defining Encoders/Decoders
+Encoders and decoders are generated based on a defined JSON <-> Model mapping. A mapping can be written that allows 
+complex classes, such as that below, to be mapped to and from any JSON representation:
 ```python
 class CustomClass(SupportFor, MultipleInheritance):
     self __init__(self, support_for_constructor_parameters):
@@ -56,4 +59,5 @@ custom_class = json.loads("<custom_class_as_json>", cls=CustomClassJSONDecoder) 
 ```
 
 ## Documentation
-[View on ReadTheDocs](http://hgi-json.readthedocs.io/en/readthedocs/) or read in `/docs`.
+For more details, including information on how to setup and use the library, please [view the documentation on 
+ReadTheDocs](http://hgi-json.readthedocs.io/en/readthedocs/) or read it from `/docs`.
