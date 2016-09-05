@@ -60,4 +60,4 @@ custom_class = json.loads("<custom_class_as_json>", cls=CustomClassJSONDecoder) 
 
 ## Documentation
 For more details, including information on how to setup and use the library, please [view the documentation on 
-ReadTheDocs](http://hgi-json.readthedocs.io/en/readthedocs/) or read it from `/docs`.
+ReadTheDocs](http://hgi-json.readthedocs.io/en/latest/) or read it from `/docs`.
