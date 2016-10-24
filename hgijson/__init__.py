@@ -6,5 +6,3 @@ from hgijson.json.builders import MappingJSONDecoderClassBuilder, SetJSONEncoder
     SetJSONDecoderClassBuilder, MappingJSONEncoderClassBuilder
 
 from hgijson.json.models import JsonPropertyMapping
-
-

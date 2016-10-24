@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from json import JSONEncoder, JSONDecoder
-from typing import Union, Sequence, List, Optional
+from typing import Union, List, Optional
 
 from hgijson.json._serializers import JsonObjectSerializer, JsonObjectDeserializer
 from hgijson.json.interfaces import ParsedJSONDecoder

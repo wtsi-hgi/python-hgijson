@@ -1,7 +1,7 @@
 import json
+from json import JSONDecoder, JSONEncoder
 from abc import ABCMeta, abstractproperty
 from datetime import datetime, timezone
-from json import JSONDecoder, JSONEncoder
 from typing import Any, Set, TypeVar, Generic
 
 from dateutil.parser import parser

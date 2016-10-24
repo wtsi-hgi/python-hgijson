@@ -1,11 +1,18 @@
 # Change Log
+## [Unreleased]
+### Changed
+- Moved to using a PyPi version of 
+[HGI's common Python library](https://github.com/wtsi-hgi/python-common) for 
+testing, opposed to using it from GitHub.
+
+
 ## 1.4.3 - 2016-08-30
 ### Added
 - Support for defining encoders/decoders for objects with properties of the same type 
 ([#19](https://github.com/wtsi-hgi/python-json/issues/19)).
 
 ### Changed
-- Moved the documentation over to ReadTheDocs, opposed to bundling it all the README.
+- Moved the documentation over to ReadTheDocs, opposed to bundling it all in the README.
 
 
 ## 1.4.2 - 2016-08-04

@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from typing import Any, Generic, Union, Sequence, Dict, List, Optional
+from typing import Any, Generic, Union, Dict, List, Optional
 
 from hgijson.types import SerializableType, PrimitiveUnionType, PrimitiveJsonSerializableType
 
