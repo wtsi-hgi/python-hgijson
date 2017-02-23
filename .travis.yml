@@ -9,6 +9,7 @@ matrix:
       - python: 3.6-dev
 
 before_install:
+  - pip install nose
   - pip install codecov
 
 install:
