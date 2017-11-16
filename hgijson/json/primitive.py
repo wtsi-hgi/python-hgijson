@@ -74,7 +74,10 @@ class DatetimeISOFormatJSONDecoder(ParsedJSONDecoder):
     """
     _DATE_PARSER = parser()
 
-    def decode_parsed(self, parsed_json: str) -> datetime:
+    def decode(self, to_decode: str, **kwargs) -> str:
+        return self.decode_parsed(json.loads(to_decode))
+
+    def decode_parsed(self, parsed_json: str) -> str:
         return DatetimeISOFormatJSONDecoder._DATE_PARSER.parse(parsed_json)
 
 
@@ -121,7 +124,7 @@ class SetJSONEncoder(Generic[ItemType], JSONEncoder, metaclass=ABCMeta):
         return encoded_set
 
 
-class SetJSONDecoder(Generic[ItemType], JSONDecoder, ParsedJSONDecoder, metaclass=ABCMeta):
+class SetJSONDecoder(Generic[ItemType], ParsedJSONDecoder, metaclass=ABCMeta):
     """
     Decoder for sets, which deserialises JSON lists into Python sets.
     """
