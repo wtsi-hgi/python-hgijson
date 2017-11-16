@@ -1,9 +1,10 @@
 # Change Log
-## [Unreleased]
+## 1.5.0 - 2017-11-16 
 ### Changed
 - Moved to using a PyPi version of 
 [HGI's common Python library](https://github.com/wtsi-hgi/python-common) for 
 testing, opposed to using it from GitHub.
+- Fixed bug in `DatetimeISOFormatJSONDecoder`.
 
 
 ## 1.4.3 - 2016-08-30

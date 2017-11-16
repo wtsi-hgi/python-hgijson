@@ -10,7 +10,7 @@ except ImportError:
 
 setup(
     name="hgijson",
-    version="1.4.3",
+    version="1.5.0",
     author="Colin Nolan",
     author_email="colin.nolan@sanger.ac.uk",
     packages=find_packages(exclude=["tests"]),
@@ -26,7 +26,7 @@ setup(
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License"
     ]
 )
