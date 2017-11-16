@@ -14,7 +14,7 @@ setup(
     author="Colin Nolan",
     author_email="colin.nolan@sanger.ac.uk",
     packages=find_packages(exclude=["tests"]),
-    install_requires = open("requirements.txt", "r").readline(),
+    install_requires = open("requirements.txt", "r").readlines(),
     url="https://github.com/wtsi-hgi/python-json",
     license="MIT",
     description="Python 3 library for easily JSON encoding/decoding complex class-based Python models, using an "
