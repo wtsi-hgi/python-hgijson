@@ -69,7 +69,7 @@ class MappingJSONEncoder(JSONEncoder, PropertyMapper, metaclass=ABCMeta):
         return self._serializer_cache
 
 
-class MappingJSONDecoder(JSONDecoder, ParsedJSONDecoder, PropertyMapper, metaclass=ABCMeta):
+class MappingJSONDecoder(ParsedJSONDecoder, PropertyMapper, metaclass=ABCMeta):
     """
     JSON decoder that creates an object from JSON based on a mapping from the JSON properties to the object properties,
     mindful that some properties may have to be passed through the constructor.
