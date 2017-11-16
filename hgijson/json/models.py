@@ -46,7 +46,6 @@ class JsonPropertyMapping(PropertyMapping):
                 def json_property_setter(obj_as_json: dict, value: Any):
                     obj_as_json[json_property_name] = value
 
-
         encoder_as_serializer_cls = json_encoder_to_serializer(encoder_cls)
         decoder_as_serializer_cls = json_decoder_to_deserializer(decoder_cls)
 
