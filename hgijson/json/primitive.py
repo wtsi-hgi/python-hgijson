@@ -1,7 +1,7 @@
 import json
-from json import JSONDecoder, JSONEncoder
-from abc import ABCMeta, abstractproperty
+from abc import ABCMeta, abstractmethod
 from datetime import datetime, timezone
+from json import JSONDecoder, JSONEncoder
 from typing import Any, Set, TypeVar, Generic
 
 from dateutil.parser import parser
@@ -68,14 +68,14 @@ class DatetimeISOFormatJSONEncoder(JSONEncoder):
         return to_encode.isoformat()
 
 
-class DatetimeISOFormatJSONDecoder(JSONDecoder):
+class DatetimeISOFormatJSONDecoder(ParsedJSONDecoder):
     """
     JSON decoder for datetime as ISO 8601 formatted string.
     """
     _DATE_PARSER = parser()
 
-    def decode(self, to_decode: str, **kwargs) -> datetime:
-        return DatetimeISOFormatJSONDecoder._DATE_PARSER.parse(to_decode)
+    def decode_parsed(self, parsed_json: str) -> datetime:
+        return DatetimeISOFormatJSONDecoder._DATE_PARSER.parse(parsed_json)
 
 
 class DatetimeEpochJSONEncoder(JSONEncoder):
@@ -99,12 +99,14 @@ class SetJSONEncoder(Generic[ItemType], JSONEncoder, metaclass=ABCMeta):
     """
     Encoder for sets, which serialises sets into JSON lists.
     """
-    @abstractproperty
+    @property
+    @abstractmethod
     def item_encoder_cls(self) -> type:
         """
         The type of JSON encoder to use for each item in a set.
         :return: the type of item JSON encoder - must be a subclass of `JSONEncoder`
         """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._item_encoder = self.item_encoder_cls(*args, **kwargs)     # type: JSONEncoder
@@ -123,7 +125,8 @@ class SetJSONDecoder(Generic[ItemType], JSONDecoder, ParsedJSONDecoder, metaclas
     """
     Decoder for sets, which deserialises JSON lists into Python sets.
     """
-    @abstractproperty
+    @property
+    @abstractmethod
     def item_decoder_cls(self) -> type:
         """
         The type of JSON decoder for each item in a set that has been encoded as a JSON list.
