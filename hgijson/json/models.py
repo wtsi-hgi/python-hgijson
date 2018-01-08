@@ -12,6 +12,7 @@ class JsonPropertyMapping(PropertyMapping):
     def __init__(
             self, json_property_name=None, object_property_name: str=None, object_constructor_parameter_name: str=None,
             json_property_getter: Callable[[Dict], Any]=None, json_property_setter: Callable[[Any, Any], None]=None,
+            object_property_getter: Callable[[Any], Any]=None, object_property_setter: Callable[[Any, Any], None]=None,
             encoder_cls: Union[type, Callable[[], type]]=JSONEncoder,
             decoder_cls: Union[type, Callable[[], type]]=JSONDecoder, optional: bool=False, **kwargs):
         """
@@ -21,6 +22,8 @@ class JsonPropertyMapping(PropertyMapping):
         :param object_constructor_parameter_name:
         :param json_property_getter:
         :param json_property_setter:
+        :param object_property_getter:
+        :param object_property_setter:
         :param encoder_cls:
         :param decoder_cls:
         :param optional:
@@ -46,12 +49,32 @@ class JsonPropertyMapping(PropertyMapping):
                 def json_property_setter(obj_as_json: dict, value: Any):
                     obj_as_json[json_property_name] = value
 
+        if object_property_name is not None:
+            if object_property_getter is not None and object_property_setter is not None:
+                raise ValueError("Redundant `object_property_name` argument given. It has been specified that an "
+                                 "object property is to be used via the given property name and both a setter and "
+                                 "getter of this object property has been provided. To avoid confusion, the object "
+                                 "property cannot be specified in this case.")
+
+            if object_property_getter is None:
+                def object_property_getter(obj: Any) -> Any:
+                    return obj.__getattribute__(object_property_name)
+
+            if object_property_setter is None and object_constructor_parameter_name is None:
+                def object_property_setter(obj: Any, value: Any):
+                    if not hasattr(obj, object_property_name):
+                        raise AttributeError("Object `%s` does not have the attribute `%s`"
+                                             % (obj, object_property_name))
+                    obj.__setattr__(object_property_name, value)
+
         encoder_as_serializer_cls = json_encoder_to_serializer(encoder_cls)
         decoder_as_serializer_cls = json_decoder_to_deserializer(decoder_cls)
 
-        super().__init__(object_property_name, object_constructor_parameter_name,
+        super().__init__(object_constructor_parameter_name=object_constructor_parameter_name,
                          serialized_property_getter=json_property_getter,
                          serialized_property_setter=json_property_setter,
+                         object_property_getter=object_property_getter,
+                         object_property_setter=object_property_setter,
                          serializer_cls=encoder_as_serializer_cls, deserializer_cls=decoder_as_serializer_cls,
                          optional=optional, **kwargs)
 

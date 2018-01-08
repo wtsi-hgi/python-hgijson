@@ -18,10 +18,13 @@ def get_complex_model_property_mappings() -> Sequence[PropertyMapping]:
     return [
         JsonPropertyMapping("serialized_b", "b", "constructor_b"),
         JsonPropertyMapping("serialized_c", "c"),
-        PropertyMapping("d", serialized_property_getter=lambda obj_as_dict: obj_as_dict["serialized_d"],
+        PropertyMapping(serialized_property_getter=lambda obj_as_dict: obj_as_dict["serialized_d"],
                         serialized_property_setter=lambda obj_as_dict, value: obj_as_dict.__setitem__(
                             "serialized_d", value),
-                        serializer_cls=SimpleModelSerializer, deserializer_cls=SimpleModelDeserializer),
+                        object_property_getter=lambda obj: obj.d,
+                        object_property_setter=lambda obj, value: setattr(obj, "d", value),
+                        serializer_cls=SimpleModelSerializer,
+                        deserializer_cls=SimpleModelDeserializer),
         JsonPropertyMapping("serialized_e", "e"),
         JsonPropertyMapping("serialized_f", "f"),
         JsonPropertyMapping("serialized_g", "g"),

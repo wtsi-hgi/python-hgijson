@@ -47,7 +47,8 @@ class TestSerializer(unittest.TestCase):
         def serialized_property_setter_for_d(container: Dict, value: Dict):
             container["serialized_d"] = value
 
-        mappings = [PropertyMapping("d", serialized_property_setter=serialized_property_setter_for_d,
+        mappings = [PropertyMapping(serialized_property_setter=serialized_property_setter_for_d,
+                                    object_property_getter=lambda obj: obj.d,
                                     serializer_cls=SimpleModelSerializer)]
         serializer = ComplexModelSerializer(mappings)
 
@@ -129,7 +130,8 @@ class TestDeserializer(unittest.TestCase):
         mappings = [JsonPropertyMapping("serialized_a", "a"),
                     JsonPropertyMapping("serialized_b", object_constructor_parameter_name="constructor_b"),
                     JsonPropertyMapping("serialized_c", "c"),
-                    PropertyMapping("d", serialized_property_getter=lambda obj_as_dict: obj_as_dict["serialized_d"],
+                    PropertyMapping(serialized_property_getter=lambda obj_as_dict: obj_as_dict["serialized_d"],
+                                    object_property_setter=lambda obj, value: setattr(obj, "d", value),
                                     deserializer_cls=SimpleModelDeserializer)]
         deserializer = ComplexModelDeserializer(mappings)
         self.assertEqual(deserializer.deserialize(self.complex_model_as_json), self.complex_model)

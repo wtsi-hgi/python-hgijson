@@ -8,7 +8,7 @@ class PropertyMapping():
     Model of a mapping between a json property and a property of an object.
     """
     def __init__(
-            self, object_property_name: str=None, object_constructor_parameter_name: str=None,
+            self, *, object_constructor_parameter_name: str=None,
             object_constructor_argument_modifier: Callable[[Any], Any]=None,
             serialized_property_getter: Callable[[Dict], Any]=None,
             serialized_property_setter: Callable[[Any, Any], None]=None,
@@ -34,27 +34,6 @@ class PropertyMapping():
         :param optional: whether the property is optional - will ignore if `None` in serialized representation and will
         not serialize if `None` in object
         """
-        if object_property_name is not None:
-            # It is not possible to know what the serialized container is therefore default values cannot be set if a
-            # required getter/setter is not given. Defaults can however be set in subclasses.
-
-            if object_property_getter is not None and object_property_setter is not None:
-                raise ValueError("Redundant `object_property_name` argument given. It has been specified that an "
-                                 "object property is to be used via the given property name and both a setter and "
-                                 "getter of this property has been provided. To avoid confusion, the object "
-                                 "property cannot be specified in this case.")
-
-            if object_property_getter is None:
-                def object_property_getter(obj: Any) -> Any:
-                    return obj.__getattribute__(object_property_name)
-
-            if object_property_setter is None and object_constructor_parameter_name is None:
-                def object_property_setter(obj: Any, value: Any):
-                    if not hasattr(obj, object_property_name):
-                        raise AttributeError("Object `%s` does not have the attribute `%s`"
-                                             % (obj, object_property_name))
-                    obj.__setattr__(object_property_name, value)
-
         if object_constructor_parameter_name is not None:
             if serialized_property_getter is None:
                 raise ValueError("`serialized_property_getter` must be defined alongside "
