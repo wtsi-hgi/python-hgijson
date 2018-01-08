@@ -2,19 +2,19 @@
 ## Setup
 Install both library dependencies and the dependencies needed for testing:
 ```bash
-$ pip3 install -q -r requirements.txt
-$ pip3 install -q -r test_requirements.txt
+pip3 install -q -r requirements.txt
+pip3 install -q -r test_requirements.txt
 ```
 
 ## Testing
 Using nosetests, in the project directory, run:
 ```bash
-$ nosetests -v
+PYTHONPATH=. python -m unittest discover -v -s hgijson/tests
 ```
 
 To generate a test coverage report with nosetests:
 ```bash
-$ nosetests -v --with-coverage --cover-package=hgijson --cover-inclusive
+PYTHONPATH=. coverage run -m unittest discover -v -s hgijson/tests
 ```
 
 ## Documentation
