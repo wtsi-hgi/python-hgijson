@@ -8,11 +8,12 @@ class PropertyMapping():
     Model of a mapping between a json property and a property of an object.
     """
     def __init__(
-            self, *, object_constructor_parameter_name: str=None,
-            object_constructor_argument_modifier: Callable[[Any], Any]=None,
+            self, *,
             serialized_property_getter: Callable[[Dict], Any]=None,
             serialized_property_setter: Callable[[Any, Any], None]=None,
             object_property_getter: Callable[[Any], Any]=None, object_property_setter: Callable[[Any, Any], None]=None,
+            object_constructor_parameter_name: str = None,
+            object_constructor_argument_modifier: Callable[[Any], Any] = None,
             serializer_cls: type=PrimitiveSerializer, deserializer_cls: type=PrimitiveDeserializer,
             optional: bool=False):
         """

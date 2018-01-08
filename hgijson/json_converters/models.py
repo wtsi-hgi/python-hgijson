@@ -11,15 +11,17 @@ class JsonPropertyMapping(PropertyMapping):
     """
     def __init__(
             self, json_property_name=None, object_property_name: str=None, object_constructor_parameter_name: str=None,
+            *, object_constructor_argument_modifier: Callable[[Any], Any]=None,
             json_property_getter: Callable[[Dict], Any]=None, json_property_setter: Callable[[Any, Any], None]=None,
             object_property_getter: Callable[[Any], Any]=None, object_property_setter: Callable[[Any, Any], None]=None,
             encoder_cls: Union[type, Callable[[], type]]=JSONEncoder,
-            decoder_cls: Union[type, Callable[[], type]]=JSONDecoder, optional: bool=False, **kwargs):
+            decoder_cls: Union[type, Callable[[], type]]=JSONDecoder, optional: bool=False):
         """
         Constructor.
         :param json_property_name:
         :param object_property_name:
         :param object_constructor_parameter_name:
+        :param object_constructor_argument_modifier:
         :param json_property_getter:
         :param json_property_setter:
         :param object_property_getter:
@@ -70,13 +72,14 @@ class JsonPropertyMapping(PropertyMapping):
         encoder_as_serializer_cls = json_encoder_to_serializer(encoder_cls)
         decoder_as_serializer_cls = json_decoder_to_deserializer(decoder_cls)
 
-        super().__init__(object_constructor_parameter_name=object_constructor_parameter_name,
-                         serialized_property_getter=json_property_getter,
+        super().__init__(serialized_property_getter=json_property_getter,
                          serialized_property_setter=json_property_setter,
                          object_property_getter=object_property_getter,
                          object_property_setter=object_property_setter,
+                         object_constructor_parameter_name=object_constructor_parameter_name,
+                         object_constructor_argument_modifier=object_constructor_argument_modifier,
                          serializer_cls=encoder_as_serializer_cls, deserializer_cls=decoder_as_serializer_cls,
-                         optional=optional, **kwargs)
+                         optional=optional)
 
     @property
     def json_property_getter(self) -> Callable[[Dict], Any]:

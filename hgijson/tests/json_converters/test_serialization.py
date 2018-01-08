@@ -4,7 +4,7 @@ import unittest
 from hgijson.tests.json_converters._helpers import create_complex_model_with_json_representation, \
     create_simple_model_with_json_representation
 from hgijson.tests.json_converters._serializers import SimpleModelMappingJSONDecoder, ComplexModelMappingJSONDecoder, \
-    SimpleModelMappingJSONEncoder, ComplexModelMappingJSONEncoder, get_complex_model_json_property_mappings
+    SimpleModelMappingJSONEncoder, ComplexModelMappingJSONEncoder
 
 
 class TestMappingJSONEncoder(unittest.TestCase):
