@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 from json import JSONDecoder, JSONEncoder
 from typing import Optional, Union, Callable, Dict, List, Tuple
 
-from hgijson.json.interfaces import ParsedJSONDecoder
+from hgijson.json_converters.interfaces import ParsedJSONDecoder
 from hgijson.serialization import Deserializer, Serializer
 from hgijson.types import PrimitiveJsonSerializableType, PrimitiveUnionType, SerializableType
 

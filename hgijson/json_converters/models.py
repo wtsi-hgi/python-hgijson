@@ -1,7 +1,7 @@
 from json import JSONDecoder, JSONEncoder
 from typing import Callable, Any, Dict, Union
 
-from hgijson.json._converters import json_decoder_to_deserializer, json_encoder_to_serializer
+from hgijson.json_converters._converters import json_decoder_to_deserializer, json_encoder_to_serializer
 from hgijson.models import PropertyMapping
 
 

@@ -1,4 +1,4 @@
-from hgijson.json.primitive import SetJSONEncoder, SetJSONDecoder
+from hgijson.json_converters.primitive import SetJSONEncoder, SetJSONDecoder
 
 
 class MockSetJSONEncoder(SetJSONEncoder):

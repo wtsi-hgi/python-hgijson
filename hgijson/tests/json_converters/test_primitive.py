@@ -2,11 +2,11 @@ import json
 import unittest
 from datetime import datetime, timezone
 
-from hgijson.json.primitive import StrJSONDecoder, IntJSONEncoder, FloatJSONEncoder, FloatJSONDecoder, \
+from hgijson.json_converters.primitive import StrJSONDecoder, IntJSONEncoder, FloatJSONEncoder, FloatJSONDecoder, \
     DatetimeEpochJSONEncoder, DatetimeEpochJSONDecoder, DatetimeISOFormatJSONDecoder, DatetimeISOFormatJSONEncoder, \
     IntJSONDecoder
-from hgijson.json.primitive import StrJSONEncoder
-from hgijson.tests.json._mocks import MockSetJSONEncoder, MockSetJSONDecoder
+from hgijson.json_converters.primitive import StrJSONEncoder
+from hgijson.tests.json_converters._mocks import MockSetJSONEncoder, MockSetJSONDecoder
 
 
 class TestStrJSONEncoder(unittest.TestCase):

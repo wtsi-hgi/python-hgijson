@@ -2,7 +2,7 @@ import json
 import unittest
 from json import JSONEncoder
 
-from hgijson.json.automatic import AutomaticJSONEncoderClassBuilder
+from hgijson.json_converters.automatic import AutomaticJSONEncoderClassBuilder
 from hgijson.tests._stubs import StubModel, StubRegisteredTypeJSONEncoder
 
 

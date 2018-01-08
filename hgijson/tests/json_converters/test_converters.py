@@ -1,10 +1,10 @@
 import json
 import unittest
 
-from hgijson.json._converters import json_encoder_to_serializer, json_decoder_to_deserializer
+from hgijson.json_converters._converters import json_encoder_to_serializer, json_decoder_to_deserializer
 from hgijson.serialization import Deserializer, Serializer
-from hgijson.tests.json._helpers import create_simple_model_with_json_representation
-from hgijson.tests.json._serializers import BasicSimpleModelJSONEncoder, BasicSimpleModelJSONDecoder
+from hgijson.tests.json_converters._helpers import create_simple_model_with_json_representation
+from hgijson.tests.json_converters._serializers import BasicSimpleModelJSONEncoder, BasicSimpleModelJSONDecoder
 
 
 class TestConverters(unittest.TestCase):

@@ -1,12 +1,12 @@
 import unittest
 from typing import Dict
 
-from hgijson.json.models import JsonPropertyMapping
+from hgijson.json_converters.models import JsonPropertyMapping
 from hgijson.models import PropertyMapping
 from hgijson.tests._models import SimpleModel
 from hgijson.tests._serializers import ComplexModelSerializer, SimpleModelDeserializer, ComplexModelDeserializer, \
     SimpleModelSerializer
-from hgijson.tests.json._helpers import create_complex_model_with_json_representation, \
+from hgijson.tests.json_converters._helpers import create_complex_model_with_json_representation, \
     create_simple_model_with_json_representation
 
 

@@ -2,8 +2,8 @@ import json
 from json import JSONEncoder, JSONDecoder
 from typing import Sequence, Iterable
 
-from hgijson.json._serialization import MappingJSONDecoder, MappingJSONEncoder
-from hgijson.json.models import JsonPropertyMapping
+from hgijson.json_converters._serialization import MappingJSONDecoder, MappingJSONEncoder
+from hgijson.json_converters.models import JsonPropertyMapping
 from hgijson.types import PrimitiveUnionType
 from hgijson.tests._models import SimpleModel, ComplexModel
 

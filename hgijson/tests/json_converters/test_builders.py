@@ -4,14 +4,14 @@ from json import JSONDecoder, JSONEncoder
 
 from hgicommon.models import Model
 
-from hgijson.json._serialization import MappingJSONDecoder, MappingJSONEncoder
-from hgijson.json.builders import MappingJSONEncoderClassBuilder, MappingJSONDecoderClassBuilder, \
+from hgijson.json_converters._serialization import MappingJSONDecoder, MappingJSONEncoder
+from hgijson.json_converters.builders import MappingJSONEncoderClassBuilder, MappingJSONDecoderClassBuilder, \
     SetJSONEncoderClassBuilder, SetJSONDecoderClassBuilder
-from hgijson.json.models import JsonPropertyMapping
+from hgijson.json_converters.models import JsonPropertyMapping
 from hgijson.tests._models import SimpleModel, ComplexModel
-from hgijson.tests.json._helpers import create_complex_model_with_json_representation,\
+from hgijson.tests.json_converters._helpers import create_complex_model_with_json_representation,\
     create_simple_model_with_json_representation
-from hgijson.tests.json._serializers import get_simple_model_json_property_mappings, \
+from hgijson.tests.json_converters._serializers import get_simple_model_json_property_mappings, \
     get_complex_model_json_property_mappings
 
 

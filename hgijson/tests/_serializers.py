@@ -1,6 +1,6 @@
 from typing import Any, Iterable, Sequence, List
 
-from hgijson.json.models import JsonPropertyMapping
+from hgijson.json_converters.models import JsonPropertyMapping
 from hgijson.models import PropertyMapping
 from hgijson.serialization import Serializer, Deserializer
 from hgijson.serializers import PrimitiveSerializer, PrimitiveDeserializer

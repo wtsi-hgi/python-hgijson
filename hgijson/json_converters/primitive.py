@@ -6,7 +6,7 @@ from typing import Any, Set, TypeVar, Generic
 
 from dateutil.parser import parser
 
-from hgijson.json.interfaces import ParsedJSONDecoder
+from hgijson.json_converters.interfaces import ParsedJSONDecoder
 from hgijson.types import PrimitiveJsonSerializableType, SerializableType
 
 ItemType = TypeVar("ItemType")

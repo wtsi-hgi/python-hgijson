@@ -1,9 +1,9 @@
 from abc import ABCMeta
 from typing import Iterable, Tuple, List
 
-from hgijson.json._serialization import MappingJSONEncoder, MappingJSONDecoder, PropertyMapper
-from hgijson.json.models import JsonPropertyMapping
-from hgijson.json.primitive import SetJSONEncoder, SetJSONDecoder
+from hgijson.json_converters._serialization import MappingJSONEncoder, MappingJSONDecoder, PropertyMapper
+from hgijson.json_converters.models import JsonPropertyMapping
+from hgijson.json_converters.primitive import SetJSONEncoder, SetJSONDecoder
 
 
 class _JSONSerializationClassBuilder(metaclass=ABCMeta):

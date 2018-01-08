@@ -1,7 +1,7 @@
 from json import JSONEncoder
 
 from hgicommon.models import Model
-from hgijson.json.automatic import _RegisteredTypeJSONEncoder
+from hgijson.json_converters.automatic import _RegisteredTypeJSONEncoder
 
 
 class StubModel(Model):
