@@ -1,4 +1,15 @@
 # Change Log
+## 2.0.0 - 2018-01-08
+### Changed
+- Renamed subpackage from `json` -> `json_converters` to avoid namespace clash with standard library.
+- Moved from using `nose` -> `unittest` for testing.
+- Only the first 3 arguments of `JsonPropertyMapping` can be used as args: the remainder must be kwargs.
+
+### Removed
+- Ability to pass arguments through arbitrary arguments from `JsonPropertyMapping` to `PropertyMapping`
+- Use of args with `PropertyMapping` (kwargs only).
+
+
 ## 1.5.0 - 2017-11-16 
 ### Changed
 - Moved to using a PyPi version of 
