@@ -58,14 +58,14 @@ class JsonPropertyMapping(PropertyMapping):
 
             if object_property_getter is None:
                 def object_property_getter(obj: Any) -> Any:
-                    return obj.__getattribute__(object_property_name)
+                    return getattr(obj, object_property_name)
 
             if object_property_setter is None and object_constructor_parameter_name is None:
                 def object_property_setter(obj: Any, value: Any):
                     if not hasattr(obj, object_property_name):
                         raise AttributeError("Object `%s` does not have the attribute `%s`"
                                              % (obj, object_property_name))
-                    obj.__setattr__(object_property_name, value)
+                    setattr(obj, object_property_name, value)
 
         encoder_as_serializer_cls = json_encoder_to_serializer(encoder_cls)
         decoder_as_serializer_cls = json_decoder_to_deserializer(decoder_cls)
