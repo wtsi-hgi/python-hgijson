@@ -24,7 +24,8 @@ def get_complex_model_json_property_mappings() -> Sequence[JsonPropertyMapping]:
         JsonPropertyMapping("serialized_e", "e"),
         JsonPropertyMapping("serialized_f", "f"),
         JsonPropertyMapping("serialized_g", "g"),
-        JsonPropertyMapping("serialized_h", "h")
+        JsonPropertyMapping("serialized_h", "h"),
+        JsonPropertyMapping("serialized_i", "i", collection_factory=set)
     ]
 
 

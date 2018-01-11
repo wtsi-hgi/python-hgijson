@@ -1,11 +1,11 @@
 from abc import ABCMeta, abstractmethod
-from json import JSONEncoder, JSONDecoder
+from json import JSONEncoder
 from typing import Union, List, Optional
 
 from hgijson.json_converters._serializers import JsonObjectSerializer, JsonObjectDeserializer
 from hgijson.json_converters.interfaces import ParsedJSONDecoder
-from hgijson.models import PropertyMapping
-from hgijson.types import PrimitiveJsonSerializableType, SerializableType
+from hgijson.serialization import PropertyMapping
+from hgijson.types import PrimitiveJsonType, SerializableType
 
 
 class PropertyMapper(metaclass=ABCMeta):
@@ -42,7 +42,7 @@ class MappingJSONEncoder(JSONEncoder, PropertyMapper, metaclass=ABCMeta):
         self._serializer_cache = None
 
     def default(self, serializable: Optional[Union[SerializableType, List[SerializableType]]]) \
-            -> PrimitiveJsonSerializableType:
+            -> PrimitiveJsonType:
         serializer = self._create_serializer()
         if serializable is not None \
                 and not isinstance(serializable, List) \
@@ -97,7 +97,7 @@ class MappingJSONDecoder(ParsedJSONDecoder, PropertyMapper, metaclass=ABCMeta):
         json_as_dict = super().decode(json_as_string)
         return self.decode_parsed(json_as_dict)
 
-    def decode_parsed(self, parsed_json: PrimitiveJsonSerializableType) -> SerializableType:
+    def decode_parsed(self, parsed_json: PrimitiveJsonType) -> SerializableType:
         deserializer = self._create_deserializer()
         return deserializer.deserialize(parsed_json)
 

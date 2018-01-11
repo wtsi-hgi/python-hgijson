@@ -1,7 +1,7 @@
 from typing import Any
 
 from hgijson.serialization import Serializer, Deserializer
-from hgijson.types import PrimitiveJsonSerializableType
+from hgijson.types import PrimitiveJsonType
 
 
 class PrimitiveSerializer(Serializer):
@@ -32,7 +32,7 @@ class PrimitiveDeserializer(Deserializer):
     def __init__(self, *args, **kwargs):
         super().__init__([], object)
 
-    def deserialize(self, object_property_value_dict: PrimitiveJsonSerializableType) -> PrimitiveJsonSerializableType:
+    def deserialize(self, object_property_value_dict: PrimitiveJsonType) -> PrimitiveJsonType:
         return object_property_value_dict
 
     def _create_deserializer_of_type(self, deserializer_type: type) -> None:

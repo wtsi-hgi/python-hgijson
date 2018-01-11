@@ -50,10 +50,8 @@ class TestMappingJSONEncoderClassBuilder(unittest.TestCase):
     Tests for `MappingJSONEncoderClassBuilder`.
     """
     def setUp(self):
-        self.simple_model = create_simple_model_with_json_representation()[0]
-        self.simple_model_as_json = create_simple_model_with_json_representation()[1]
-        self.complex_model = create_complex_model_with_json_representation()[0]
-        self.complex_model_as_json = create_complex_model_with_json_representation()[1]
+        self.simple_model, self.simple_model_as_json = create_simple_model_with_json_representation()
+        self.complex_model, self.complex_model_as_json = create_complex_model_with_json_representation()
 
     def test_build(self):
         encoder_builder = MappingJSONEncoderClassBuilder()
@@ -147,10 +145,8 @@ class TestMappingJSONDecoderClassBuilder(unittest.TestCase):
     Tests for `MappingJSONDecoderClassBuilder`.
     """
     def setUp(self):
-        self.simple_model = create_simple_model_with_json_representation()[0]
-        self.simple_model_as_json = create_simple_model_with_json_representation()[1]
-        self.complex_model = create_complex_model_with_json_representation()[0]
-        self.complex_model_as_json = create_complex_model_with_json_representation()[1]
+        self.simple_model, self.simple_model_as_json = create_simple_model_with_json_representation()
+        self.complex_model, self.complex_model_as_json = create_complex_model_with_json_representation()
 
     def test_build(self):
         decoder_builder = MappingJSONDecoderClassBuilder()

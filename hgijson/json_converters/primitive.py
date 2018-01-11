@@ -2,12 +2,12 @@ import json
 from abc import ABCMeta, abstractmethod
 from datetime import datetime, timezone
 from json import JSONDecoder, JSONEncoder
-from typing import Any, Set, TypeVar, Generic
+from typing import Any, Set, TypeVar, Generic, Type
 
 from dateutil.parser import parser
 
 from hgijson.json_converters.interfaces import ParsedJSONDecoder
-from hgijson.types import PrimitiveJsonSerializableType, SerializableType
+from hgijson.types import PrimitiveJsonType, SerializableType
 
 ItemType = TypeVar("ItemType")
 
@@ -114,7 +114,7 @@ class SetJSONEncoder(Generic[ItemType], JSONEncoder, metaclass=ABCMeta):
         super().__init__(*args, **kwargs)
         self._item_encoder = self.item_encoder_cls(*args, **kwargs)     # type: JSONEncoder
 
-    def default(self, to_encode: Set[ItemType]) -> PrimitiveJsonSerializableType:
+    def default(self, to_encode: Set[ItemType]) -> PrimitiveJsonType:
         if not isinstance(to_encode, Set):
             super().default(to_encode)
         encoded_set = []
@@ -144,7 +144,7 @@ class SetJSONDecoder(Generic[ItemType], ParsedJSONDecoder, metaclass=ABCMeta):
         to_decode_as_list = json.loads(to_decode)
         return self.decode_parsed(to_decode_as_list)
 
-    def decode_parsed(self, parsed_json: PrimitiveJsonSerializableType) -> SerializableType:
+    def decode_parsed(self, parsed_json: PrimitiveJsonType) -> SerializableType:
         decoded_set = set()
         for item in parsed_json:
             if isinstance(self._item_decoder, ParsedJSONDecoder):
@@ -156,3 +156,47 @@ class SetJSONDecoder(Generic[ItemType], ParsedJSONDecoder, metaclass=ABCMeta):
 
             decoded_set.add(decoded_item)
         return decoded_set
+
+
+
+# class CollectionJSONDecoder(Generic[ItemType], ParsedJSONDecoder, metaclass=ABCMeta):
+#     """
+#     Decoder for sets, which deserialises JSON lists into Python sets.
+#     """
+#     @property
+#     @abstractmethod
+#     def item_decoder_cls(self) -> Type[JSONDecoder]:
+#         """
+#         The type of JSON decoder for each item in a set that has been encoded as a JSON list.
+#         :return: the type of item JSON decoder - must be a subclass of `JSONDecoder`
+#         """
+#
+#     @abstractmethod
+#     def item_getter(self) -> ItemType:
+#         """
+#         TODO
+#         :return:
+#         """
+#
+#     def item_setter(self):
+#
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self._item_decoder = self.item_decoder_cls(*args, **kwargs)     # type: JSONDecoder
+#
+#     def decode(self, to_decode: str, **kwargs) -> Set[ItemType]:
+#         to_decode_as_list = json.loads(to_decode)
+#         return self.decode_parsed(to_decode_as_list)
+#
+#     def decode_parsed(self, parsed_json: PrimitiveJsonSerializableType) -> SerializableType:
+#         decoded_set = set()
+#         for item in parsed_json:
+#             if isinstance(self._item_decoder, ParsedJSONDecoder):
+#                 # Optimisation: `ParsedJSONDecoder` knows how to decode a dict - no need to convert to JSON as string
+#                 decoded_item = self._item_decoder.decode_parsed(item)
+#             else:
+#                 item_as_string = json.dumps(item)
+#                 decoded_item = self._item_decoder.decode(item_as_string)
+#
+#             decoded_set.add(decoded_item)
+#         return decoded_set

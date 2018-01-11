@@ -1,21 +1,41 @@
 from json import JSONDecoder, JSONEncoder
-from typing import Callable, Any, Dict, Union
+from typing import Callable, Any, Dict, Union, Iterable
 
 from hgijson.json_converters._converters import json_decoder_to_deserializer, json_encoder_to_serializer
-from hgijson.models import PropertyMapping
+from hgijson.serialization import PropertyMapping
+from hgijson.types import SerializableType
 
 
 class JsonPropertyMapping(PropertyMapping):
     """
     Model of a mapping between a json property and a property of an object.
     """
+    @property
+    def json_property_getter(self) -> Callable[[Dict], Any]:
+        return self.serialized_property_getter
+
+    @json_property_getter.setter
+    def json_property_getter(self, getter: Callable[[Dict], Any]):
+        self.serialized_property_getter = getter
+
+    @property
+    def json_property_setter(self) -> Callable[[Any, Any], None]:
+        return self.serialized_property_setter
+
+    @json_property_setter.setter
+    def json_property_setter(self, setter: Callable[[Any, Any], None]):
+        self.serialized_property_setter = setter
+
     def __init__(
             self, json_property_name=None, object_property_name: str=None, object_constructor_parameter_name: str=None,
             *, object_constructor_argument_modifier: Callable[[Any], Any]=None,
             json_property_getter: Callable[[Dict], Any]=None, json_property_setter: Callable[[Any, Any], None]=None,
             object_property_getter: Callable[[Any], Any]=None, object_property_setter: Callable[[Any, Any], None]=None,
             encoder_cls: Union[type, Callable[[], type]]=JSONEncoder,
-            decoder_cls: Union[type, Callable[[], type]]=JSONDecoder, optional: bool=False):
+            decoder_cls: Union[type, Callable[[], type]]=JSONDecoder, 
+            optional: bool=False,
+            collection_factory: Callable[[Iterable[SerializableType]], Any]=lambda items: list(items),
+            collection_init: Callable[[Any, Iterable[SerializableType]], None]=None):
         """
         Constructor.
         :param json_property_name:
@@ -79,20 +99,5 @@ class JsonPropertyMapping(PropertyMapping):
                          object_constructor_parameter_name=object_constructor_parameter_name,
                          object_constructor_argument_modifier=object_constructor_argument_modifier,
                          serializer_cls=encoder_as_serializer_cls, deserializer_cls=decoder_as_serializer_cls,
-                         optional=optional)
-
-    @property
-    def json_property_getter(self) -> Callable[[Dict], Any]:
-        return self.serialized_property_getter
-
-    @json_property_getter.setter
-    def json_property_getter(self, getter: Callable[[Dict], Any]):
-        self.serialized_property_getter = getter
-
-    @property
-    def json_property_setter(self) -> Callable[[Any, Any], None]:
-        return self.serialized_property_setter
-
-    @json_property_setter.setter
-    def json_property_setter(self, setter: Callable[[Any, Any], None]):
-        self.serialized_property_setter = setter
+                         optional=optional,
+                         collection_factory=collection_factory, collection_init=collection_init)

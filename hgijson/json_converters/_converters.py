@@ -5,7 +5,7 @@ from typing import Optional, Union, Callable, Dict, List, Tuple
 
 from hgijson.json_converters.interfaces import ParsedJSONDecoder
 from hgijson.serialization import Deserializer, Serializer
-from hgijson.types import PrimitiveJsonSerializableType, PrimitiveUnionType, SerializableType
+from hgijson.types import PrimitiveJsonType, PrimitiveUnionType, SerializableType
 
 
 class _JSONEncoderAsSerializer(Serializer, metaclass=ABCMeta):
@@ -58,7 +58,7 @@ class _JSONDecoderAsDeserializer(Deserializer, metaclass=ABCMeta):
         super().__init__([], self.decoder_type)
         self._decoder = self.decoder_type(*args, **kwargs)  # type: JSONDecoder
 
-    def deserialize(self, deserializable: PrimitiveJsonSerializableType) -> Optional[SerializableType]:
+    def deserialize(self, deserializable: PrimitiveJsonType) -> Optional[SerializableType]:
         if not isinstance(self._decoder, ParsedJSONDecoder):
             # Decode must take a string (even though we have a richer representation) :/
             json_as_string = json.dumps(deserializable)

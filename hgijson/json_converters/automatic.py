@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractstaticmethod
 from json import JSONEncoder
 from typing import Dict, Optional, Iterable, Any, TypeVar
 
-from hgijson.types import PrimitiveJsonSerializableType
+from hgijson.types import PrimitiveJsonType
 
 
 class _RegisteredTypeJSONEncoder(JSONEncoder, metaclass=ABCMeta):
@@ -30,7 +30,7 @@ class _RegisteredTypeJSONEncoder(JSONEncoder, metaclass=ABCMeta):
         self._kwargs = kwargs
         self._encoder_cache = dict()    # type: Dict[type, JSONEncoder]
 
-    def default(self, to_encode: Any) -> PrimitiveJsonSerializableType:
+    def default(self, to_encode: Any) -> PrimitiveJsonType:
         type_to_encode = type(to_encode)
 
         encoder_type = self._get_json_encoders_for_type(type_to_encode)

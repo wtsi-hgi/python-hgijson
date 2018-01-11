@@ -44,7 +44,8 @@ def create_complex_model_with_json_representation(modifier: int=0) -> Tuple[Comp
         "serialized_e": complex_model.e,
         "serialized_f": complex_model.f,
         "serialized_g": complex_model.g,
-        "serialized_h": complex_model.h
+        "serialized_h": complex_model.h,
+        "serialized_i": list(complex_model.i)
     })
 
     return complex_model, complex_model_as_json

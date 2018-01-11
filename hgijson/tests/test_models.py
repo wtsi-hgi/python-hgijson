@@ -1,6 +1,6 @@
 import unittest
 
-from hgijson.models import PropertyMapping
+from hgijson.serialization import PropertyMapping
 
 
 class TestPropertyMapping(unittest.TestCase):

@@ -1,8 +1,7 @@
 from typing import Any, Iterable, Sequence, List
 
 from hgijson.json_converters.models import JsonPropertyMapping
-from hgijson.models import PropertyMapping
-from hgijson.serialization import Serializer, Deserializer
+from hgijson.serialization import Serializer, Deserializer, PropertyMapping
 from hgijson.serializers import PrimitiveSerializer, PrimitiveDeserializer
 from hgijson.tests._models import SimpleModel, ComplexModel
 
@@ -28,7 +27,8 @@ def get_complex_model_property_mappings() -> Sequence[PropertyMapping]:
         JsonPropertyMapping("serialized_e", "e"),
         JsonPropertyMapping("serialized_f", "f"),
         JsonPropertyMapping("serialized_g", "g"),
-        JsonPropertyMapping("serialized_h", "h")
+        JsonPropertyMapping("serialized_h", "h"),
+        JsonPropertyMapping("serialized_i", "i", collection_factory=set),
     ]
 
 
@@ -36,7 +36,7 @@ class SimpleModelSerializer(Serializer):
     """
     Serializer for `SimpleModel`.
     """
-    def __init__(self, custom_mappings: List[PropertyMapping]=None):
+    def __init__(self, custom_mappings: Iterable[PropertyMapping]=None):
         if custom_mappings is None:
             custom_mappings = get_simple_model_property_mappings()
         super().__init__(custom_mappings)
@@ -71,7 +71,7 @@ class SimpleModelDeserializer(Deserializer):
     """
     Deserializer for `SimpleModel`.
     """
-    def __init__(self, custom_mappings: List[PropertyMapping]=None):
+    def __init__(self, custom_mappings: Iterable[PropertyMapping]=None):
         if custom_mappings is None:
             custom_mappings = get_simple_model_property_mappings()
         super().__init__(custom_mappings, SimpleModel)

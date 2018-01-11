@@ -1,35 +1,112 @@
 import unittest
-from typing import Dict
+from typing import Iterable, Any, Tuple, Callable, Optional, Dict
 
-from hgijson.json_converters.models import JsonPropertyMapping
-from hgijson.models import PropertyMapping
+from hgijson import JsonPropertyMapping
+from hgijson.serialization import PropertyMapping, Serializer, Deserializer
 from hgijson.tests._models import SimpleModel
-from hgijson.tests._serializers import ComplexModelSerializer, SimpleModelDeserializer, ComplexModelDeserializer, \
-    SimpleModelSerializer
+from hgijson.tests._serializers import SimpleModelDeserializer, SimpleModelSerializer, ComplexModelSerializer, \
+    ComplexModelDeserializer
 from hgijson.tests.json_converters._helpers import create_complex_model_with_json_representation, \
     create_simple_model_with_json_representation
+from hgijson.types import PrimitiveJsonType
 
 
-class TestSerializer(unittest.TestCase):
+class _TestSerialization(unittest.TestCase):
+    """
+    TODO
+    """
+    def setUp(self):
+        self.simple_model, self.simple_model_as_json = create_simple_model_with_json_representation()
+        self.complex_model, self.complex_model_as_json = create_complex_model_with_json_representation()
+
+    def test_serialization_with_no_mapping(self):
+        mappings = [PropertyMapping()]
+        self._assertSerialization(mappings, {}, SimpleModel())
+
+    def test_serialization_using_names(self):
+        mappings = [JsonPropertyMapping("serialized_a", "a"), JsonPropertyMapping("serialized_b", "b")]
+        self._assertSerialization(mappings, self.simple_model_as_json, self.simple_model)
+
+    def test_serialization_with_iterable_with_no_items(self):
+        self._assertSerialization([], [], [])
+
+    def test_serialization_with_iterable(self):
+        simple_models = [create_simple_model_with_json_representation(i)[0] for i in range(10)]
+        simple_models_as_json = [create_simple_model_with_json_representation(i)[1] for i in range(10)]
+        self._assertSerialization(None, simple_models_as_json, simple_models)
+
+    def test_serialization_optional_when_not_set(self):
+        mappings = [JsonPropertyMapping("serialized_a", "a", optional=True),
+                    JsonPropertyMapping("serialized_b", "b", optional=True)]
+        self._assertSerialization(mappings, {}, SimpleModel())
+
+    def test_serialization_optional_when_set(self):
+        mappings = [JsonPropertyMapping("serialized_a", "a", optional=True),
+                    JsonPropertyMapping("serialized_b", "b", optional=True)]
+        self._assertSerialization(mappings, self.simple_model_as_json, self.simple_model)
+
+    def test_serialization_none(self):
+        self._assertSerialization(None, None, None)
+
+    def test_serialization_when_property_does_not_exist(self):
+        mappings = [JsonPropertyMapping("serialized_a", "z")]
+        self.assertRaises(
+            AttributeError, self._assertSerialization, mappings, self.simple_model_as_json, self.simple_model)
+
+    def test_serialization_using_serialization_cls(self):
+        mappings = [
+            JsonPropertyMapping("serialized_a", "a"),
+            JsonPropertyMapping("serialized_b", "b", "constructor_b"),
+            JsonPropertyMapping("serialized_c", "c"),
+            PropertyMapping(serialized_property_setter=lambda obj, value: obj.__setitem__("serialized_d", value),
+                            object_property_getter=lambda obj: obj.d, serializer_cls=SimpleModelSerializer)]
+        expected = {
+            "serialized_a": self.complex_model.a,
+            "serialized_b": self.complex_model.b,
+            "serialized_c": self.complex_model.c,
+            "serialized_d": [{
+                "serialized_a": i,
+                "serialized_b": self.complex_model.b + i
+            } for i in range(len(self.complex_model.d))]}
+
+        self._assertSerialization(
+            mappings, expected, self.complex_model, ComplexModelSerializer, ComplexModelDeserializer)
+
+
+
+#     def test_serialise_collection(self):
+#         mappings = [JsonPropertyMapping("serialized_i", "i", collection_factory=set),
+#                     JsonPropertyMapping("serialized_b", "b", "constructor_b")]
+#
+#         serializer = ComplexModelSerializer(mappings)
+#         serialised = serializer.serialize(self.complex_model)
+#         print(serialised)
+#
+#         deserializer = ComplexModelDeserializer(mappings)
+#         print(deserializer.deserialize(serialised))
+#
+
+    def _assertSerialization(
+            self, mappings: Optional[Iterable[PropertyMapping]], expected_serialized: PrimitiveJsonType,
+            expected_deserialized: Any,
+            serializer_factory: Callable[[Iterable[PropertyMapping]], Serializer]=SimpleModelSerializer,
+            deserializer_factory: Callable[[Iterable[PropertyMapping]], Deserializer]=SimpleModelDeserializer) \
+            -> Tuple[PrimitiveJsonType, Any]:
+        serializer = serializer_factory(mappings)
+        serialised = serializer.serialize(expected_deserialized)
+        self.assertEqual(serialised, expected_serialized)
+
+        deserializer = deserializer_factory(mappings)
+        deserialised = deserializer.deserialize(serialised)
+        self.assertEqual(deserialised, expected_deserialized)
+
+        return serialised, deserialised
+
+
+class TestSerializer(_TestSerialization):
     """
     Tests for `Serializer`.
     """
-    def setUp(self):
-        self.simple_model = create_simple_model_with_json_representation()[0]
-        self.simple_model_as_json = create_simple_model_with_json_representation()[1]
-        self.complex_model = create_complex_model_with_json_representation()[0]
-        self.complex_model_as_json = create_complex_model_with_json_representation()[1]
-
-    def test_serialize_with_no_mapping(self):
-        mappings = [PropertyMapping()]
-        serializer = SimpleModelSerializer(mappings)
-        self.assertDictEqual(serializer.serialize(self.simple_model), {})
-
-    def test_serialize_using_names(self):
-        mappings = [JsonPropertyMapping("serialized_a", "a"), JsonPropertyMapping("serialized_b", "b")]
-        serializer = SimpleModelSerializer(mappings)
-        self.assertDictEqual(serializer.serialize(self.simple_model), self.simple_model_as_json)
-
     def test_serialize_using_object_property_getter(self):
         mappings = [JsonPropertyMapping("serialized_b_plus_one", object_property_getter=lambda model: model.b + 1)]
         serializer = SimpleModelSerializer(mappings)
@@ -43,76 +120,11 @@ class TestSerializer(unittest.TestCase):
         serializer = ComplexModelSerializer(mappings)
         self.assertDictEqual(serializer.serialize(self.complex_model), {"augmented_key_5": 5})
 
-    def test_serialize_using_serializer_cls(self):
-        def serialized_property_setter_for_d(container: Dict, value: Dict):
-            container["serialized_d"] = value
 
-        mappings = [PropertyMapping(serialized_property_setter=serialized_property_setter_for_d,
-                                    object_property_getter=lambda obj: obj.d,
-                                    serializer_cls=SimpleModelSerializer)]
-        serializer = ComplexModelSerializer(mappings)
-
-        complex_model = self.complex_model
-        expected = {"serialized_d": [{
-            "serialized_a": i,
-            "serialized_b": complex_model.b + i
-        } for i in range(len(complex_model.d))]}
-        self.assertDictEqual(serializer.serialize(complex_model), expected)
-
-    def test_serialize_with_iterable_with_no_items(self):
-        serialized = SimpleModelSerializer().serialize([])
-        self.assertCountEqual(serialized, [])
-
-    def test_serialize_with_iterable(self):
-        complex_models = [create_complex_model_with_json_representation(i)[0] for i in range(10)]
-        complex_models_as_json = [create_complex_model_with_json_representation(i)[1] for i in range(10)]
-        serialized = ComplexModelSerializer().serialize(complex_models)
-        self.assertEqual(serialized, complex_models_as_json)
-
-    def test_serialize_optional_when_not_set(self):
-        mappings = [JsonPropertyMapping("serialized_a", "a", optional=True),
-                    JsonPropertyMapping("serialized_b", "b", optional=True)]
-        serializer = SimpleModelSerializer(mappings)
-        self.assertDictEqual(serializer.serialize(SimpleModel()), {})
-
-    def test_serialize_optional_when_set(self):
-        mappings = [JsonPropertyMapping("serialized_a", "a", optional=True),
-                    JsonPropertyMapping("serialized_b", "b", optional=True)]
-        serializer = SimpleModelSerializer(mappings)
-        self.assertDictEqual(serializer.serialize(self.simple_model), self.simple_model_as_json)
-
-    def test_serialize_when_property_does_not_exist(self):
-        mappings = [JsonPropertyMapping("serialized_a", "z")]
-        serializer = SimpleModelSerializer(mappings)
-        self.assertRaises(AttributeError, serializer.serialize, self.simple_model)
-
-    def test_serialize_when_none(self):
-        serializer = SimpleModelSerializer()
-        self.assertIsNone(serializer.serialize(None))
-
-
-class TestDeserializer(unittest.TestCase):
+class TestDeserializer(_TestSerialization):
     """
     Tests for `Deserializer`.
     """
-    def setUp(self):
-        self.simple_model = create_simple_model_with_json_representation()[0]
-        self.simple_model_as_json = create_simple_model_with_json_representation()[1]
-        self.complex_model = create_complex_model_with_json_representation()[0]
-        self.complex_model_as_json = create_complex_model_with_json_representation()[1]
-
-    def test_deserialize_with_no_mapping(self):
-        mappings = [PropertyMapping()]
-        deserializer = SimpleModelDeserializer(mappings)
-        self.simple_model.a = None
-        self.simple_model.b = None
-        self.assertEqual(deserializer.deserialize(self.simple_model_as_json), self.simple_model)
-
-    def test_deserialize_using_names(self):
-        mappings = [JsonPropertyMapping("serialized_a", "a"), JsonPropertyMapping("serialized_b", "b")]
-        deserializer = SimpleModelDeserializer(mappings)
-        self.assertEqual(deserializer.deserialize(self.simple_model_as_json), self.simple_model)
-
     def test_deserialize_using_constructor_parameter(self):
         mappings = [JsonPropertyMapping("serialized_a", "a"),
                     JsonPropertyMapping("serialized_b", object_constructor_parameter_name="constructor_b")]
@@ -126,16 +138,6 @@ class TestDeserializer(unittest.TestCase):
         model = SimpleModel(self.simple_model_as_json["serialized_a"] + 1)
         self.assertEqual(deserializer.deserialize(self.simple_model_as_json), model)
 
-    def test_deserialize_using_deserializer(self):
-        mappings = [JsonPropertyMapping("serialized_a", "a"),
-                    JsonPropertyMapping("serialized_b", object_constructor_parameter_name="constructor_b"),
-                    JsonPropertyMapping("serialized_c", "c"),
-                    PropertyMapping(serialized_property_getter=lambda obj_as_dict: obj_as_dict["serialized_d"],
-                                    object_property_setter=lambda obj, value: setattr(obj, "d", value),
-                                    deserializer_cls=SimpleModelDeserializer)]
-        deserializer = ComplexModelDeserializer(mappings)
-        self.assertEqual(deserializer.deserialize(self.complex_model_as_json), self.complex_model)
-
     def test_deserialize_using_serialized_property_getter(self):
         a_and_b = {
             "ab": [self.simple_model.a, self.simple_model.b]
@@ -144,37 +146,6 @@ class TestDeserializer(unittest.TestCase):
                     JsonPropertyMapping(None, "b", json_property_getter=lambda json_as_dict: json_as_dict["ab"][1])]
         deserializer = SimpleModelDeserializer(mappings)
         self.assertEqual(deserializer.deserialize(a_and_b), self.simple_model)
-
-    def test_deserialize_with_iterable_with_no_items(self):
-        decoded = SimpleModelDeserializer().deserialize([])
-        self.assertEqual(decoded, [])
-
-    def test_deserialize_with_iterable(self):
-        complex_models = [create_complex_model_with_json_representation(i)[0] for i in range(10)]
-        complex_models_as_json = [create_complex_model_with_json_representation(i)[1] for i in range(10)]
-        decoded = ComplexModelDeserializer().deserialize(complex_models_as_json)
-        self.assertEqual(decoded, complex_models)
-
-    def test_deserialize_optional_when_not_set(self):
-        mappings = [JsonPropertyMapping("serialized_a", "a", optional=True),
-                    JsonPropertyMapping("serialized_b", "b", optional=True)]
-        deserializer = SimpleModelDeserializer(mappings)
-        self.assertEqual(deserializer.deserialize({}), SimpleModel())
-
-    def test_deserialize_optional_when_set(self):
-        mappings = [JsonPropertyMapping("serialized_a", "a", optional=True),
-                    JsonPropertyMapping("serialized_b", "b", optional=True)]
-        deserializer = SimpleModelDeserializer(mappings)
-        self.assertEqual(deserializer.deserialize(self.simple_model_as_json), self.simple_model)
-
-    def test_deserialize_when_property_does_not_exist(self):
-        mappings = [JsonPropertyMapping("serialized_a", "z")]
-        deserializer = SimpleModelDeserializer(mappings)
-        self.assertRaises(AttributeError, deserializer.deserialize, self.simple_model_as_json)
-
-    def test_deserialize_none(self):
-        deserializer = SimpleModelDeserializer()
-        self.assertIsNone(deserializer.deserialize(None))
 
 
 if __name__ == "__main__":

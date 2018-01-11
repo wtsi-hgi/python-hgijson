@@ -24,6 +24,7 @@ class ComplexModel(SimpleModel):
         self.f = {"1": 2, "3": 4}
         self.g = "test"
         self.h = 123
+        self.i = {3, 1, 4, 1, 5, 9}
 
         for i in range(len(self.d)):
             self.d[i].a = i
