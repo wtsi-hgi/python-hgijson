@@ -8,14 +8,14 @@ from hgijson.types import PrimitiveUnionType
 from hgijson.tests._models import SimpleModel, ComplexModel
 
 
-def get_simple_model_json_property_mappings() -> Sequence[JsonPropertyMapping]:
+def get_simple_model_json_property_mappings() -> Iterable[JsonPropertyMapping]:
     return [
         JsonPropertyMapping("serialized_a", "a"),
         JsonPropertyMapping("serialized_b", "b", "constructor_b")
     ]
 
 
-def get_complex_model_json_property_mappings() -> Sequence[JsonPropertyMapping]:
+def get_complex_model_json_property_mappings() -> Iterable[JsonPropertyMapping]:
     return [
         JsonPropertyMapping("serialized_b", "b", "constructor_b"),
         JsonPropertyMapping("serialized_c", "c"),

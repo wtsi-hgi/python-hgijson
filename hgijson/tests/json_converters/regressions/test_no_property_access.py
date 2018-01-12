@@ -21,7 +21,7 @@ _NoPropertyAccessJSONEncoder = MappingJSONEncoderClassBuilder(_NoPropertyAccess,
 _NoPropertyAccessJSONDecoder = MappingJSONDecoderClassBuilder(_NoPropertyAccess, _no_property_access_mappings).build()
 
 
-class TestRegressions(unittest.TestCase):
+class TestNoPropertyAccessRegression(unittest.TestCase):
     """
     Regression tests for bugs found in the wild.
     """
@@ -30,6 +30,7 @@ class TestRegressions(unittest.TestCase):
         obj = _NoPropertyAccess(configurations)
         json_as_dict = _NoPropertyAccessJSONEncoder().default(obj)
         self.assertEqual({"configurations": configurations}, json_as_dict)
+        
 
 
 if __name__ == "__main__":

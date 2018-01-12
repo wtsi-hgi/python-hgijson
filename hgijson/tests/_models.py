@@ -1,9 +1,34 @@
-from typing import List
-
-from hgicommon.models import Model
+from abc import ABCMeta
 
 
-class SimpleModel(Model):
+class BaseModel(metaclass=ABCMeta):
+    """
+    TODO
+    """
+    def __str__(self) -> str:
+        string_builder = []
+        for property, value in vars(self).items():
+            string_builder.append("%s: %s" % (property, str(value)))
+        string_builder = sorted(string_builder)
+        return "{ %s }" % ', '.join(string_builder)
+
+    def __repr__(self) -> str:
+        return str(self)
+
+    def __eq__(self, other) -> bool:
+        if type(other) != type(self):
+            return False
+        for property, value in vars(self).items():
+            other_value = getattr(other, property, object())
+            if other_value != value:
+                return False
+        return True
+
+    def __hash__(self):
+        return hash(str(self))
+
+
+class SimpleModel(BaseModel):
     """
     Example of a simple model.
     """
@@ -28,6 +53,3 @@ class ComplexModel(SimpleModel):
 
         for i in range(len(self.d)):
             self.d[i].a = i
-
-    def all(self) -> List:
-        return [self.a, self.b, self.c, self.d]

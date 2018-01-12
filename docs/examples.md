@@ -3,15 +3,14 @@
 ### The Models
 ```python
 from abc import ABCMeta
-from hgicommon.models import Model
 
-class Named(Model, metaclass=ABCMeta):
+class Named(metaclass=ABCMeta):
     def __init__(self, name: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = name
 
 
-class Identifiable(Model, metaclass=ABCMeta):
+class Identifiable(metaclass=ABCMeta):
     def __init__(self, id: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.id = id

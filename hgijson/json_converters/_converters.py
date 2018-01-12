@@ -1,7 +1,7 @@
 import json
 from abc import ABCMeta, abstractmethod
 from json import JSONDecoder, JSONEncoder
-from typing import Optional, Union, Callable, Dict, List, Tuple
+from typing import Optional, Union, Callable, Type
 
 from hgijson.json_converters.interfaces import ParsedJSONDecoder
 from hgijson.serialization import Deserializer, Serializer
@@ -14,7 +14,7 @@ class _JSONEncoderAsSerializer(Serializer, metaclass=ABCMeta):
     """
     @property
     @abstractmethod
-    def encoder_type(self) -> type:
+    def encoder_type(self) -> Type[JSONEncoder]:
         """
         Gets the `JSONEncoder` type that is used by this serialiser.
         :return: the encoder type (must be a subclass of `JSONEncoder`)
@@ -22,7 +22,7 @@ class _JSONEncoderAsSerializer(Serializer, metaclass=ABCMeta):
 
     def __init__(self, *args, **kwargs):
         super().__init__([])
-        self._encoder = self.encoder_type(*args, **kwargs)  # type: JSONEncoder
+        self._encoder = self.encoder_type(*args, **kwargs)
 
     def serialize(self, serializable: Optional[SerializableType]) -> PrimitiveUnionType:
         if type(self._encoder) == JSONEncoder:
@@ -31,7 +31,7 @@ class _JSONEncoderAsSerializer(Serializer, metaclass=ABCMeta):
         else:
             return self._encoder.default(serializable)
 
-    def _create_serializer_of_type(self, serializer_type: type) -> None:
+    def _create_serializer_of_type(self, serializer_type: Type[Serializer]) -> None:
         """
         Unused - implemented to satisfy the interface only.
         """
@@ -48,7 +48,7 @@ class _JSONDecoderAsDeserializer(Deserializer, metaclass=ABCMeta):
     """
     @property
     @abstractmethod
-    def decoder_type(self) -> type:
+    def decoder_type(self) -> Type[JSONDecoder]:
         """
         Gets the `JSONDecoder` type that is used by this deserialiser.
         :return: the decoder type (must be a subclass of `JSONDecoder`)
@@ -56,7 +56,7 @@ class _JSONDecoderAsDeserializer(Deserializer, metaclass=ABCMeta):
 
     def __init__(self, *args, **kwargs):
         super().__init__([], self.decoder_type)
-        self._decoder = self.decoder_type(*args, **kwargs)  # type: JSONDecoder
+        self._decoder = self.decoder_type(*args, **kwargs)
 
     def deserialize(self, deserializable: PrimitiveJsonType) -> Optional[SerializableType]:
         if not isinstance(self._decoder, ParsedJSONDecoder):
@@ -68,13 +68,14 @@ class _JSONDecoderAsDeserializer(Deserializer, metaclass=ABCMeta):
             # again!)
             return self._decoder.decode_parsed(deserializable)
 
-    def _create_deserializer_of_type(self, deserializer_type: type) -> None:
+    def _create_deserializer_of_type(self, deserializer_type: Type[JSONDecoder]) -> None:
         """
         Unused - implemented to satisfy the interface only.
         """
 
 
-def json_encoder_to_serializer(encoder_cls: Union[type, Callable[[], type]]) -> type:
+def json_encoder_to_serializer(encoder_cls: Union[Type[JSONEncoder], Callable[[], Type[JSONEncoder]]]) \
+        -> Type[Serializer]:
     """
     Converts a `JSONEncoder` class into an equivalent `Serializer` class.
     :param encoder_cls: the encoder class type or a function that returns the type
@@ -90,7 +91,8 @@ def json_encoder_to_serializer(encoder_cls: Union[type, Callable[[], type]]) -> 
     )
 
 
-def json_decoder_to_deserializer(decoder_cls: Union[type, Callable[[], type]]) -> type:
+def json_decoder_to_deserializer(decoder_cls: Union[Type[JSONDecoder], Callable[[], Type[JSONDecoder]]]) \
+        -> Type[Deserializer]:
     """
     Converts a `JSONDecoder` class into an equivalent `Deserializer` class.
     :param decoder_cls: the decoder class type or a function that returns the type
@@ -104,4 +106,3 @@ def json_decoder_to_deserializer(decoder_cls: Union[type, Callable[[], type]]) -
             "decoder_type": property(lambda self: decoder_cls if isinstance(decoder_cls, type) else decoder_cls())
         }
     )
-

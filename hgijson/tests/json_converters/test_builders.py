@@ -2,20 +2,19 @@ import json
 import unittest
 from json import JSONDecoder, JSONEncoder
 
-from hgicommon.models import Model
 
 from hgijson.json_converters._serialization import MappingJSONDecoder, MappingJSONEncoder
 from hgijson.json_converters.builders import MappingJSONEncoderClassBuilder, MappingJSONDecoderClassBuilder, \
     SetJSONEncoderClassBuilder, SetJSONDecoderClassBuilder
 from hgijson.json_converters.models import JsonPropertyMapping
-from hgijson.tests._models import SimpleModel, ComplexModel
+from hgijson.tests._models import SimpleModel, ComplexModel, BaseModel
 from hgijson.tests.json_converters._helpers import create_complex_model_with_json_representation,\
     create_simple_model_with_json_representation
 from hgijson.tests.json_converters._serializers import get_simple_model_json_property_mappings, \
     get_complex_model_json_property_mappings
 
 
-class _Named(Model):
+class _Named(BaseModel):
     def __init__(self):
         super().__init__()
         self.name = None    # type: str
@@ -26,7 +25,7 @@ class _Office(_Named):
         super().__init__()
 
 
-class _Identifiable(Model):
+class _Identifiable(BaseModel):
     def __init__(self):
         super().__init__()
         self.id = None    # type: int
@@ -39,7 +38,7 @@ class _Employee(_Named, _Identifiable):
         self.office = None
 
 
-class _Container(Model):
+class _Container(BaseModel):
     def __init__(self, colour: str, container: "_Container" = None):
         self.colour = colour
         self.contains = container

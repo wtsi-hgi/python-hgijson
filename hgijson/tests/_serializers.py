@@ -1,4 +1,4 @@
-from typing import Any, Iterable, Sequence, List
+from typing import Any, Iterable, Sequence, List, Type
 
 from hgijson.json_converters.models import JsonPropertyMapping
 from hgijson.serialization import Serializer, Deserializer, PropertyMapping
@@ -28,7 +28,7 @@ def get_complex_model_property_mappings() -> Sequence[PropertyMapping]:
         JsonPropertyMapping("serialized_f", "f"),
         JsonPropertyMapping("serialized_g", "g"),
         JsonPropertyMapping("serialized_h", "h"),
-        JsonPropertyMapping("serialized_i", "i", collection_factory=set),
+        JsonPropertyMapping("serialized_i", "i", collection_factory=set, collection_iter=iter),
     ]
 
 
@@ -44,7 +44,7 @@ class SimpleModelSerializer(Serializer):
     def _create_serialized_container(self) -> Any:
         return {}
 
-    def _create_serializer_of_type(self, serializer_type: type) -> Serializer:
+    def _create_serializer_of_type(self, serializer_type: Type) -> Serializer:
         return PrimitiveSerializer()
 
 
@@ -60,7 +60,7 @@ class ComplexModelSerializer(Serializer):
     def _create_serialized_container(self) -> Any:
         return {}
 
-    def _create_serializer_of_type(self, serializer_type: type) -> Serializer:
+    def _create_serializer_of_type(self, serializer_type: Type) -> Serializer:
         if serializer_type == SimpleModelSerializer:
             return SimpleModelSerializer()
         else:
@@ -76,7 +76,7 @@ class SimpleModelDeserializer(Deserializer):
             custom_mappings = get_simple_model_property_mappings()
         super().__init__(custom_mappings, SimpleModel)
 
-    def _create_deserializer_of_type(self, deserializer_type: type):
+    def _create_deserializer_of_type(self, deserializer_type: Type):
         return PrimitiveDeserializer()
 
 
@@ -89,7 +89,7 @@ class ComplexModelDeserializer(Deserializer):
             custom_mappings = list(get_simple_model_property_mappings()) + list(get_complex_model_property_mappings())
         super().__init__(custom_mappings, ComplexModel)
 
-    def _create_deserializer_of_type(self, deserializer_type: type):
+    def _create_deserializer_of_type(self, deserializer_type: Type):
         if deserializer_type == SimpleModelDeserializer:
             return SimpleModelDeserializer()
         else:

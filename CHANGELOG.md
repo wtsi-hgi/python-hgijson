@@ -1,4 +1,12 @@
 # Change Log
+## Unreleased
+### Changed
+- Refactored tests.
+
+### Removed
+- Test dependency on legacy `hgicommon` library.
+
+
 ## 2.0.0 - 2018-01-08
 ### Changed
 - Renamed subpackage from `json` -> `json_converters` to avoid namespace clash with standard library.

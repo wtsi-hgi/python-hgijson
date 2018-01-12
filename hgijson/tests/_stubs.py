@@ -1,10 +1,10 @@
 from json import JSONEncoder
 
-from hgicommon.models import Model
 from hgijson.json_converters.automatic import _RegisteredTypeJSONEncoder
+from hgijson.tests._models import BaseModel
 
 
-class StubModel(Model):
+class StubModel(BaseModel):
     """
     Stub `Model`.
     """

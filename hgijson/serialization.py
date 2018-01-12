@@ -18,8 +18,8 @@ class PropertyMapping:
             serializer_cls: Type["Serializer"]=None,
             deserializer_cls: Type["Deserializer"]=None,
             optional: bool=False,
-            collection_factory: Callable[[Iterable[SerializableType]], Any]=lambda items: list(items),
-            collection_init: Callable[[Any, Iterable[SerializableType]], None]=None):
+            collection_factory: Callable[[Iterable], Any]=lambda items: list(items),
+            collection_iter: Callable[[Any], Iterable]=lambda collection: iter(collection)):
         """
         Constructor.
         :param object_property_name: defines the object property to assign the value returned by
@@ -73,7 +73,7 @@ class PropertyMapping:
         self.deserializer_cls = deserializer_cls if deserializer_cls is not None else PrimitiveDeserializer
         self.optional = optional
         self.collection_factory = collection_factory
-        self.collection_init = collection_init
+        self.collection_iter = collection_iter
 
     def __str__(self) -> str:
         string_builder = []
@@ -133,6 +133,8 @@ class Serializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCMet
                 if mapping.object_property_getter is not None and mapping.serialized_property_setter is not None:
                     value = mapping.object_property_getter(serializable)
                     if not (mapping.optional and value is None):
+                        if isinstance(value, type(mapping.collection_factory([]))):
+                            value = list(mapping.collection_iter(value))
                         encoded_value = self._serialize_property_value(value, mapping.serializer_cls)
                         mapping.serialized_property_setter(serialized, encoded_value)
 
@@ -232,10 +234,8 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
                         decoded_value = self._deserialize_property_value(value, mapping.deserializer_cls)
 
                         # TODO
-                        if isinstance(decoded_value, list) or isinstance(decoded_value, set):
+                        if isinstance(decoded_value, list):
                             collection = mapping.collection_factory(decoded_value)
-                            if mapping.collection_init is not None:
-                                mapping.collection_init(decoded_value)
                             decoded_value = collection
 
                         mapping.object_property_setter(decoded, decoded_value)
@@ -253,7 +253,7 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
         assert deserializer is not None
         return deserializer.deserialize(to_deserialize)
 
-    def _create_deserializer_of_type_with_cache(self, deserializer_type: type) -> "Deserializer":
+    def _create_deserializer_of_type_with_cache(self, deserializer_type: Type) -> "Deserializer":
         """
         Creates a deserializer of the given type, exploiting a cache.
         :param deserializer_type: the type of deserializer to create
@@ -262,4 +262,3 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
         if deserializer_type not in self._deserializers_cache:
             self._deserializers_cache[deserializer_type] = self._create_deserializer_of_type(deserializer_type)
         return self._deserializers_cache[deserializer_type]
-

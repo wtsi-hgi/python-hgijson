@@ -34,8 +34,8 @@ class JsonPropertyMapping(PropertyMapping):
             encoder_cls: Union[type, Callable[[], type]]=JSONEncoder,
             decoder_cls: Union[type, Callable[[], type]]=JSONDecoder, 
             optional: bool=False,
-            collection_factory: Callable[[Iterable[SerializableType]], Any]=lambda items: list(items),
-            collection_init: Callable[[Any, Iterable[SerializableType]], None]=None):
+            collection_factory: Callable[[Iterable], Any]=lambda items: list(items),
+            collection_iter: Callable[[Any], Iterable]=lambda collection: iter(collection)):
         """
         Constructor.
         :param json_property_name:
@@ -100,4 +100,4 @@ class JsonPropertyMapping(PropertyMapping):
                          object_constructor_argument_modifier=object_constructor_argument_modifier,
                          serializer_cls=encoder_as_serializer_cls, deserializer_cls=decoder_as_serializer_cls,
                          optional=optional,
-                         collection_factory=collection_factory, collection_init=collection_init)
+                         collection_factory=collection_factory, collection_iter=collection_iter)

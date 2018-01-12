@@ -3,7 +3,7 @@ from typing import Iterable, Any, Tuple, Callable, Optional, Dict
 
 from hgijson import JsonPropertyMapping
 from hgijson.serialization import PropertyMapping, Serializer, Deserializer
-from hgijson.tests._models import SimpleModel
+from hgijson.tests._models import SimpleModel, ComplexModel
 from hgijson.tests._serializers import SimpleModelDeserializer, SimpleModelSerializer, ComplexModelSerializer, \
     ComplexModelDeserializer
 from hgijson.tests.json_converters._helpers import create_complex_model_with_json_representation, \
@@ -72,19 +72,16 @@ class _TestSerialization(unittest.TestCase):
         self._assertSerialization(
             mappings, expected, self.complex_model, ComplexModelSerializer, ComplexModelDeserializer)
 
+    def test_serialization_collection(self):
+        mappings = [JsonPropertyMapping("serialized_b", "b", "constructor_b"),
+                    JsonPropertyMapping("serialized_i", "i", collection_factory=set)]
+        expected_serialized = {"serialized_b": self.complex_model_as_json["serialized_b"],
+                               "serialized_i": list(self.complex_model.i)}
+        expected_deserialized = ComplexModel(self.complex_model.b)
+        expected_deserialized.i = self.complex_model.i
 
-
-#     def test_serialise_collection(self):
-#         mappings = [JsonPropertyMapping("serialized_i", "i", collection_factory=set),
-#                     JsonPropertyMapping("serialized_b", "b", "constructor_b")]
-#
-#         serializer = ComplexModelSerializer(mappings)
-#         serialised = serializer.serialize(self.complex_model)
-#         print(serialised)
-#
-#         deserializer = ComplexModelDeserializer(mappings)
-#         print(deserializer.deserialize(serialised))
-#
+        self._assertSerialization(
+            mappings, expected_serialized, expected_deserialized, ComplexModelSerializer, ComplexModelDeserializer)
 
     def _assertSerialization(
             self, mappings: Optional[Iterable[PropertyMapping]], expected_serialized: PrimitiveJsonType,
@@ -92,13 +89,15 @@ class _TestSerialization(unittest.TestCase):
             serializer_factory: Callable[[Iterable[PropertyMapping]], Serializer]=SimpleModelSerializer,
             deserializer_factory: Callable[[Iterable[PropertyMapping]], Deserializer]=SimpleModelDeserializer) \
             -> Tuple[PrimitiveJsonType, Any]:
+        # TODO: Switch (serialization/deserialization first) order depending on SUT
+
         serializer = serializer_factory(mappings)
         serialised = serializer.serialize(expected_deserialized)
-        self.assertEqual(serialised, expected_serialized)
+        self.assertEqual(expected_serialized, serialised)
 
         deserializer = deserializer_factory(mappings)
         deserialised = deserializer.deserialize(serialised)
-        self.assertEqual(deserialised, expected_deserialized)
+        self.assertEqual(expected_deserialized, deserialised)
 
         return serialised, deserialised
 
