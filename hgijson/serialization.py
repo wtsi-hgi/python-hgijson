@@ -210,13 +210,9 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
                     value = mapping.serialized_property_getter(to_deserialize)
                     if not (mapping.optional and value is None):
                         decoded_value = self._deserialize_property_value(value, mapping.deserializer_cls)
-
-                        # TODO
-                        # if isinstance(decoded_value, list):
-                        #     collection = mapping.collection_factory(decoded_value)
-                        #     if mapping.collection_init is not None:
-                        #         mapping.collection_init(decoded_value)
-                        #     decoded_value = collection
+                        if isinstance(decoded_value, list):
+                            collection = mapping.collection_factory(decoded_value)
+                            decoded_value = collection
 
                         argument = mapping.object_constructor_argument_modifier(decoded_value)
                         init_kwargs[mapping.object_constructor_parameter_name] = argument
@@ -232,8 +228,6 @@ class Deserializer(Generic[SerializableType, PrimitiveUnionType], metaclass=ABCM
                     value = mapping.serialized_property_getter(to_deserialize)
                     if not (mapping.optional and value is None):
                         decoded_value = self._deserialize_property_value(value, mapping.deserializer_cls)
-
-                        # TODO
                         if isinstance(decoded_value, list):
                             collection = mapping.collection_factory(decoded_value)
                             decoded_value = collection
