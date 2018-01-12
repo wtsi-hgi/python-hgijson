@@ -13,6 +13,7 @@ install:
 
 script:
   - PYTHONPATH=. coverage run -m unittest discover -v -s hgijson/tests
+  - coverage report
 
 after_success:
   - codecov
