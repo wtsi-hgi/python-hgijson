@@ -4,7 +4,7 @@ from typing import Sequence, Iterable
 
 from hgijson.json_converters._serialization import MappingJSONDecoder, MappingJSONEncoder
 from hgijson.json_converters.models import JsonPropertyMapping
-from hgijson.types import PrimitiveUnionType
+from hgijson.custom_types import PrimitiveUnionType
 from hgijson.tests._models import SimpleModel, ComplexModel
 
 

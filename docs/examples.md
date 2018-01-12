@@ -86,10 +86,91 @@ print(bob_as_json_string)
 
 ```python
 bob_deserialised = json.loads(bob_as_json_string, cls=EmployeeJSONDecoder) 
-print(bob_deserialised == bob)
+assert bob_deserialised == bob
 ```
+
+
+## Example 2: Sets and Collections
+### The Models
 ```python
-True
+from typing import Iterable, Set
+
+class Person:
+    def __init__(self, names: Iterable[str]):
+        self.nicknames = set(names)
+
+    def __eq__(self, other):
+        return type(other) == type(self) and other.nicknames == self.nicknames
+
+    def __hash__(self):
+        return hash("".join(sorted(self.nicknames)))
+
+
+class WorkerInventory:
+    def __init__(self, workers):
+        self.workers = workers
+
+    def __iter__(self):
+        return iter(self.workers)
+
+    def get_with_nickname(self, nickname: str) -> Set[Person]:
+        return {worker for worker in self.workers if nickname in worker.nicknames}
+
+
+class Company:
+    def __init__(self, name, workers):
+        self.name = name
+        self.workers = workers
 ```
 
 
+### The Encoders and Decoders
+```python
+from hgijson import MappingJSONDecoderClassBuilder, MappingJSONEncoderClassBuilder, JsonPropertyMapping
+
+person_mapping = [
+    JsonPropertyMapping("short_names", "nicknames", "names", collection_factory=set)
+]
+PersonJSONEncoder = MappingJSONEncoderClassBuilder(Person, person_mapping).build()
+PersonJSONDecoder = MappingJSONDecoderClassBuilder(Person, person_mapping).build()
+
+company_mapping = [
+    JsonPropertyMapping("id", "name", "name"),
+    JsonPropertyMapping("workers", "workers", "workers", collection_factory=WorkerInventory, 
+                        encoder_cls=PersonJSONEncoder, decoder_cls=PersonJSONDecoder)
+]
+CompanyJSONEncoder = MappingJSONEncoderClassBuilder(Company, company_mapping).build()
+CompanyJSONDecoder = MappingJSONDecoderClassBuilder(Company, company_mapping).build()
+```
+
+
+#### Results
+```python
+import json
+
+person = Person({"Rob", "Bob"})
+company = Company("My Company", [person])
+comapny_as_json_string = json.dumps(company, cls=CompanyJSONEncoder, indent=4, sort_keys=True)
+
+print(comapny_as_json_string)
+```
+```json
+{
+    "id": "My Company",
+    "workers": [
+        {
+            "short_names": [
+                "Bob",
+                "Rob"
+            ]
+        }
+    ]
+}
+```
+
+```python
+company = json.loads(comapny_as_json_string, cls=CompanyJSONDecoder) 
+bobs = company.workers.get_with_nickname("Bob")
+assert len(bobs) == 1
+assert list(bobs)[0] == person
+```

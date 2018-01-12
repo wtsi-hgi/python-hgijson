@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractstaticmethod
 from json import JSONEncoder
 from typing import Dict, Optional, Iterable, Any, TypeVar
 
-from hgijson.types import PrimitiveJsonType
+from hgijson.custom_types import PrimitiveJsonType
 
 
 class _RegisteredTypeJSONEncoder(JSONEncoder, metaclass=ABCMeta):

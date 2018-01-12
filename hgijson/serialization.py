@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from typing import Any, Generic, Union, Dict, List, Optional, Iterable, Type, Callable
 
-from hgijson.types import SerializableType, PrimitiveUnionType, PrimitiveJsonType
+from hgijson.custom_types import SerializableType, PrimitiveUnionType, PrimitiveJsonType
 
 
 class PropertyMapping:

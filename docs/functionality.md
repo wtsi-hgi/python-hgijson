@@ -385,44 +385,35 @@ person_mapping_schema = [
 ]
 ```
 
-## Sets
-JSON supports less "primitive types" than Python, implying that there cannot be an unambiguous, one-to-one mapping
-between all Python and JSON "primitive types". One such type without an equivalent in JSON is `set`. Python's built-in 
-JSON library "handles" the serialiation of sets by raising a `TypeError`.
-
-`SetJSONEncoder` and `SetJSONDecoder` are supplied in this library to support the serialization of `set`s. They work by
-encoding sets as JSON lists then decoding these lists back into sets. As the mapping between JSON and objects is well 
-defined when using this library (i.e. it never has to guess the type of the Python object that is to be constructed from
-a JSON representation), it is known if a JSON list should be decoded as `list` or as `set`.
-
-Build classes that can serialize/deserialize sets of strings:
-```python
-StringSetJSONEncoder = SetJSONEncoderClassBuilder(StrJSONEncoder).build()
-StringSetJSONDecoder = SetJSONDecoderClassBuilder(StrJSONDecoder).build()
-```
+## Sets and Other Collections
+The library supports the easy conversion of `set`s and other collections (including non-inbuilt ones) into JSON arrays.  
+The `collection_factory` property can be used to indicate the collection type, where the decoded items are given as the
+first argument and the collection is returned. The `collection_iter` can be given if the collection does not implement
+the `Iterable` interface; it must take the collection as the first argument and return an iterator for the collection's 
+items. 
 
 Model:
 ```python
 class Person:
-    def __init__(self):
-        self.nicknames = {"Rob", "Bob"}
+    def __init__(self, names: Iterable[str]):
+        self.nicknames = set(names)
 ```
 
-JSON:
+JSON (`Person({"Rob", "Bob"})`):
 ```json
 {
-    "short_names": ["<person.nicknames>"]
+    "short_names": ["Bob", "Rob"]
 }
 ```
 
 To define that:
-* The JSON "short_names" property is set from the object's "nicknames" property, which is of type `set`.
-* The object's "nicknames" property is set from the JSON's "full_name" property.
+* The JSON "short_names" property is set from the person object's "nicknames" property, which is of type `set`.
+* The person object's "nicknames" property is set from the JSON's "short_names" property.
 ```python
-mapping_schema = [
-    JsonPropertyMapping("short_names", "nicknames", encoder_cls=StringSetJSONEncoder, decoder_cls=StringSetJSONDecoder)
+person_mapping = [
+    JsonPropertyMapping("short_names", "nicknames", "names", collection_factory=set)
 ]
-```
+````
 
 
 ## Serialization to/from a dict

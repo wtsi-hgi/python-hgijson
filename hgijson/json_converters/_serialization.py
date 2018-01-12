@@ -5,7 +5,7 @@ from typing import Union, List, Optional
 from hgijson.json_converters._serializers import JsonObjectSerializer, JsonObjectDeserializer
 from hgijson.json_converters.interfaces import ParsedJSONDecoder
 from hgijson.serialization import PropertyMapping
-from hgijson.types import PrimitiveJsonType, SerializableType
+from hgijson.custom_types import PrimitiveJsonType, SerializableType
 
 
 class PropertyMapper(metaclass=ABCMeta):

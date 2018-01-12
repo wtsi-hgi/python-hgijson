@@ -6,7 +6,6 @@ from hgijson.json_converters.primitive import StrJSONDecoder, IntJSONEncoder, Fl
     DatetimeEpochJSONEncoder, DatetimeEpochJSONDecoder, DatetimeISOFormatJSONDecoder, DatetimeISOFormatJSONEncoder, \
     IntJSONDecoder
 from hgijson.json_converters.primitive import StrJSONEncoder
-from hgijson.tests.json_converters._mocks import MockSetJSONEncoder, MockSetJSONDecoder
 
 
 class TestStrJSONEncoder(unittest.TestCase):
@@ -130,36 +129,6 @@ class TestDatetimeISOFormatJSONDecoder(unittest.TestCase):
     def test_with_json_loads(self):
         expected_value = datetime(1970, 1, 1, tzinfo=timezone.utc)
         self.assertEqual(expected_value, json.loads('"1970-01-01T00:00:00+00:00"', cls=DatetimeISOFormatJSONDecoder))
-
-
-class TestSetJSONEncoder(unittest.TestCase):
-    """
-    Tests for `SetJSONEncoder`.
-    """
-    def setUp(self):
-        self.item_encoder_cls = IntJSONEncoder
-        self.encoder = MockSetJSONEncoder(self.item_encoder_cls)
-        self.values = {1, 5, 7, 9}
-
-    def test_default(self):
-        self.assertEqual(json.dumps(list(self.values)), self.encoder.encode(self.values))
-
-    def test_default_with_unsupported_type(self):
-        self.assertRaises(TypeError, self.encoder.encode, object())
-
-
-class TestSetJSONDecoder(unittest.TestCase):
-    """
-    Tests for `SetJSONDecoder`.
-    """
-    def setUp(self):
-        self.item_decoder_cls = IntJSONDecoder
-        self.decoder = MockSetJSONDecoder(self.item_decoder_cls)
-        self.values = {1, 5, 7, 9}
-
-    def test_decode(self):
-        values_as_json_string = json.dumps(list(self.values))
-        self.assertEqual(self.values, self.decoder.decode(values_as_json_string))
 
 
 if __name__ == "__main__":

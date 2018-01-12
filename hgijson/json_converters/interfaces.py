@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABCMeta
 from json import JSONDecoder
 
-from hgijson.types import SerializableType, PrimitiveJsonType
+from hgijson.custom_types import SerializableType, PrimitiveJsonType
 
 
 class ParsedJSONDecoder(JSONDecoder, metaclass=ABCMeta):

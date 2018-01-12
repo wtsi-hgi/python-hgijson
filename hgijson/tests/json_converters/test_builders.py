@@ -1,14 +1,11 @@
 import json
 import unittest
-from json import JSONDecoder, JSONEncoder
-
 
 from hgijson.json_converters._serialization import MappingJSONDecoder, MappingJSONEncoder
-from hgijson.json_converters.builders import MappingJSONEncoderClassBuilder, MappingJSONDecoderClassBuilder, \
-    SetJSONEncoderClassBuilder, SetJSONDecoderClassBuilder
+from hgijson.json_converters.builders import MappingJSONEncoderClassBuilder, MappingJSONDecoderClassBuilder
 from hgijson.json_converters.models import JsonPropertyMapping
 from hgijson.tests._models import SimpleModel, ComplexModel, BaseModel
-from hgijson.tests.json_converters._helpers import create_complex_model_with_json_representation,\
+from hgijson.tests.json_converters._helpers import create_complex_model_with_json_representation, \
     create_simple_model_with_json_representation
 from hgijson.tests.json_converters._serializers import get_simple_model_json_property_mappings, \
     get_complex_model_json_property_mappings
@@ -236,39 +233,6 @@ class TestMappingJSONDecoderClassBuilder(unittest.TestCase):
         }
         employee_as_json_string = json.dumps([employee_as_json])
         self.assertEqual(EmployeeJSONDecoder().decode(employee_as_json_string), [employee])
-
-
-class TestSetJSONEncoderClassBuilder(unittest.TestCase):
-    """
-    Tests for `SetJSONEncoderClassBuilder`.
-    """
-    def setUp(self):
-        self.values = set([create_simple_model_with_json_representation(i)[0] for i in range(10)])
-        self.values_as_json = [create_simple_model_with_json_representation(i)[1] for i in range(10)]
-        self.ValueJSONEncoder = MappingJSONEncoderClassBuilder(
-            SimpleModel, get_simple_model_json_property_mappings()).build()
-
-    def test_build(self):
-        CustomSetJSONEncoder = SetJSONEncoderClassBuilder(self.ValueJSONEncoder).build()
-        encoder = CustomSetJSONEncoder()    # type: JSONEncoder
-        self.assertCountEqual(encoder.default(self.values), self.values_as_json)
-
-
-class TestSetJSONDecoderClassBuilder(unittest.TestCase):
-    """
-    Tests for `SetJSONDecoderClassBuilder`.
-    """
-    def setUp(self):
-        self.values = set([create_simple_model_with_json_representation(i)[0] for i in range(10)])
-        self.values_as_json = [create_simple_model_with_json_representation(i)[1] for i in range(10)]
-        self.ValueJSONDecoder = MappingJSONDecoderClassBuilder(
-            SimpleModel, get_simple_model_json_property_mappings()).build()
-
-    def test_build(self):
-        CustomSetJSONDecoder = SetJSONDecoderClassBuilder(self.ValueJSONDecoder).build()
-        decoder = CustomSetJSONDecoder()    # type: JSONDecoder
-        values_as_json_string = json.dumps(self.values_as_json)
-        self.assertEqual(decoder.decode(values_as_json_string), self.values)
 
 
 if __name__ == "__main__":

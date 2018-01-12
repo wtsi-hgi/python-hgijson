@@ -3,7 +3,6 @@ from typing import Callable, Any, Dict, Union, Iterable
 
 from hgijson.json_converters._converters import json_decoder_to_deserializer, json_encoder_to_serializer
 from hgijson.serialization import PropertyMapping
-from hgijson.types import SerializableType
 
 
 class JsonPropertyMapping(PropertyMapping):

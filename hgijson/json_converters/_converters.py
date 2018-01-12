@@ -5,7 +5,7 @@ from typing import Optional, Union, Callable, Type
 
 from hgijson.json_converters.interfaces import ParsedJSONDecoder
 from hgijson.serialization import Deserializer, Serializer
-from hgijson.types import PrimitiveJsonType, PrimitiveUnionType, SerializableType
+from hgijson.custom_types import PrimitiveJsonType, PrimitiveUnionType, SerializableType
 
 
 class _JSONEncoderAsSerializer(Serializer, metaclass=ABCMeta):

@@ -1,10 +1,15 @@
 # Change Log
 ## Unreleased
+## Added
+- Ability to use custom collections with the `collection_factory` and `collection_iter` parameters.
+
 ### Changed
 - Refactored tests.
+- Renamed subpackage from `types` -> `custom_types` to avoid namespace clash with standard library. 
 
 ### Removed
 - Test dependency on legacy `hgicommon` library.
+- `SetJSONDecoder` and `SetJSONEncoder` (use `collection_factory=set` instead).
 
 
 ## 2.0.0 - 2018-01-08

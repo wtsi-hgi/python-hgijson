@@ -1,7 +1,7 @@
 from typing import Any
 
 from hgijson.serialization import Serializer, Deserializer
-from hgijson.types import PrimitiveJsonType
+from hgijson.custom_types import PrimitiveJsonType
 
 
 class PrimitiveSerializer(Serializer):

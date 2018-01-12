@@ -8,7 +8,7 @@ from hgijson.tests._serializers import SimpleModelDeserializer, SimpleModelSeria
     ComplexModelDeserializer
 from hgijson.tests.json_converters._helpers import create_complex_model_with_json_representation, \
     create_simple_model_with_json_representation
-from hgijson.types import PrimitiveJsonType
+from hgijson.custom_types import PrimitiveJsonType
 
 
 class _TestSerialization(unittest.TestCase):
