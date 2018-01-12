@@ -1,10 +1,10 @@
 import json
 from json import JSONEncoder, JSONDecoder
-from typing import Sequence, Iterable
+from typing import Iterable
 
+from hgijson.custom_types import PrimitiveJsonType
 from hgijson.json_converters._serialization import MappingJSONDecoder, MappingJSONEncoder
 from hgijson.json_converters.models import JsonPropertyMapping
-from hgijson.custom_types import PrimitiveUnionType
 from hgijson.tests._models import SimpleModel, ComplexModel
 
 
@@ -33,7 +33,7 @@ class BasicSimpleModelJSONEncoder(JSONEncoder):
     """
     Basic JSON encoder for `SimpleModel`.
     """
-    def default(self, to_encode: SimpleModel) -> PrimitiveUnionType:
+    def default(self, to_encode: SimpleModel) -> PrimitiveJsonType:
         return {
             "serialized_a": to_encode.a,
             "serialized_b": to_encode.b
