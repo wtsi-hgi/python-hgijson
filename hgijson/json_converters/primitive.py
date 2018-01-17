@@ -1,13 +1,11 @@
 import json
-from abc import ABCMeta, abstractmethod
 from datetime import datetime, timezone
 from json import JSONDecoder, JSONEncoder
-from typing import Any, Set, TypeVar, Generic, Type
+from typing import Any, TypeVar
 
 from dateutil.parser import parser
 
 from hgijson.json_converters.interfaces import ParsedJSONDecoder
-from hgijson.custom_types import PrimitiveJsonType, SerializableType
 
 ItemType = TypeVar("ItemType")
 
