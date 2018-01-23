@@ -30,7 +30,6 @@ class TestNoPropertyAccessRegression(unittest.TestCase):
         obj = _NoPropertyAccess(configurations)
         json_as_dict = _NoPropertyAccessJSONEncoder().default(obj)
         self.assertEqual({"configurations": configurations}, json_as_dict)
-        
 
 
 if __name__ == "__main__":
