@@ -1,5 +1,5 @@
 import unittest
-from copy import copy, deepcopy
+from copy import deepcopy
 
 from hgijson import JsonPropertyMapping, MappingJSONEncoderClassBuilder, MappingJSONDecoderClassBuilder
 from hgijson.tests._models import BaseModel

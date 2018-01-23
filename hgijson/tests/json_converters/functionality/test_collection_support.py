@@ -42,7 +42,7 @@ _ContainerJSONEncoder = MappingJSONEncoderClassBuilder(_Container, _container_ma
 _ContainerJSONDecoder = MappingJSONDecoderClassBuilder(_Container, _container_mappings).build()
 
 
-class TestCollectionSupportRegression(unittest.TestCase):
+class TestCollectionSupport(unittest.TestCase):
     """
     Testing for collection support.
     """

@@ -21,9 +21,9 @@ _NoPropertyAccessJSONEncoder = MappingJSONEncoderClassBuilder(_NoPropertyAccess,
 _NoPropertyAccessJSONDecoder = MappingJSONDecoderClassBuilder(_NoPropertyAccess, _no_property_access_mappings).build()
 
 
-class TestNoPropertyAccessRegression(unittest.TestCase):
+class TestNoPropertyAccess(unittest.TestCase):
     """
-    Regression tests for bugs found in the wild.
+    Test no object property access support.
     """
     def test_no_property_access(self):
         configurations = [1, 2, 3]
