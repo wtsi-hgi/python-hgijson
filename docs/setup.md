@@ -1,13 +1,17 @@
 # Setup
+## Requirements
+- Python 3.5.2+
+
+
 ## Installation
 Stable releases can be installed via PyPI:
 ```bash
-$ pip3 install hgijson
+$ pip install hgijson
 ```
 
 Bleeding edge versions can be installed directly from GitHub:
 ```bash
-$ pip3 install git+https://github.com/wtsi-hgi/python-json.git@<commit_id_or_branch_or_tag>#egg=hgijson
+$ pip install git+https://github.com/wtsi-hgi/python-json.git@<commit_id_or_branch_or_tag>#egg=hgijson
 ```
 
 To declare this library as a dependency of your project, add it to your `requirement.txt` file.
