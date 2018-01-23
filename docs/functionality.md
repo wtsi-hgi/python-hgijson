@@ -413,8 +413,46 @@ To define that:
 person_mapping = [
     JsonPropertyMapping("short_names", "nicknames", "names", collection_factory=set)
 ]
-````
+```
 
+## Nested JSON Properties
+JSON representations sometimes include redundant properties, often to group information. To easily work with nested 
+properties, when the same nesting does not exist in the object representation, the `parent_json_properties` property can
+be used.
+
+
+Model:
+```python
+class Person:
+    def __init__(self, name=None, job=None, favourite_colour=None):
+        self.name = name
+        self.job = job
+        self.favourite_colour = favourite_colour
+```
+
+JSON (`Person("Bob", "Software Developer", "red")`):
+```json
+{
+    "name": "Bob",
+    "work": {
+        "job": "Software Developer"
+    },
+    "other": {
+        "misc": {
+            "favourite_colour": "red"
+        }
+    }
+}
+```
+
+Mapping:
+```python
+person_mapping = [
+    JsonPropertyMapping("name", "name"),
+    JsonPropertyMapping("job", "job", parent_json_properties=["work"]),
+    JsonPropertyMapping("favourite_colour", "favourite_colour", parent_json_properties=["other", "misc"]),
+]
+```
 
 ## Serialization to/from a dict
 To serialize an object to a dictionary, opposed to a string:
