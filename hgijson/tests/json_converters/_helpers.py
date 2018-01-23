@@ -2,6 +2,16 @@ from typing import Dict, Tuple
 
 from hgijson.tests._models import SimpleModel, ComplexModel
 
+EXAMPLE_VALUE_1 = "example-value-1"
+EXAMPLE_VALUE_2 = "example-value-2"
+EXAMPLE_VALUE_3 = "example-value-3"
+EXAMPLE_VALUE_4 = "example-value-4"
+
+EXAMPLE_PROPERTY_1 = "example-property-1"
+EXAMPLE_PROPERTY_2 = "example-property-2"
+EXAMPLE_PROPERTY_3 = "example-property-3"
+EXAMPLE_PROPERTY_4 = "example-property-4"
+
 
 def create_simple_model_with_json_representation(modifier: int=0) -> Tuple[SimpleModel, Dict]:
     """

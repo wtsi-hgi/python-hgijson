@@ -34,7 +34,8 @@ class JsonPropertyMapping(PropertyMapping):
             decoder_cls: Union[type, Callable[[], type]]=JSONDecoder, 
             optional: bool=False,
             collection_factory: Callable[[Iterable], Any]=lambda items: list(items),
-            collection_iter: Callable[[Any], Iterable]=lambda collection: iter(collection)):
+            collection_iter: Callable[[Any], Iterable]=lambda collection: iter(collection),
+            parent_json_properties: Iterable[str]=None):
         """
         Constructor.
         :param json_property_name:
@@ -57,18 +58,46 @@ class JsonPropertyMapping(PropertyMapping):
                                  "property cannot be specified in this case.")
 
             if json_property_getter is None:
-                def json_property_getter(obj_as_json: dict):
+                def json_property_getter(obj_as_json: Dict):
                     if json_property_name not in obj_as_json:
                         if optional:
                             return None
                         else:
-                            raise KeyError("No value associated to the non-optional key `%s` in the input JSON: `%s`"
+                            raise KeyError("No value for the non-optional key \"%s\" in the input JSON: %s"
                                              % (json_property_name, obj_as_json))
                     return obj_as_json[json_property_name]
 
             if json_property_setter is None:
-                def json_property_setter(obj_as_json: dict, value: Any):
+                def json_property_setter(obj_as_json: Dict, value: Any):
                     obj_as_json[json_property_name] = value
+
+        if parent_json_properties is not None:
+            parent_json_properties = list(parent_json_properties)
+
+            if json_property_getter is not None:
+                top_level_json_property_getter = json_property_getter
+
+                def json_property_getter(obj_as_json: Dict):
+                    top_level_obj_as_json = obj_as_json
+                    for ancestor in parent_json_properties:
+                        obj_as_json = obj_as_json.get(ancestor, None)
+                        if obj_as_json is None:
+                            if optional:
+                                return None
+                            else:
+                                raise KeyError("Parent keys missing \"%s\" in the input JSON: %s"
+                                               % (".".join(parent_json_properties), top_level_obj_as_json))
+                    return top_level_json_property_getter(obj_as_json)
+
+            if json_property_setter is not None:
+                top_level_json_property_setter = json_property_setter
+
+                def json_property_setter(obj_as_json: Dict, value: Any):
+                    for ancestor in parent_json_properties:
+                        if ancestor not in obj_as_json:
+                            obj_as_json[ancestor] = {}
+                        obj_as_json = obj_as_json[ancestor]
+                    top_level_json_property_setter(obj_as_json, value)
 
         if object_property_name is not None:
             if object_property_getter is not None and object_property_setter is not None:
