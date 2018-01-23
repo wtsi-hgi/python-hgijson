@@ -64,7 +64,7 @@ class JsonPropertyMapping(PropertyMapping):
                             return None
                         else:
                             raise KeyError("No value for the non-optional key \"%s\" in the input JSON: %s"
-                                             % (json_property_name, obj_as_json))
+                                           % (json_property_name, obj_as_json))
                     return obj_as_json[json_property_name]
 
             if json_property_setter is None:
@@ -113,7 +113,7 @@ class JsonPropertyMapping(PropertyMapping):
             if object_property_setter is None and object_constructor_parameter_name is None:
                 def object_property_setter(obj: Any, value: Any):
                     if not hasattr(obj, object_property_name):
-                        raise AttributeError("Object `%s` does not have the attribute `%s`"
+                        raise AttributeError("Object \"%s\" does not have the attribute \"%s\""
                                              % (obj, object_property_name))
                     setattr(obj, object_property_name, value)
 

@@ -3,6 +3,7 @@
 ### Added
 - Support for working with nested JSON properties.
 
+
 ## 3.0.1 - 2018-01-17
 ### Removed
 - Unused imports. 
